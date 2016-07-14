@@ -25,7 +25,7 @@ class FunctionLearning(Experiment):
 
     def create_node(self, participant, network):
         """Create a new node."""
-        return Indexed(participant, network)
+        return Indexed(participant=participant, network=network)
 
 
 class Paired(Network):
@@ -43,10 +43,11 @@ class Paired(Network):
         else:
             partner_n_index = n_index - 1
 
-        partner_node = Node.query.filter_by(network_id=node.network_id, index=partner_n_index).one_or_none()
-
-        if partner_node:
+        try:
+            partner_node = Indexed.query.filter_by(network_id=node.network_id, index=partner_n_index).one()
             node.connect(direction="both", whom=partner_node)
+        except:
+            pass
 
 
 class Indexed(Node):
