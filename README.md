@@ -1,1 +1,1 @@
-A joint perceptual estimation game
+A joint perceptual estimation game. Currently in progress.
