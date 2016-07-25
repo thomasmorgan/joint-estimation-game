@@ -46,7 +46,7 @@ get_info = function() {
             yTrainReported = [];
 
             // Get test values.
-            // half are from training the rest are new
+            // half are from training; the rest are new
             allX = range(1, xMax);
             xTestFromTraining = randomSubset(xTrain, N/4);
             xTestNew = randomSubset(allX.diff(xTrain), N/4);
@@ -100,6 +100,7 @@ drawUserInterface = function () {
     feedback.hide();
 
     if (trialIndex === 0) {
+        
         // Track the mouse.
         $(document).mousemove( function(e) {
             y = e.pageY-50;
@@ -163,6 +164,7 @@ function mousedownEventListener(event) {
         // Training phase
         if (trialIndex < N/2) {
             yTrue = yTrain[trialIndex-1];
+            
             // if they are wrong show feedback
             yTrainReported.push(yNow);
             feedback.attr({ y: 400 - yTrue * PPU, height: yTrue * PPU });
@@ -170,6 +172,7 @@ function mousedownEventListener(event) {
             feedback.animate({fill: "#666"}, 100, "<", function () {
                 this.animate({fill: "#CCC"}, 100, ">");
             });
+
             // Move on to next trial if response is correct.
             if(Math.abs(yNow - yTrue) < 4) {
                 clicked = true;

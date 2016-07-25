@@ -19,34 +19,103 @@
             <form>
                 <div class="row question">
                     <div class="col-md-8">
-                        Describe the relationship between the size of the two bars. Use as many words as is necessary to fully describe how their sizes are related:
-                    </div>
-                        <div><textarea id="relationship" class="form-control" rows="5"></textarea></div>
-                </div>
-
-                <div class="row question">
-                    <div class="col-md-8">
-                        On a scale of 1-10 (where 10 is the most engaged), please rate how engaged you were while performing the task:
+                        How cooperative did you feel your partner was during the experiment?
                     </div>
                     <div class="col-md-4">
-                        <select id="engagement" name="engagement">
-                            <option value="10">10 - Very engaged</option>
+                        <select id="cooperative_partner" name="cooperative_partner">
+                            <option value="10">10 - Highly cooperative</option>
                             <option value="9">9</option>
                             <option value="8">8</option>
                             <option value="7">7</option>
                             <option value="6">6</option>
-                            <option value="5" SELECTED>5 - Moderately engaged</option>
+                            <option value="5" SELECTED>5 - Neither cooperative nor uncooperative</option>
                             <option value="4">4</option>
                             <option value="3">3</option>
                             <option value="2">2</option>
-                            <option value="1">1 - Not engaged</option>
+                            <option value="1">1 - Highly uncooperative</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row question">
+                    <div class="col-md-8">
+                        How cooperative did you feel you were during the experiment?
+                    </div>
+                    <div class="col-md-4">
+                        <select id="cooperative_self" name="cooperative_self">
+                            <option value="10">10 - Highly cooperative</option>
+                            <option value="9">9</option>
+                            <option value="8">8</option>
+                            <option value="7">7</option>
+                            <option value="6">6</option>
+                            <option value="5" SELECTED>5 - Neither cooperative nor uncooperative</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1 - Highly uncooperative</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                        How much do you feel you trusted your partner's opinion during the experiment?
+                </div>
+                <div class="col-md-4">
+                        <select id="trust_partner" name="trust_partner">
+                            <option value="10">10 - Strongly believed</option>
+                            <option value="9">9</option>
+                            <option value="8">8</option>
+                            <option value="7">7</option>
+                            <option value="6">6</option>
+                            <option value="5" SELECTED>5 - Neither believed nor doubted</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1 - Strongly doubted</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row question">
+                    <div class="col-md-8">
+                        How much do you feel your partner trusted your opinion during the experiment?
+                    </div>
+                    <div class="col-md-4">
+                        <select id="trust_self" name="trust_self">
+                            <option value="10">10 - Strongly believed</option>
+                            <option value="9">9</option>
+                            <option value="8">8</option>
+                            <option value="7">7</option>
+                            <option value="6">6</option>
+                            <option value="5" SELECTED>5 - Neither believed nor doubted</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1 - Strongly doubted</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row question">
+                    <div class="col-md-8">
+                        How engaged were you during the experiment overall?
+                    </div>
+                    <div class="col-md-4">
+                        <select id="engagement" name="engagement">
+                            <option value="10">10 - Highly engaged</option>
+                            <option value="9">9</option>
+                            <option value="8">8</option>
+                            <option value="7">7</option>
+                            <option value="6">6</option>
+                            <option value="5" SELECTED>5 - Neither engaged nor disengaged</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1 - Highly disengaged</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="row question">
                     <div class="col-md-8">
-                        On a scale of 1-10 (where 10 is the most difficult), please rate how difficult you found the learning task:
+                        How difficult did you find the experiment overall?
                     </div>
                     <div class="col-md-4">
                         <select id="difficulty" name="difficulty">
@@ -55,7 +124,7 @@
                             <option value="8">8</option>
                             <option value="7">7</option>
                             <option value="6">6</option>
-                            <option value="5" SELECTED>5 - Moderate</option>
+                            <option value="5" SELECTED>5 - Neither difficult nor easy</option>
                             <option value="4">4</option>
                             <option value="3">3</option>
                             <option value="2">2</option>
