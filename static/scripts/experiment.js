@@ -1,5 +1,5 @@
 // Settings
-PPU = 3;      // Pixels per base unit.
+PPU = 5;      // Pixels per base unit.
 xMax = 100;   // Maximum size of a bar in base units.
 trialIndex = 0;
 stimulusYSize = 0;
@@ -85,14 +85,23 @@ drawUserInterface = function () {
     inset = 1;
 
     // Draw the X bar background.
-    backgroundX = paper.rect(50, 50, 300, 25-2*inset);
-    backgroundX.attr("stroke", "#CCCCCC");
-    backgroundX.attr("stroke-dasharray", "--");
+    stimulus_background = paper.rect(50, 150, 500, 25-2*inset);
+    stimulus_background.attr("stroke", "#CCCCCC");
+    stimulus_background.attr("stroke-dasharray", "--");
 
     // Draw the X bar.
-    stimulusX = paper.rect(50, 50-inset, 0, 25);
-    stimulusX.attr("fill", "#0B486B");
-    stimulusX.attr("stroke", "none");
+    stimulus_bar = paper.rect(50, 150-inset, 0, 25);
+    stimulus_bar.attr("fill", "#0B486B");
+    stimulus_bar.attr("stroke", "none");
+
+    response_background = paper.rect(50, 250, 500, 25-2*inset);
+    response_background.attr("stroke", "#CCCCCC");
+    response_background.attr("stroke-dasharray", "--");
+
+    // Draw the X bar.
+    response_bar = paper.rect(50, 250-inset, 0, 25);
+    response_bar.attr("fill", "#0B486B");
+    response_bar.attr("stroke", "none");
 
     // // Draw the Y bar background.
     // backgroundY = paper.rect(450, 400-300, 25-2*inset, 300);
@@ -110,18 +119,18 @@ drawUserInterface = function () {
     // feedback.attr("stroke", "none");
     // feedback.hide();
 
-    // if (trialIndex === 0) {
+    if (trialIndex === 0) {
         
-    //     // Track the mouse.
-    //     $(document).mousemove( function(e) {
-    //         y = e.pageY-50;
-    //         stimulusYSize = bounds(400 - y, 1*PPU, xMax*PPU);
-    //         stimulusY.attr({ y: 400 - stimulusYSize, height: stimulusYSize });
-    //     });
+        // Track the mouse.
+        $(document).mousemove( function(e) {
+            x = e.pageX-50;
+            response_bar_size = bounds(x, 1*PPU, xMax*PPU);
+            response_bar.attr({ x: 50, width: response_bar_size });
+        });
 
-    //     Mousetrap.bind("space", proceedToNextTrial, "keydown");
-    //     document.addEventListener('click', mousedownEventListener);
-    // }
+        // Mousetrap.bind("space", proceedToNextTrial, "keydown");
+        // document.addEventListener('click', mousedownEventListener);
+    }
 };
 
 proceedToNextTrial = function () {
@@ -137,8 +146,8 @@ proceedToNextTrial = function () {
     //     stimulusXSize = xTrain[trialIndex - 1] * PPU;
     // else
     //     stimulusXSize = xTest[trialIndex - N/2 - 1] * PPU;
-    stimulusX.attr({ width: int_list[trialIndex - 1] });
-    stimulusX.show();
+    stimulus_bar.attr({ width: int_list[trialIndex - 1] });
+    stimulus_bar.show();
     // stimulusY.show();
 
     // If this was the last trial, finish up.
