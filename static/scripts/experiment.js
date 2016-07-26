@@ -14,7 +14,7 @@ create_agent = function() {
         type: 'json',
         success: function (resp) {
             my_node_id = resp.node.id;
-            get_infos();
+            get_info();
         },
         error: function (err) {
             console.log(err);
