@@ -45,6 +45,8 @@ get_received_info = function() {
                 r = resp.infos[0].contents;
                 int_list = JSON.parse(r);
                 $("#title").text("Partner connected");
+                drawUserInterface();
+                proceedToNextTrial();
             }
 
             // // Get training values
@@ -62,8 +64,6 @@ get_received_info = function() {
             // xTestNew = randomSubset(allX.diff(xTrain), N/4);
             // xTest = shuffle(xTestFromTraining.concat(xTestNew));
             // yTest = [];
-            // drawUserInterface();
-            // proceedToNextTrial();
         },
         error: function (err) {
             console.log(err);
@@ -93,74 +93,74 @@ drawUserInterface = function () {
     stimulusX.attr("fill", "#0B486B");
     stimulusX.attr("stroke", "none");
 
-    // Draw the Y bar background.
-    backgroundY = paper.rect(450, 400-300, 25-2*inset, 300);
-    backgroundY.attr("stroke", "#CCCCCC");
-    backgroundY.attr("stroke-dasharray", "--");
+    // // Draw the Y bar background.
+    // backgroundY = paper.rect(450, 400-300, 25-2*inset, 300);
+    // backgroundY.attr("stroke", "#CCCCCC");
+    // backgroundY.attr("stroke-dasharray", "--");
 
-    // Draw the Y bar.
-    stimulusY = paper.rect(450-inset, 400, 25, 0);
-    stimulusY.attr("fill", "#C02942");
-    stimulusY.attr("stroke", "none");
+    // // Draw the Y bar.
+    // stimulusY = paper.rect(450-inset, 400, 25, 0);
+    // stimulusY.attr("fill", "#C02942");
+    // stimulusY.attr("stroke", "none");
 
-    // Draw the feedback bar.
-    feedback = paper.rect(500, 400, 25, 0);
-    feedback.attr("fill", "#CCCCCC");
-    feedback.attr("stroke", "none");
-    feedback.hide();
+    // // Draw the feedback bar.
+    // feedback = paper.rect(500, 400, 25, 0);
+    // feedback.attr("fill", "#CCCCCC");
+    // feedback.attr("stroke", "none");
+    // feedback.hide();
 
-    if (trialIndex === 0) {
+    // if (trialIndex === 0) {
         
-        // Track the mouse.
-        $(document).mousemove( function(e) {
-            y = e.pageY-50;
-            stimulusYSize = bounds(400 - y, 1*PPU, xMax*PPU);
-            stimulusY.attr({ y: 400 - stimulusYSize, height: stimulusYSize });
-        });
+    //     // Track the mouse.
+    //     $(document).mousemove( function(e) {
+    //         y = e.pageY-50;
+    //         stimulusYSize = bounds(400 - y, 1*PPU, xMax*PPU);
+    //         stimulusY.attr({ y: 400 - stimulusYSize, height: stimulusYSize });
+    //     });
 
-        Mousetrap.bind("space", proceedToNextTrial, "keydown");
-        document.addEventListener('click', mousedownEventListener);
-    }
+    //     Mousetrap.bind("space", proceedToNextTrial, "keydown");
+    //     document.addEventListener('click', mousedownEventListener);
+    // }
 };
 
 proceedToNextTrial = function () {
     // Prevent repeat keypresses.
-    Mousetrap.pause();
+    // Mousetrap.pause();
 
     // Increment the trial counter.
     trialIndex = trialIndex + 1;
     $("#trial-number").html(trialIndex);
 
     // Set up the stimuli.
-    if (trialIndex < N/2)
-        stimulusXSize = xTrain[trialIndex - 1] * PPU;
-    else
-        stimulusXSize = xTest[trialIndex - N/2 - 1] * PPU;
-    stimulusX.attr({ width: stimulusXSize });
+    // if (trialIndex < N/2)
+    //     stimulusXSize = xTrain[trialIndex - 1] * PPU;
+    // else
+    //     stimulusXSize = xTest[trialIndex - N/2 - 1] * PPU;
+    stimulusX.attr({ width: int_list[0] });
     stimulusX.show();
-    stimulusY.show();
+    // stimulusY.show();
 
     // If this was the last trial, finish up.
-    if (trialIndex == N+1) {
-        document.removeEventListener('click', mousedownEventListener);
-        paper.remove();
+    // if (trialIndex == N+1) {
+    //     document.removeEventListener('click', mousedownEventListener);
+    //     paper.remove();
 
-        // Send data back to the server.
-        response = JSON.stringify({"x": xTest, "y": yTest});
+    //     // Send data back to the server.
+    //     response = JSON.stringify({"x": xTest, "y": yTest});
 
-        reqwest({
-            url: "/info/" + my_node_id,
-            method: 'post',
-            data: {
-                contents: response,
-                info_type: "Info"
-            }, success: function(resp) {
-                create_agent();
-            }
-        });
-    } else {
-        clicked = false;
-    }
+    //     reqwest({
+    //         url: "/info/" + my_node_id,
+    //         method: 'post',
+    //         data: {
+    //             contents: response,
+    //             info_type: "Info"
+    //         }, success: function(resp) {
+    //             create_agent();
+    //         }
+    //     });
+    // } else {
+    //     clicked = false;
+    // }
 };
 
 //
