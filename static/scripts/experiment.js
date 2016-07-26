@@ -14,6 +14,7 @@ create_agent = function() {
         type: 'json',
         success: function (resp) {
             my_node_id = resp.node.id;
+            get_infos();
         },
         error: function (err) {
             console.log(err);
@@ -37,23 +38,23 @@ get_info = function() {
             r = resp.infos[0].contents;
             data = JSON.parse(r);
 
-            // Get training values
-            xTrain = data.x;
-            yTrain = data.y;
+            // // Get training values
+            // xTrain = data.x;
+            // yTrain = data.y;
 
-            N = xTrain.length * 2;
-            $("#total-trials").html(N);
-            yTrainReported = [];
+            // N = xTrain.length * 2;
+            // $("#total-trials").html(N);
+            // yTrainReported = [];
 
-            // Get test values.
-            // half are from training; the rest are new
-            allX = range(1, xMax);
-            xTestFromTraining = randomSubset(xTrain, N/4);
-            xTestNew = randomSubset(allX.diff(xTrain), N/4);
-            xTest = shuffle(xTestFromTraining.concat(xTestNew));
-            yTest = [];
-            drawUserInterface();
-            proceedToNextTrial();
+            // // Get test values.
+            // // half are from training; the rest are new
+            // allX = range(1, xMax);
+            // xTestFromTraining = randomSubset(xTrain, N/4);
+            // xTestNew = randomSubset(allX.diff(xTrain), N/4);
+            // xTest = shuffle(xTestFromTraining.concat(xTestNew));
+            // yTest = [];
+            // drawUserInterface();
+            // proceedToNextTrial();
         },
         error: function (err) {
             console.log(err);

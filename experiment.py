@@ -5,7 +5,7 @@ from wallace.models import Network, Node
 from sqlalchemy import Integer
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
-
+from wallace.nodes import Source
 
 class FunctionLearning(Experiment):
     """A function-learning experiment."""
