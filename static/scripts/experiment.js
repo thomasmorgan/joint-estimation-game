@@ -3,6 +3,7 @@ PPU = 3;      // Pixels per base unit.
 xMax = 100;   // Maximum size of a bar in base units.
 trialIndex = 0;
 stimulusYSize = 0;
+enter_lock = true;
 
 
 
@@ -45,8 +46,8 @@ get_received_info = function() {
                 r = resp.infos[0].contents;
                 int_list = JSON.parse(r);
                 $("#title").text("Partner connected");
-                drawUserInterface();
-                proceedToNextTrial();
+                $(".instructions").text("Press enter to begin");
+                enter_lock = false;
             }
 
             // // Get training values
@@ -136,7 +137,7 @@ proceedToNextTrial = function () {
     //     stimulusXSize = xTrain[trialIndex - 1] * PPU;
     // else
     //     stimulusXSize = xTest[trialIndex - N/2 - 1] * PPU;
-    stimulusX.attr({ width: int_list[0] });
+    stimulusX.attr({ width: int_list[trialIndex - 1] });
     stimulusX.show();
     // stimulusY.show();
 
@@ -203,3 +204,14 @@ function mousedownEventListener(event) {
         }
     }
 }
+
+$(document).keydown(function(e) {
+    var code = e.keyCode || e.which;
+    if (code == 13) {
+        if (enter_lock === false) {
+            enter_lock = true;
+            drawUserInterface();
+            proceedToNextTrial();
+        }
+    }
+});
