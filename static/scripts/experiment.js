@@ -30,13 +30,22 @@ create_agent = function() {
 };
 
 get_info = function() {
+    setTimeout(get_received_info, 1000);
+};
+
+get_received_info = function() {
     reqwest({
         url: "/node/" + my_node_id + "/received_infos",
         method: 'get',
         type: 'json',
         success: function (resp) {
-            r = resp.infos[0].contents;
-            data = JSON.parse(r);
+            if (resp.infos.length === 0) {
+                get_info();
+            } else {
+                r = resp.infos[0].contents;
+                int_list = JSON.parse(r);
+                $("#title").text("Partner connected");
+            }
 
             // // Get training values
             // xTrain = data.x;
