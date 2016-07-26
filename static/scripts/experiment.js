@@ -4,6 +4,7 @@ xMax = 100;   // Maximum size of a bar in base units.
 trialIndex = 0;
 stimulusYSize = 0;
 enter_lock = true;
+click_lock = true;
 
 
 
@@ -129,7 +130,7 @@ drawUserInterface = function () {
         });
 
         // Mousetrap.bind("space", proceedToNextTrial, "keydown");
-        // document.addEventListener('click', mousedownEventListener);
+        document.addEventListener('click', mousedownEventListener);
     }
 };
 
@@ -146,7 +147,7 @@ proceedToNextTrial = function () {
     //     stimulusXSize = xTrain[trialIndex - 1] * PPU;
     // else
     //     stimulusXSize = xTest[trialIndex - N/2 - 1] * PPU;
-    stimulus_bar.attr({ width: int_list[trialIndex - 1] });
+    stimulus_bar.attr({ width: int_list[trialIndex - 1]*PPU });
     stimulus_bar.show();
     // stimulusY.show();
 
@@ -177,40 +178,46 @@ proceedToNextTrial = function () {
 // Listen for clicks and act accordingly.
 //
 function mousedownEventListener(event) {
-    if (clicked === false) {
+    if (click_lock === false) {
 
-        yNow = Math.round(stimulusYSize/PPU);
+        click_lock = true;
+        response = Math.round(response_bar_size/PPU);
+        response_bar.hide();
+        Mousetrap.resume();
+        proceedToNextTrial();
+        response_bar.show();
+        click_lock = false;
 
-        // Training phase
-        if (trialIndex < N/2) {
-            yTrue = yTrain[trialIndex-1];
+        // // Training phase
+        // if (trialIndex < N/2) {
+        //     yTrue = yTrain[trialIndex-1];
             
-            // if they are wrong show feedback
-            yTrainReported.push(yNow);
-            feedback.attr({ y: 400 - yTrue * PPU, height: yTrue * PPU });
-            feedback.show();
-            feedback.animate({fill: "#666"}, 100, "<", function () {
-                this.animate({fill: "#CCC"}, 100, ">");
-            });
+        //     // if they are wrong show feedback
+        //     yTrainReported.push(yNow);
+        //     feedback.attr({ y: 400 - yTrue * PPU, height: yTrue * PPU });
+        //     feedback.show();
+        //     feedback.animate({fill: "#666"}, 100, "<", function () {
+        //         this.animate({fill: "#CCC"}, 100, ">");
+        //     });
 
-            // Move on to next trial if response is correct.
-            if(Math.abs(yNow - yTrue) < 4) {
-                clicked = true;
-                feedback.hide();
-                stimulusX.hide();
-                stimulusY.hide();
-                Mousetrap.resume();
-            }
-        // Testing phase
-        } else if (trialIndex <= N) {
-            clicked = true;
-            $("#training-or-testing").html("Testing");
-            yTest.push(yNow);
-            feedback.hide();
-            stimulusX.hide();
-            stimulusY.hide();
-            Mousetrap.resume();
-        }
+        //     // Move on to next trial if response is correct.
+        //     if(Math.abs(yNow - yTrue) < 4) {
+        //         clicked = true;
+        //         feedback.hide();
+        //         stimulusX.hide();
+        //         stimulusY.hide();
+        //         Mousetrap.resume();
+        //     }
+        // // Testing phase
+        // } else if (trialIndex <= N) {
+        //     clicked = true;
+        //     $("#training-or-testing").html("Testing");
+        //     yTest.push(yNow);
+        //     feedback.hide();
+        //     stimulusX.hide();
+        //     stimulusY.hide();
+        //     Mousetrap.resume();
+        // }
     }
 }
 
@@ -221,6 +228,7 @@ $(document).keydown(function(e) {
             enter_lock = true;
             drawUserInterface();
             proceedToNextTrial();
+            click_lock = false;
         }
     }
 });
