@@ -1,11 +1,11 @@
 """Define a transmission-chain experiment that transmits functional forms."""
 
-from wallace.experiments import Experiment
-from wallace.models import Network, Node, Info
+from dallinger.experiments import Experiment
+from dallinger.models import Network, Node, Info
 from sqlalchemy import Integer
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
-from wallace.nodes import Source
+from dallinger.nodes import Source
 from random import randint
 import json
 
@@ -14,7 +14,7 @@ class FunctionLearning(Experiment):
     """A function-learning experiment."""
 
     def __init__(self, session):
-        """Call the same function in the super (see experiments.py in wallace).
+        """Call the same function in the super (see experiments.py in dallinger).
 
         A few properties are then overwritten. Finally, setup() is called.
         """
