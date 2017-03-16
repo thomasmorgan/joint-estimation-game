@@ -10,7 +10,7 @@ from random import randint
 import json
 
 
-class FunctionLearning(Experiment):
+class JointEstimation(Experiment):
     """A function-learning experiment."""
 
     def __init__(self, session):
@@ -18,7 +18,7 @@ class FunctionLearning(Experiment):
 
         A few properties are then overwritten. Finally, setup() is called.
         """
-        super(FunctionLearning, self).__init__(session)
+        super(JointEstimation, self).__init__(session)
         self.experiment_repeats = 1
         self.setup()
 
@@ -31,7 +31,7 @@ class FunctionLearning(Experiment):
         return Indexed(participant=participant, network=network)
 
     def setup(self):
-        """Create the networks and add a source if the networks don't already exist."""
+        """Create the networks, and add a source if the networks don't already exist."""
         if not self.networks():
             for _ in range(self.practice_repeats):
                 network = self.create_network()
