@@ -11,7 +11,7 @@ import json
 
 
 class JointEstimation(Experiment):
-    """A function-learning experiment."""
+    """An experiment for joint perception."""
 
     def __init__(self, session):
         """Call the same function in the super (see experiments.py in dallinger).
@@ -119,7 +119,7 @@ class ListSource(Source):
 
         # create list container and specify number of trials
         list_to_add = []
-        list_length = 20
+        list_length = 100
 
         # iterate over our desired number of trials to make a new list of the appropriate length
         for new_item in range(list_length):
