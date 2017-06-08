@@ -9,6 +9,7 @@ from dallinger.nodes import Source
 from random import randint
 import json
 
+
 class JointEstimation(Experiment):
     """An experiment for joint perception."""
 
@@ -22,6 +23,7 @@ class JointEstimation(Experiment):
         self.models = models
         self.experiment_repeats = 1
         self.setup()
+        self.initial_recruitment_size = 2
 
     def create_network(self):
         """Create a new network."""
@@ -32,7 +34,7 @@ class JointEstimation(Experiment):
         return self.models.Indexed(participant=participant, network=network)
 
     def setup(self):
-        """Create the networks, and add a source if the networks don't already exist."""
+        """Create networks. Add a source if the networks don't yet exist."""
         if not self.networks():
             for _ in range(self.practice_repeats):
                 network = self.create_network()
@@ -45,4 +47,3 @@ class JointEstimation(Experiment):
                 self.session.add(network)
                 self.models.ListSource(network=network)
             self.session.commit()
-
