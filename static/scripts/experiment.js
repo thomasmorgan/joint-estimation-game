@@ -33,10 +33,6 @@ create_agent = function() {
     });
 };
 
-$(document).ready(function(){
-  create_agent();
-});
-
 get_info = function() {
     setTimeout(get_received_info, 1000);
 };
@@ -346,6 +342,7 @@ showPartner = function() {
                 $(".instructions").text("Press enter to begin");
                 enter_lock = false;
             }
+          }})
 
     // Draw partner's background.
     partner_background = paper.rect(response_x_start, response_y_start+200, response_bg_width, response_bg_height-2*inset);
