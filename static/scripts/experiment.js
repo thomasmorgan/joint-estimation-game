@@ -33,6 +33,10 @@ create_agent = function() {
     });
 };
 
+$(document).ready(function(){
+  create_agent();
+});
+
 get_info = function() {
     setTimeout(get_received_info, 1000);
 };
