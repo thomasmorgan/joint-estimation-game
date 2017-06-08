@@ -10,7 +10,6 @@ response_timeout = 2; // Time in seconds for response timeout.
 trainN = 20; // Define number of training trials.
 testN = trainN + 50; // Define number of test trails (over training trials).
 
-
 // Create the agent.
 create_agent = function() {
     reqwest({
@@ -113,11 +112,11 @@ drawUserInterface = function () {
 
     // If we're at the first trial, proceed directly to stimulus presentation.
     if (trialIndex === 0) {
-        
+
         response_background.hide();
         response_bar.hide();
         proceedToNextTrial();
-    
+
     // If this isn't our first trial, continue as normal.
     } else {
         proceedToNextTrial();
@@ -129,7 +128,7 @@ drawUserInterface = function () {
 // Move to next trial: Increment trial number, display stimulus, and allow response.
 //
 proceedToNextTrial = function () {
-    
+
     // // Prevent repeat keypresses.
     // Mousetrap.pause();
 
@@ -171,7 +170,7 @@ proceedToNextTrial = function () {
     if (trialIndex <= trainN) {
 
         // Display correction
-        
+
         // Send data to server.
         sendDataToServer();
         clicked = false;
@@ -180,7 +179,7 @@ proceedToNextTrial = function () {
     } else if (trialIndex > trainN && trialIndex <= testN) {
 
         // Display partner's guess
-        
+
         // Send data to server.
         sendDataToServer();
         clicked = false;
@@ -190,7 +189,7 @@ proceedToNextTrial = function () {
 
         document.removeEventListener('click', mousedownEventListener);
         paper.remove();
-        
+
         // Send data back to the server.
         sendDataToServer();
     };
@@ -200,7 +199,7 @@ proceedToNextTrial = function () {
 // Send the data back to the server.
 //
 sendDataToServer = function(){
-        
+
         // Identify whether we're in training or testing.
         if (trialIndex <= trainN){
             trialType = "train";
@@ -256,14 +255,14 @@ allowResponse = function() {
 
     // // If they take too long, disable response and move to next trial.
     // setTimeout( function() {
-        
+
     //     $(document).off('click')
     //     $("#title").text("Reponse period timed out.");
     //     $(".instructions").text("Please wait for your partner's guess.");
     //     response_bar.hide();
     //     response_background.hide();
     //     click_lock = true;
-    
+
     // }, response_timeout*1000);
 
 }
@@ -275,16 +274,16 @@ function mousedownEventListener(event) {
     if (click_lock === false) {
 
         click_lock = true;
-        
+
         // Allow user to create a response.
         response = Math.round(response_bar_size/PPU);
-        response_bar.hide(); 
+        response_bar.hide();
         response_background.hide();
-        
+
         // Increment trial counter and release next stimulus.
         Mousetrap.resume();
         proceedToNextTrial();
-        
+
         // Reset for next trial.
         response_background.hide();
         response_bar.hide();
@@ -293,7 +292,7 @@ function mousedownEventListener(event) {
         // // Training phase
         // if (trialIndex < N/2) {
         //     yTrue = yTrain[trialIndex-1];
-            
+
         //     // if they are wrong show feedback
         //     yTrainReported.push(yNow);
         //     feedback.attr({ y: 400 - yTrue * PPU, height: yTrue * PPU });
@@ -348,7 +347,7 @@ showPartner = function() {
     partner_background = paper.rect(response_x_start, response_y_start+200, response_bg_width, response_bg_height-2*inset);
     partner_background.attr("stroke", "#CCCCCC");
     partner_background.attr("stroke-dasharray", "--");
-    
+
     // Draw partner's guess.
     partner_bar = paper.rect(response_x_start, response_y_start-inset+200, response_bg_width, response_bg_height);
     partner_bar.attr("fill", "#0B486B");
@@ -361,10 +360,10 @@ $(document).keydown(function(e) {
     if (code == 13) {
         if (enter_lock === false) {
             enter_lock = true;
-            
+
             drawUserInterface();
             // proceedToNextTrial();
-            
+
             click_lock = false;
         }
     }

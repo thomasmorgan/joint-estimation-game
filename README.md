@@ -1,1 +1,3 @@
-A joint perceptual estimation game. Currently in progress.
+# Joint perceptual estimation game
+
+A two-person interactive Dallinger experiment (Paxton, Morgan, & Griffiths, in preparation).
