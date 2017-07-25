@@ -18,6 +18,11 @@ create_agent = function() {
         type: 'json',
         success: function (resp) {
             my_node_id = resp.node.id;
+            if (my_node_id === 2){
+              partner_node_id = 3
+            } else {
+              partner_node_id = 2
+            }
             get_info();
         },
         error: function (err) {
@@ -129,8 +134,8 @@ drawUserInterface = function () {
 //
 proceedToNextTrial = function () {
 
-    // // Prevent repeat keypresses.
-    // Mousetrap.pause();
+    // Prevent repeat keypresses.
+    Mousetrap.pause();
 
     // Increment the trial counter.
     trialIndex = trialIndex + 1;
@@ -166,6 +171,17 @@ proceedToNextTrial = function () {
 
     }, stimulus_timeout*1000);
 
+    // // If they take too long, disable response and move to next trial.
+    // setTimeout( function() {
+    //     $(document).off('click')
+    //     document.removeEventListener('click', mousedownEventListener);
+    //
+    //     $("#title").text("Reponse period timed out.");
+    //     $(".instructions").text("Please wait for your partner's guess.");
+    //     response_bar.hide();
+    //     response_background.hide();
+    // }, response_timeout*1000);
+
     // If this is a training trial...
     if (trialIndex <= trainN) {
 
@@ -179,6 +195,7 @@ proceedToNextTrial = function () {
     } else if (trialIndex > trainN && trialIndex <= testN) {
 
         // Display partner's guess
+        showPartner();
 
         // Send data to server.
         sendDataToServer();
@@ -210,7 +227,10 @@ sendDataToServer = function(){
         };
 
         // Prepare data to send to server.
-        trialData = JSON.stringify({"trialType": trialType, "trialNumber": trialNumber, "length": int_list[trialIndex - 1]*PPU, "guess": response});
+        trialData = JSON.stringify({"trialType": trialType,
+                                    "trialNumber": trialNumber,
+                                    "length": int_list[trialIndex - 1]*PPU,
+                                    "guess": response});
 
         // If we're at the last trial, proceed to questionnaire.
         if (trialIndex === testN){
@@ -252,27 +272,14 @@ allowResponse = function() {
         response_bar_size = bounds(x, 1*PPU, xMax*PPU);
         response_bar.attr({ x: response_x_start, width: response_bar_size });
     });
-
-    // // If they take too long, disable response and move to next trial.
-    // setTimeout( function() {
-
-    //     $(document).off('click')
-    //     $("#title").text("Reponse period timed out.");
-    //     $(".instructions").text("Please wait for your partner's guess.");
-    //     response_bar.hide();
-    //     response_background.hide();
-    //     click_lock = true;
-
-    // }, response_timeout*1000);
-
 }
 
 //
 // Listen for clicks and act accordingly.
 //
 function mousedownEventListener(event) {
-    if (click_lock === false) {
 
+    if (click_lock === false) {
         click_lock = true;
 
         // Allow user to create a response.
@@ -287,7 +294,7 @@ function mousedownEventListener(event) {
         // Reset for next trial.
         response_background.hide();
         response_bar.hide();
-        click_lock = false;
+        // click_lock = false;
 
         // // Training phase
         // if (trialIndex < N/2) {
@@ -329,30 +336,33 @@ showPartner = function() {
 
     // Get partner's guess
     reqwest({
-        url: "/node/" + my_node_id + "/received_infos",
+        url: "/node/" + partner_node_id + "/received_infos",
         method: 'get',
         type: 'json',
         success: function (resp) {
-            if (resp.infos.length === 0) {
-                get_info();
-            } else {
-                r = resp.infos[0].contents;
-                int_list = JSON.parse(r);
-                $("#title").text("Partner connected");
-                $(".instructions").text("Press enter to begin");
-                enter_lock = false;
-            }
+              partner_guess_record = resp.infos[trialNumber+1].contents;
+              partner_x_guess = JSON.parse(partner_guess_record)["length"];
+              $("#title").text("This is your partner's guess");
+              $(".instructions").text("Would you like to accept their guess or keep yours?");
+              enter_lock = false;
           }})
 
     // Draw partner's background.
-    partner_background = paper.rect(response_x_start, response_y_start+200, response_bg_width, response_bg_height-2*inset);
+    partner_background = paper.rect(response_x_start,
+                                    response_y_start+200,
+                                    response_bg_width,
+                                    response_bg_height-2*inset);
     partner_background.attr("stroke", "#CCCCCC");
     partner_background.attr("stroke-dasharray", "--");
 
     // Draw partner's guess.
-    partner_bar = paper.rect(response_x_start, response_y_start-inset+200, response_bg_width, response_bg_height);
+    partner_bar = paper.rect(response_x_start,
+                             response_y_start-inset+200,
+                             response_bg_width,
+                             response_bg_height);
     partner_bar.attr("fill", "#0B486B");
     partner_bar.attr("stroke", "none");
+    partner_bar.attr({ x: partner_x_guess, width: response_bar_size });
 
 }
 
