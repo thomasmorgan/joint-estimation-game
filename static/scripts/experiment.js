@@ -330,40 +330,40 @@ function mousedownEventListener(event) {
 }
 
 //
+// Display partner's guess.
 //
-//
-// showPartner = function() {
-//
-//     // // Get partner's guess
-//     // reqwest({
-//     //     url: "/node/" + partner_node_id + "/received_infos",
-//     //     method: 'get',
-//     //     type: 'json',
-//     //     success: function (resp) {
-//     //           partner_guess_record = resp.infos[trialNumber+1].contents;
-//     //           partner_x_guess = JSON.parse(partner_guess_record)["length"];
-//     //           $("#title").text("This is your partner's guess");
-//     //           $(".instructions").text("Would you like to accept their guess or keep yours?");
-//     //           enter_lock = false;
-//     //       }})
-//
-//     // Draw partner's background.
-//     partner_background = paper.rect(response_x_start,
-//                                     response_y_start+200,
-//                                     response_bg_width,
-//                                     response_bg_height-2*inset);
-//     partner_background.attr("stroke", "#CCCCCC");
-//     partner_background.attr("stroke-dasharray", "--");
-//
-//     // Draw partner's guess.
-//     partner_bar = paper.rect(response_x_start,
-//                              response_y_start-inset+200,
-//                              response_bg_width,
-//                              response_bg_height);
-//     partner_bar.attr("fill", "#0B486B");
-//     partner_bar.attr("stroke", "none");
-//     partner_bar.attr({ x: response_x_start, width: partner_x_guess });
-//
+showPartner = function() {
+
+    // // Get partner's guess
+    // reqwest({
+    //     url: "/node/" + partner_node_id + "/received_infos",
+    //     method: 'get',
+    //     type: 'json',
+    //     success: function (resp) {
+    //           partner_guess_record = resp.infos[trialNumber+1].contents;
+    //           partner_x_guess = JSON.parse(partner_guess_record)["length"];
+    //           $("#title").text("This is your partner's guess");
+    //           $(".instructions").text("Would you like to accept their guess or keep yours?");
+    //           enter_lock = false;
+    //       }})
+
+    // Draw partner's background.
+    partner_background = paper.rect(response_x_start,
+                                    response_y_start+200,
+                                    response_bg_width,
+                                    response_bg_height-2*inset);
+    partner_background.attr("stroke", "#CCCCCC");
+    partner_background.attr("stroke-dasharray", "--");
+
+    // Draw partner's guess.
+    partner_bar = paper.rect(response_x_start,
+                             response_y_start-inset+200,
+                             response_bg_width,
+                             response_bg_height);
+    partner_bar.attr("fill", "#0B486B");
+    partner_bar.attr("stroke", "none");
+    partner_bar.attr({ x: response_x_start, width: partner_x_guess });
+
 // }
 
 $(document).keydown(function(e) {
