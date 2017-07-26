@@ -142,10 +142,6 @@ proceedToNextTrial = function () {
     $("#trial-number").html(trialIndex);
 
     // Set up the stimuli.
-    // if (trialIndex < N/2)
-    //     stimulusXSize = xTrain[trialIndex - 1] * PPU;
-    // else
-    //     stimulusXSize = xTest[trialIndex - N/2 - 1] * PPU;
     stimulus_background.show();
     stimulus_bar.attr({ width: int_list[trialIndex - 1]*PPU });
 
@@ -170,17 +166,6 @@ proceedToNextTrial = function () {
         allowResponse();
 
     }, stimulus_timeout*1000);
-
-    // If they take too long, disable response and move to next trial.
-    setTimeout( function() {
-        $(document).off('click')
-        document.removeEventListener('click', mousedownEventListener);
-
-        $("#title").text("Reponse period timed out.");
-        $(".instructions").text("Please wait for your partner's guess.");
-        response_bar.hide();
-        response_background.hide();
-    }, response_timeout*1000);
 
     // If this is a training trial...
     if (trialIndex <= trainN) {
@@ -259,7 +244,7 @@ sendDataToServer = function(){
 }
 
 //
-// Allow user response only for set number of seconds. Otherwise, proceed to next trial.
+// Allow user response only for a set number of seconds.
 //
 allowResponse = function() {
 
@@ -272,6 +257,17 @@ allowResponse = function() {
         response_bar_size = bounds(x, 1*PPU, xMax*PPU);
         response_bar.attr({ x: response_x_start, width: response_bar_size });
     });
+
+    // If they take too long, disable response.
+    setTimeout( function() {
+        $(document).off('click')
+        document.removeEventListener('click', mousedownEventListener);
+
+        $("#title").text("Reponse period timed out.");
+        $(".instructions").text("Please wait for your partner's guess.");
+        response_bar.hide();
+        response_background.hide();
+    }, response_timeout*1000);
 }
 
 //
