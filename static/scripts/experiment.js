@@ -171,16 +171,16 @@ proceedToNextTrial = function () {
 
     }, stimulus_timeout*1000);
 
-    // // If they take too long, disable response and move to next trial.
-    // setTimeout( function() {
-    //     $(document).off('click')
-    //     document.removeEventListener('click', mousedownEventListener);
-    //
-    //     $("#title").text("Reponse period timed out.");
-    //     $(".instructions").text("Please wait for your partner's guess.");
-    //     response_bar.hide();
-    //     response_background.hide();
-    // }, response_timeout*1000);
+    // If they take too long, disable response and move to next trial.
+    setTimeout( function() {
+        $(document).off('click')
+        document.removeEventListener('click', mousedownEventListener);
+
+        $("#title").text("Reponse period timed out.");
+        $(".instructions").text("Please wait for your partner's guess.");
+        response_bar.hide();
+        response_background.hide();
+    }, response_timeout*1000);
 
     // If this is a training trial...
     if (trialIndex <= trainN) {
@@ -332,39 +332,39 @@ function mousedownEventListener(event) {
 //
 //
 //
-showPartner = function() {
-
-    // Get partner's guess
-    reqwest({
-        url: "/node/" + partner_node_id + "/received_infos",
-        method: 'get',
-        type: 'json',
-        success: function (resp) {
-              partner_guess_record = resp.infos[trialNumber+1].contents;
-              partner_x_guess = JSON.parse(partner_guess_record)["length"];
-              $("#title").text("This is your partner's guess");
-              $(".instructions").text("Would you like to accept their guess or keep yours?");
-              enter_lock = false;
-          }})
-
-    // Draw partner's background.
-    partner_background = paper.rect(response_x_start,
-                                    response_y_start+200,
-                                    response_bg_width,
-                                    response_bg_height-2*inset);
-    partner_background.attr("stroke", "#CCCCCC");
-    partner_background.attr("stroke-dasharray", "--");
-
-    // Draw partner's guess.
-    partner_bar = paper.rect(response_x_start,
-                             response_y_start-inset+200,
-                             response_bg_width,
-                             response_bg_height);
-    partner_bar.attr("fill", "#0B486B");
-    partner_bar.attr("stroke", "none");
-    partner_bar.attr({ x: partner_x_guess, width: response_bar_size });
-
-}
+// showPartner = function() {
+//
+//     // // Get partner's guess
+//     // reqwest({
+//     //     url: "/node/" + partner_node_id + "/received_infos",
+//     //     method: 'get',
+//     //     type: 'json',
+//     //     success: function (resp) {
+//     //           partner_guess_record = resp.infos[trialNumber+1].contents;
+//     //           partner_x_guess = JSON.parse(partner_guess_record)["length"];
+//     //           $("#title").text("This is your partner's guess");
+//     //           $(".instructions").text("Would you like to accept their guess or keep yours?");
+//     //           enter_lock = false;
+//     //       }})
+//
+//     // Draw partner's background.
+//     partner_background = paper.rect(response_x_start,
+//                                     response_y_start+200,
+//                                     response_bg_width,
+//                                     response_bg_height-2*inset);
+//     partner_background.attr("stroke", "#CCCCCC");
+//     partner_background.attr("stroke-dasharray", "--");
+//
+//     // Draw partner's guess.
+//     partner_bar = paper.rect(response_x_start,
+//                              response_y_start-inset+200,
+//                              response_bg_width,
+//                              response_bg_height);
+//     partner_bar.attr("fill", "#0B486B");
+//     partner_bar.attr("stroke", "none");
+//     partner_bar.attr({ x: response_x_start, width: partner_x_guess });
+//
+// }
 
 $(document).keydown(function(e) {
     var code = e.keyCode || e.which;
