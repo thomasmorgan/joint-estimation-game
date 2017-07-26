@@ -156,9 +156,10 @@ proceedToNextTrial = function () {
         stimulus_bar.hide()
         stimulus_background.hide()
 
-        // Display response bar.
+        // Display response bar and reset instructions.
         click_lock = false;
         $("#title").text("Re-create the line length.");
+        $(".instructions").text("");
         response_background.show()
         response_bar.show();
 
