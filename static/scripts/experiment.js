@@ -250,6 +250,7 @@ allowResponse = function() {
 
     // Enable response.
     document.addEventListener('click', mousedownEventListener);
+    var timed_out = 0
 
     // Track the mouse during response.
     $(document).mousemove( function(e) {
@@ -267,6 +268,8 @@ allowResponse = function() {
         $(".instructions").text("Please wait for your partner's guess.");
         response_bar.hide();
         response_background.hide();
+
+        var timed_out = 1
     }, response_timeout*1000);
 }
 
