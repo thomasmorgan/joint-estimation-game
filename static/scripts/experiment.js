@@ -363,7 +363,7 @@ showPartner = function() {
     partner_bar.attr("stroke", "none");
     partner_bar.attr({ x: response_x_start, width: partner_x_guess });
 
-// }
+}
 
 $(document).keydown(function(e) {
     var code = e.keyCode || e.which;
