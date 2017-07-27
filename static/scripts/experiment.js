@@ -156,13 +156,6 @@ proceedToNextTrial = function () {
         stimulus_bar.hide()
         stimulus_background.hide()
 
-        // Display response bar and reset instructions.
-        click_lock = false;
-        $("#title").text("Re-create the line length.");
-        $(".instructions").text("");
-        response_background.show()
-        response_bar.show();
-
         // Allow response.
         allowResponse();
 
@@ -249,6 +242,13 @@ sendDataToServer = function(){
 //
 allowResponse = function() {
 
+    // Display response bar and reset instructions.
+    click_lock = false;
+    $("#title").text("Re-create the line length.");
+    $(".instructions").text("");
+    response_background.show()
+    response_bar.show();
+
     // Enable response.
     document.addEventListener('click', mousedownEventListener);
     var timed_out = 0
@@ -261,17 +261,35 @@ allowResponse = function() {
     });
 
     // If they take too long, disable response.
-    setTimeout( function() {
-        $(document).off('click')
-        document.removeEventListener('click', mousedownEventListener);
+    monitorForResponseDelays();
+}
 
-        $("#title").text("Reponse period timed out.");
-        $(".instructions").text("Please wait for your partner's guess.");
-        response_bar.hide();
-        response_background.hide();
+//
+// Monitor participants' behavior for guess responses.
+//
+function monitorForResponseDelays() { // Thanks to https://stackoverflow.com/a/7071535 for resolution.
+  var idleTimer;
+  function resetTimer(){
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(disableResponseAfterDelay,response_timeout*1000);
+  }
+  $(document.body).bind('click',resetTimer);
+  resetTimer();
+};
 
-        var timed_out = 1
-    }, response_timeout*1000);
+//
+// Disable participant responses if they take too long.
+//
+function disableResponseAfterDelay(){
+  $(document).off('click')
+  document.removeEventListener('click', mousedownEventListener);
+
+  $("#title").text("Reponse period timed out.");
+  $(".instructions").text("Please wait for your partner's guess.");
+  response_bar.hide();
+  response_background.hide();
+
+  var timed_out = 1;
 }
 
 //
