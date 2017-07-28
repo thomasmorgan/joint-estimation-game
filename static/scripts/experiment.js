@@ -261,18 +261,30 @@ allowResponse = function() {
     });
 
     // If they take too long, disable response.
-    monitorForResponseDelays();
+    handleResponseDelays();
 }
 
 //
 // Monitor participants' behavior for guess responses.
 //
-function monitorForResponseDelays() { // Thanks to https://stackoverflow.com/a/7071535 for resolution.
+function handleResponseDelays() { // Thanks to https://stackoverflow.com/a/7071535 for resolution.
+
+  // Create a variable to handle timeout.
   var idleTimer;
+
+  // Disable response if timer expires.
   function resetTimer(){
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(disableResponseAfterDelay,response_timeout*1000);
+    idleTimer = setTimeout(
+      function() {
+        disableResponseAfterDelay();
+        sendDataToServer();
+      },
+      response_timeout*1000
+    );
   }
+
+  // Reset the timer after they click.
   $(document.body).bind('click',resetTimer);
   resetTimer();
 };
@@ -281,15 +293,21 @@ function monitorForResponseDelays() { // Thanks to https://stackoverflow.com/a/7
 // Disable participant responses if they take too long.
 //
 function disableResponseAfterDelay(){
+
+  // Turn off click ability and event listener.
   $(document).off('click')
   document.removeEventListener('click', mousedownEventListener);
 
+  // Inform participant why it's happening.
   $("#title").text("Reponse period timed out.");
   $(".instructions").text("Please wait for your partner's guess.");
+
+  // Hide response bar.
   response_bar.hide();
   response_background.hide();
 
-  var timed_out = 1;
+  // Inform us that the response has timed out and send timeout to server.
+  response = 'timed_out';
 }
 
 //
