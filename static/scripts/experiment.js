@@ -157,11 +157,9 @@ proceedToNextTrial = function () {
     $(".instructions").text("");
     stimulus_background.show();
     stimulus_bar.show();
-    setTimeout(function(){
 
-        // Hide stimulus bar.
-        stimulus_bar.hide()
-        stimulus_background.hide()
+    // Allow response only for a limited amount of time.
+    setTimeout(function(){
 
         // Allow response.
         allowResponse();
@@ -176,11 +174,13 @@ proceedToNextTrial = function () {
     // If this is a training trial...
     if (trialIndex <= trainN) {
 
-        // Display correction
+        // Display correction.
 
         // Send data to server.
         sendDataToServer();
         clicked = false;
+
+        // Move on to the next trial.
         proceedToNextTrial();
 
     // ... or if this is a test trial ...
@@ -192,6 +192,8 @@ proceedToNextTrial = function () {
         // Send data to server.
         sendDataToServer();
         clicked = false;
+
+        // Move on to the next trial.
         proceedToNextTrial();
 
     // ... or if we're done, finish up.
@@ -200,8 +202,9 @@ proceedToNextTrial = function () {
         document.removeEventListener('click', mousedownEventListener);
         paper.remove();
 
-        // Send data back to the server.
+        // Send data back to the server and proceed to questionnaire.
         sendDataToServer();
+
     };
 };
 
@@ -255,6 +258,10 @@ sendDataToServer = function(){
 // Allow user response only for a set number of seconds.
 //
 allowResponse = function() {
+
+    // Hide stimulus bar.
+    stimulus_bar.hide()
+    stimulus_background.hide()
 
     // Display response bar and reset instructions.
     click_lock = false;
