@@ -396,8 +396,9 @@ getPartnerGuess = function() {
             if (resp.infos.length === 0) {
                 waitForGuess();
             } else {
-              partner_guess_record = resp.infos[trialNumber+1].contents;
-              partner_x_guess = JSON.parse(partner_guess_record)["length"];
+              //partner_guess_record = resp.infos[trialNumber+1].contents;
+              //partner_x_guess = JSON.parse(partner_guess_record)["length"];
+              partner_x_guess = 50;
               $("#title").text("This is your partner's guess");
               $(".instructions").text("Would you like to accept their guess or keep yours?");
               showPartner();
