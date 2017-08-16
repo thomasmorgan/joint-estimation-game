@@ -11,6 +11,20 @@ partner_timeout = 3; // Time in seconds for which partner's guess is displayed.
 trainN = 20; // Define number of training trials.
 testN = trainN + 50; // Define number of test trails (over training trials).
 
+// Specify location information for stimuli, responses, and buttons.
+inset = 1;
+stimulus_x_start = 50;
+stimulus_y_start = 150;
+stimulus_bg_width = 500;
+stimulus_bg_height = 25;
+response_x_start = 100;
+response_y_start = 350;
+response_bg_width = 500;
+response_bg_height = 25;
+change_guess_y = stimulus_y_start + stimulus_bg_height
+accept_partner_y = stimulus_y_start + 3*stimulus_bg_height
+accept_own_y = stimulus_y_start + 5*stimulus_bg_height
+
 // Create the agent.
 create_agent = function() {
     reqwest({
@@ -96,29 +110,35 @@ drawUserInterface = function () {
 
     paper = Raphael(0, 50, 800, 600);
 
-    inset = 1;
-
-    // Draw the stimulus background.
-    stimulus_background = paper.rect(50, 150, 500, 25-2*inset);
+    // Create the stimulus background.
+    stimulus_background = paper.rect(stimulus_x_start,
+                                     stimulus_y_start,
+                                     stimulus_bg_width,
+                                     stimulus_bg_height-2*inset);
     stimulus_background.attr("stroke", "#CCCCCC");
     stimulus_background.attr("stroke-dasharray", "--");
 
     // Draw the stimulus bar with the next line length in the list.
-    stimulus_bar = paper.rect(50, 150-inset, 0, 25);
+    stimulus_bar = paper.rect(stimulus_x_start,
+                              stimulus_y_start-inset,
+                              0,
+                              25);
     stimulus_bar.attr("fill", "#0B486B");
     stimulus_bar.attr("stroke", "none");
 
-    // Draw the response background.
-    response_x_start = 100;
-    response_y_start = 350;
-    response_bg_width = 500;
-    response_bg_height = 25;
-
-    // Create response background and bar.
-    response_background = paper.rect(response_x_start, response_y_start, response_bg_width, response_bg_height-2*inset);
+    // Create response background.
+    response_background = paper.rect(response_x_start,
+                                     response_y_start,
+                                     response_bg_width,
+                                     response_bg_height-2*inset);
     response_background.attr("stroke", "#CCCCCC");
     response_background.attr("stroke-dasharray", "--");
-    response_bar = paper.rect(response_x_start, response_y_start-inset, response_bg_width, response_bg_height);
+
+    // Draw response bar.
+    response_bar = paper.rect(response_x_start,
+                              response_y_start-inset,
+                              response_bg_width,
+                              response_bg_height);
     response_bar.attr("fill", "#0B486B");
     response_bar.attr("stroke", "none");
 
@@ -418,11 +438,18 @@ getPartnerGuess = function() {
               showPartner();
               enter_lock = false;
 
+              // Create response buttons.
+              change_guess_button = "<input type='button' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+stimulus_x_start+"px;'>"
+              accept_partner_button = '<input type="button" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+stimulus_x_start+'px;">'
+              accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>"
+
               // Draw response buttons.
-              $("body").append("<input type='button' value='Accept partner guess' style='position:absolute;top:20%;left:20%;'>")
-              $("body").append("<input type='button' value='Accept my guess' style='position:absolute;top:20%;left:40%;'>")
-              $("body").append("<input type='button' value='Change my guess' style='position:absolute;top:20%;left:60%;'>")
-              $("body").click(function(){ alert('I was clicked!');});
+              $("body").append(change_guess_button)
+              $("body").append(accept_own_button)
+              $("body").append(accept_partner_button)
+              $("#myGuess").click(function(){ alert('I accepted my guess!');});
+              $("#partnerGuess").click(function(){ alert('I accepted my partners guess!');});
+              $("#changeGuess").click(function(){ alert('I want to change my guess!');});
 
               // <button type="button" class="btn btn-primary btn-lg continue" onClick="submit_responses();">
               //     Continue</span>
