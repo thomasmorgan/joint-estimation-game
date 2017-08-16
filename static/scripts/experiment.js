@@ -5,8 +5,9 @@ trialIndex = 0;
 stimulusYSize = 0;
 enter_lock = true;
 click_lock = true;
-stimulus_timeout = 1; // Time in seconds for stimulus timeout.
-response_timeout = 2; // Time in seconds for response timeout.
+stimulus_timeout = 1; // Time in seconds for which a stimulus is displayed.
+response_timeout = 2; // Time in seconds for which a response is allowed.
+partner_timeout = 3; // Time in seconds for which partner's guess is displayed.
 trainN = 20; // Define number of training trials.
 testN = trainN + 50; // Define number of test trails (over training trials).
 
@@ -38,10 +39,16 @@ create_agent = function() {
     });
 };
 
+//
+// Check for partner's connection one time each second.
+//
 get_info = function() {
     setTimeout(get_received_info, 1000);
 };
 
+//
+// Monitor the server to see if a partner connects or is already connected.
+//
 get_received_info = function() {
     reqwest({
         url: "/node/" + my_node_id + "/received_infos",
@@ -160,6 +167,11 @@ proceedToNextTrial = function () {
         allowResponse();
 
     }, stimulus_timeout*1000);
+
+    // Show partner's guess.
+    setTimeout( function(){
+      getPartnerGuess();
+    }, partner_timeout*1000);
 
     // If this is a training trial...
     if (trialIndex <= trainN) {
@@ -366,6 +378,57 @@ function mousedownEventListener(event) {
 }
 
 //
+// Check to see if partner has guessed one time per second.
+//
+waitForGuess = function() {
+    setTimeout(get_received_info, 1000);
+};
+
+//
+// Monitor the server to see if partner has guessed.
+//
+getPartnerGuess = function() {
+    reqwest({
+        url: "/node/" + partner_node_id + "/received_infos",
+        method: 'get',
+        type: 'json',
+        success: function (resp) {
+            if (resp.infos.length === 0) {
+                waitForGuess();
+            } else {
+              partner_guess_record = resp.infos[trialNumber+1].contents;
+              partner_x_guess = JSON.parse(partner_guess_record)["length"];
+              $("#title").text("This is your partner's guess");
+              $(".instructions").text("Would you like to accept their guess or keep yours?");
+              showPartner();
+              enter_lock = false;
+            }
+
+            // // Get training values
+            // xTrain = data.x;
+            // yTrain = data.y;
+
+            // N = xTrain.length * 2;
+            // $("#total-trials").html(N);
+            // yTrainReported = [];
+
+            // // Get test values.
+            // // half are from training; the rest are new
+            // allX = range(1, xMax);
+            // xTestFromTraining = randomSubset(xTrain, N/4);
+            // xTestNew = randomSubset(allX.diff(xTrain), N/4);
+            // xTest = shuffle(xTestFromTraining.concat(xTestNew));
+            // yTest = [];
+        },
+        error: function (err) {
+            console.log(err);
+            err_response = JSON.parse(err.response);
+            $('body').html(err_response.html);
+        }
+    });
+};
+
+//
 // Display partner's guess.
 //
 showPartner = function() {
@@ -398,6 +461,7 @@ showPartner = function() {
                              response_bg_height);
     partner_bar.attr("fill", "#0B486B");
     partner_bar.attr("stroke", "none");
+    //partner_bar.attr({ x: response_x_start, width: 300 });
     partner_bar.attr({ x: response_x_start, width: partner_x_guess });
 
 }
