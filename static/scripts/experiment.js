@@ -181,6 +181,7 @@ proceedToNextTrial = function () {
         // Send data to server.
         sendDataToServer();
         clicked = false;
+        proceedToNextTrial();
 
     // ... or if this is a test trial ...
     } else if (trialIndex > trainN && trialIndex <= testN) {
@@ -191,6 +192,7 @@ proceedToNextTrial = function () {
         // Send data to server.
         sendDataToServer();
         clicked = false;
+        proceedToNextTrial();
 
     // ... or if we're done, finish up.
     } else {
@@ -337,7 +339,7 @@ function mousedownEventListener(event) {
 
         // Increment trial counter and release next stimulus.
         Mousetrap.resume();
-        proceedToNextTrial();
+        // proceedToNextTrial();
 
         // Reset for next trial.
         response_background.hide();
