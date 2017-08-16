@@ -160,10 +160,8 @@ proceedToNextTrial = function () {
 
     // Allow response only for a limited amount of time.
     setTimeout(function(){
-
         // Allow response.
         allowResponse();
-
     }, stimulus_timeout*1000);
 
     // Show partner's guess.
@@ -403,15 +401,33 @@ getPartnerGuess = function() {
         type: 'json',
         success: function (resp) {
             if (resp.infos.length === 0) {
-                waitForGuess();
+
+              // Keep checking until the partner has guessed.
+              waitForGuess();
+
             } else {
+
+              // Grab partner's guess.
               //partner_guess_record = resp.infos[trialNumber+1].contents;
               //partner_x_guess = JSON.parse(partner_guess_record)["length"];
               partner_x_guess = 50;
+
+              // Update to display partner's guess and text.
               $("#title").text("This is your partner's guess");
               $(".instructions").text("Would you like to accept their guess or keep yours?");
               showPartner();
               enter_lock = false;
+
+              // Draw response buttons.
+              $("body").append("<input type='button' value='Accept partner guess' style='position:absolute;top:20%;left:20%;'>")
+              $("body").append("<input type='button' value='Accept my guess' style='position:absolute;top:20%;left:40%;'>")
+              $("body").append("<input type='button' value='Change my guess' style='position:absolute;top:20%;left:60%;'>")
+              $("body").click(function(){ alert('I was clicked!');});
+
+              // <button type="button" class="btn btn-primary btn-lg continue" onClick="submit_responses();">
+              //     Continue</span>
+              // </button>
+
             }
 
             // // Get training values
@@ -442,19 +458,6 @@ getPartnerGuess = function() {
 // Display partner's guess.
 //
 showPartner = function() {
-
-    // // Get partner's guess
-    // reqwest({
-    //     url: "/node/" + partner_node_id + "/received_infos",
-    //     method: 'get',
-    //     type: 'json',
-    //     success: function (resp) {
-    //           partner_guess_record = resp.infos[trialNumber+1].contents;
-    //           partner_x_guess = JSON.parse(partner_guess_record)["length"];
-    //           $("#title").text("This is your partner's guess");
-    //           $(".instructions").text("Would you like to accept their guess or keep yours?");
-    //           enter_lock = false;
-    //       }})
 
     // Draw partner's background.
     partner_background = paper.rect(response_x_start,
