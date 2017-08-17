@@ -312,20 +312,17 @@ function handleResponseDelays() { // Thanks to https://stackoverflow.com/a/70715
   var idleTimer;
 
   // Disable response if timer expires.
-  function resetTimer(){
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(
-      function() {
-        disableResponseAfterDelay();
-        sendDataToServer();
-      },
-      response_timeout*1000
-    );
-  }
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(
+    function() {
+      disableResponseAfterDelay();
+      sendDataToServer();
+    },
+    response_timeout*1000
+  );
 
-  // Reset the timer after they click.
-  $(document.body).bind('click',resetTimer);
-  resetTimer();
+  // Stop the timer if we click.
+  $(document.body).on('click',clearTimeout);
 };
 
 //
@@ -364,11 +361,10 @@ function mousedownEventListener(event) {
 
         // Increment trial counter and release next stimulus.
         Mousetrap.resume();
-        // proceedToNextTrial();
 
-        // Reset for next trial.
-        response_background.hide();
-        response_bar.hide();
+        // // Reset for next trial.
+        // response_background.hide();
+        // response_bar.hide();
         // click_lock = false;
 
         // // Training phase
@@ -447,13 +443,9 @@ getPartnerGuess = function() {
               $("body").append(change_guess_button)
               $("body").append(accept_own_button)
               $("body").append(accept_partner_button)
-              $("#myGuess").click(function(){ alert('I accepted my guess!');});
-              $("#partnerGuess").click(function(){ alert('I accepted my partners guess!');});
-              $("#changeGuess").click(function(){ alert('I want to change my guess!');});
-
-              // <button type="button" class="btn btn-primary btn-lg continue" onClick="submit_responses();">
-              //     Continue</span>
-              // </button>
+              $("#myGuess").click(acceptOwnGuess);
+              $("#partnerGuess").click(acceptPartnerGuess);
+              $("#changeGuess").click(changeGuess);
 
             }
 
@@ -472,6 +464,7 @@ getPartnerGuess = function() {
             // xTestNew = randomSubset(allX.diff(xTrain), N/4);
             // xTest = shuffle(xTestFromTraining.concat(xTestNew));
             // yTest = [];
+
         },
         error: function (err) {
             console.log(err);
@@ -501,11 +494,86 @@ showPartner = function() {
                              response_bg_height);
     partner_bar.attr("fill", "#0B486B");
     partner_bar.attr("stroke", "none");
-    //partner_bar.attr({ x: response_x_start, width: 300 });
-    partner_bar.attr({ x: response_x_start, width: partner_x_guess });
+    partner_bar.attr({x: response_x_start,
+                      width: partner_x_guess
+                      });
+}
+
+//
+// Accept partner's guess.
+//
+acceptPartnerGuess = function() {
+
+
 
 }
 
+//
+// Accept own guess.
+//
+acceptOwnGuess = function(){
+
+
+
+}
+
+//
+// Change guess.
+//
+changeGuess = function(){
+
+  // Remove partner's guesses.
+  partner_background.hide();
+  partner_bar.hide();
+
+  // Remove guess buttons
+  $("#myGuess").remove();
+  $("#partnerGuess").remove();
+  $("#changeGuess").remove();
+
+  // Allow participant response again.
+  var timed_out = 0
+
+  // Create response background.
+  paper = Raphael(0, 50, 800, 600);
+  // change_background = paper.rect(response_x_start,
+  //                                  response_y_start,
+  //                                  response_bg_width,
+  //                                  response_bg_height-2*inset);
+  // change_background.attr("stroke", "#CCCCCC");
+  // change_background.attr("stroke-dasharray", "--");
+  //
+  // // Draw response bar.
+  // change_bar = paper.rect(response_x_start,
+  //                           response_y_start-inset,
+  //                           response_bg_width,
+  //                           response_bg_height);
+  // change_bar.attr("fill", "#0B486B");
+  // change_bar.attr("stroke", "none");
+
+  // Display response bar and reset instructions.
+  click_lock = false;
+  $("#title").text("Re-create the line length.");
+  $(".instructions").text("");
+  response_background.show()
+  response_bar.show();
+
+  // Enable response.
+  document.addEventListener('click', mousedownEventListener);
+
+  // Track the mouse during response.
+  $(document).mousemove( function(e) {
+      x = e.pageX-response_x_start;
+      response_bar_size = bounds(x, 1*PPU, xMax*PPU);
+      response_bar.attr({ x: response_x_start, width: response_bar_size });
+  });
+
+  // If they take too long, disable response.
+  handleResponseDelays();
+
+}
+
+//
 $(document).keydown(function(e) {
     var code = e.keyCode || e.which;
     if (code == 13) {
