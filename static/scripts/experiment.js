@@ -180,19 +180,14 @@ proceedToNextTrial = function () {
 
     // Allow response only for a limited amount of time.
     setTimeout(function(){
-        // Allow response.
         allowResponse();
     }, stimulus_timeout*1000);
-
-    // Show partner's guess.
-    setTimeout( function(){
-      getPartnerGuess();
-    }, partner_timeout*1000);
 
     // If this is a training trial...
     if (trialIndex <= trainN) {
 
         // Display correction.
+        showCorrectLength();
 
         // Send data to server.
         sendDataToServer();
@@ -204,8 +199,13 @@ proceedToNextTrial = function () {
     // ... or if this is a test trial ...
     } else if (trialIndex > trainN && trialIndex <= testN) {
 
-        // Display partner's guess
-        showPartner();
+        // Show partner's guess.
+        setTimeout( function(){
+          getPartnerGuess();
+        }, partner_timeout*1000);
+
+        // Confirm guesses.
+        processGuesses();
 
         // Send data to server.
         sendDataToServer();
@@ -225,6 +225,15 @@ proceedToNextTrial = function () {
 
     };
 };
+
+//
+// For training trials, show the correct length.
+//
+showCorrectLength = function(){
+
+  //
+
+}
 
 //
 // Send the data back to the server.
@@ -428,24 +437,11 @@ getPartnerGuess = function() {
               //partner_x_guess = JSON.parse(partner_guess_record)["length"];
               partner_x_guess = 50;
 
-              // Update to display partner's guess and text.
+              // Update page to display partner's guess and text.
               $("#title").text("This is your partner's guess");
               $(".instructions").text("Would you like to accept their guess or keep yours?");
               showPartner();
               enter_lock = false;
-
-              // Create response buttons.
-              change_guess_button = "<input type='button' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+stimulus_x_start+"px;'>"
-              accept_partner_button = '<input type="button" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+stimulus_x_start+'px;">'
-              accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>"
-
-              // Draw response buttons.
-              $("body").append(change_guess_button)
-              $("body").append(accept_own_button)
-              $("body").append(accept_partner_button)
-              $("#myGuess").click(acceptOwnGuess);
-              $("#partnerGuess").click(acceptPartnerGuess);
-              $("#changeGuess").click(changeGuess);
 
             }
 
@@ -497,6 +493,26 @@ showPartner = function() {
     partner_bar.attr({x: response_x_start,
                       width: partner_x_guess
                       });
+}
+
+//
+// Allow and capture partners' guesses.
+//
+processGuesses = function() {
+
+  // Initialize buttons.
+  change_guess_button = "<input type='button' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+stimulus_x_start+"px;'>"
+  accept_partner_button = '<input type="button" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+stimulus_x_start+'px;">'
+  accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>"
+
+  // Draw response buttons.
+  $("body").append(change_guess_button)
+  $("body").append(accept_own_button)
+  $("body").append(accept_partner_button)
+  $("#myGuess").click(acceptOwnGuess);
+  $("#partnerGuess").click(acceptPartnerGuess);
+  $("#changeGuess").click(changeGuess);
+
 }
 
 //
