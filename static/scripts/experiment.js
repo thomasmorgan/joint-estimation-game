@@ -142,18 +142,6 @@ drawUserInterface = function () {
     response_bar.attr("fill", "#0B486B");
     response_bar.attr("stroke", "none");
 
-    // If we're at the first trial, proceed directly to stimulus presentation.
-    if (trialIndex === 0) {
-
-        response_background.hide();
-        response_bar.hide();
-        proceedToNextTrial();
-
-    // If this isn't our first trial, continue as normal.
-    } else {
-        proceedToNextTrial();
-    }
-
 };
 
 //
@@ -571,7 +559,7 @@ changeGuess = function(){
   var timed_out = 0
 
   // Create response background.
-  paper = Raphael(0, 50, 800, 600);
+  // paper = Raphael(0, 50, 800, 600);
   // change_background = paper.rect(response_x_start,
   //                                  response_y_start,
   //                                  response_bg_width,
@@ -617,6 +605,20 @@ $(document).keydown(function(e) {
             enter_lock = true;
 
             drawUserInterface();
+
+            // If we're at the first trial, proceed directly to stimulus presentation.
+            if (trialIndex === 0) {
+
+                response_background.hide();
+                response_bar.hide();
+                proceedToNextTrial();
+
+            // If this isn't our first trial, continue as normal.
+            } else {
+                proceedToNextTrial();
+            }
+
+
             // proceedToNextTrial();
 
             click_lock = false;
