@@ -211,7 +211,7 @@ proceedToNextTrial = function () {
     // ... or if we're done, finish up.
     } else {
 
-        document.removeEventListener('click', mousedownEventListener);
+        $(document).off('click', mousedownEventListener);
         paper.remove();
 
         // Send data back to the server and proceed to questionnaire.
@@ -293,7 +293,7 @@ allowResponse = function() {
     response_bar.show();
 
     // Enable response.
-    document.addEventListener('click', mousedownEventListener);
+    $(document).on('click', mousedownEventListener);
     var timed_out = 0
 
     // Track the mouse during response.
@@ -336,7 +336,7 @@ function disableResponseAfterDelay(){
 
   // Turn off click ability and event listener.
   $(document).off('click');
-  document.removeEventListener('click', mousedownEventListener);
+  $(document).off('click', mousedownEventListener);
 
   // Inform participant why it's happening.
   $("#title").text("Reponse period timed out.");
@@ -583,7 +583,7 @@ changeGuess = function(){
   response_bar.show();
 
   // Enable response.
-  document.addEventListener('click', mousedownEventListener);
+  $(document).on('click', mousedownEventListener);
 
   // Track the mouse during response.
   $(document).mousemove( function(e) {
