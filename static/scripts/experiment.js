@@ -294,14 +294,14 @@ sendDataToServer = function(){
 allowResponse = function() {
 
     // Hide stimulus bar.
-    stimulus_bar.hide()
-    stimulus_background.hide()
+    stimulus_bar.hide();
+    stimulus_background.hide();
 
     // Display response bar and reset instructions.
     click_lock = false;
     $("#title").text("Re-create the line length.");
     $(".instructions").text("");
-    response_background.show()
+    response_background.show();
     response_bar.show();
 
     // Enable response.
@@ -347,7 +347,7 @@ function handleResponseDelays() { // Thanks to https://stackoverflow.com/a/70715
 function disableResponseAfterDelay(){
 
   // Turn off click ability and event listener.
-  $(document).off('click')
+  $(document).off('click');
   document.removeEventListener('click', mousedownEventListener);
 
   // Inform participant why it's happening.
@@ -456,9 +456,9 @@ getPartnerGuess = function() {
               accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>"
 
               // Draw response buttons.
-              $("body").append(change_guess_button)
-              $("body").append(accept_own_button)
-              $("body").append(accept_partner_button)
+              $("body").append(change_guess_button);
+              $("body").append(accept_own_button);
+              $("body").append(accept_partner_button);
               $("#myGuess").click(acceptOwnGuess);
               $("#partnerGuess").click(acceptPartnerGuess);
               $("#changeGuess").click(changeGuess);
@@ -521,14 +521,14 @@ showPartner = function() {
 // processGuesses = function() {
 //
 //   // Initialize buttons.
-//   change_guess_button = "<input type='button' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+stimulus_x_start+"px;'>"
-//   accept_partner_button = '<input type="button" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+stimulus_x_start+'px;">'
-//   accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>"
+//   change_guess_button = "<input type='button' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+stimulus_x_start+"px;'>";
+//   accept_partner_button = '<input type="button" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+stimulus_x_start+'px;">';
+//   accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>";
 //
 //   // Draw response buttons.
-//   $("body").append(change_guess_button)
-//   $("body").append(accept_own_button)
-//   $("body").append(accept_partner_button)
+//   $("body").append(change_guess_button);
+//   $("body").append(accept_own_button);
+//   $("body").append(accept_partner_button);
 //   $("#myGuess").click(acceptOwnGuess);
 //   $("#partnerGuess").click(acceptPartnerGuess);
 //   $("#changeGuess").click(changeGuess);
@@ -591,7 +591,7 @@ changeGuess = function(){
   click_lock = false;
   $("#title").text("Re-create the line length.");
   $(".instructions").text("");
-  response_background.show()
+  response_background.show();
   response_bar.show();
 
   // Enable response.
