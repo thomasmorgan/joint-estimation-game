@@ -168,6 +168,7 @@ proceedToNextTrial = function () {
     stimulus_bar.show();
 
     // Allow response only for a limited amount of time.
+    var unresponsiveParticipant
     setTimeout(function(){
         allowResponse();
     }, stimulus_timeout*1000);
@@ -293,9 +294,11 @@ allowResponse = function() {
     response_background.show();
     response_bar.show();
 
+    // Set the response variable to default.
+    response = 'timed_out';
+
     // Enable response.
     $(document).on('click', mousedownEventListener);
-    var timed_out = 0
 
     // Track the mouse during response.
     $(document).mousemove( function(e) {
@@ -304,10 +307,28 @@ allowResponse = function() {
         response_bar.attr({ x: response_x_start, width: response_bar_size });
     });
 
-    // If they take too long, disable response.
-    setTimeout(disableResponseAfterDelay,
-               response_timeout*1000)
-    $(document).click(clearTimeout)
+    // Monitor for an unresponsive participant.
+    unresponsiveParticipant = setTimeout(disableResponseAfterDelay,
+                                         response_timeout*1000);
+
+    // If they click to submit a response, clear the timeout and update the site text.
+    $(document).one('click', acknowledgeGuess);
+}
+
+//
+// Acknowledge participant guess.
+//
+function acknowledgeGuess(){
+
+  // Stop the unresponsive timer.
+  clearTimeout(unresponsiveParticipant);
+
+  // Stop participants from registering more than one guess.
+  $(document).off('click', mousedownEventListener);
+
+  // Inform participant why it's happening.
+  $("#title").text("Your response has been recorded.");
+  $(".instructions").text("Please wait for your partner's guess.");
 }
 
 //
@@ -326,9 +347,6 @@ function disableResponseAfterDelay(){
   // Hide response bar.
   response_bar.hide();
   response_background.hide();
-
-  // Inform us that the response has timed out and send timeout to server.
-  //response = 'timed_out';
 }
 
 //
@@ -353,7 +371,7 @@ function mousedownEventListener(event) {
         response_background.hide();
 
         // Stop the timer if we click.
-        $(document).click(function(e) {e.stopPropagation();});
+        $(document).click(function(e) { e.stopPropagation(); });
 
         // Increment trial counter and release next stimulus.
         Mousetrap.resume();
@@ -546,9 +564,6 @@ changeGuess = function(){
   $("#myGuess").remove();
   $("#partnerGuess").remove();
   $("#changeGuess").remove();
-
-  // Allow participant response again.
-  var timed_out = 0
 
   // Create response background.
   // paper = Raphael(0, 50, 800, 600);
