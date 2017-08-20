@@ -364,21 +364,16 @@ function mousedownEventListener(event) {
             response_bar.attr({ x: response_x_start, width: response_bar_size });
         });
 
-        // Allow user to create a response.
+        // Register response and hide bars.
         response = Math.round(response_bar_size/PPU);
-        console.log(Math.round(response_bar_size/PPU))
         response_bar.hide();
         response_background.hide();
 
         // Stop the timer if we click.
         $(document).click(function(e) { e.stopPropagation(); });
 
-        // Increment trial counter and release next stimulus.
+        // Reset for next trial.
         Mousetrap.resume();
-
-        // // Reset for next trial.
-        // response_background.hide();
-        // response_bar.hide();
         click_lock = false;
 
         // // Training phase
