@@ -1,6 +1,6 @@
 // Settings
-PPU = 5;      // Pixels per base unit.
-xMax = 100;   // Maximum size of a bar in base units.
+PPU = 5; // Pixels per base unit.
+xMax = 100; // Maximum size of a bar in base units.
 trialIndex = 0;
 stimulusYSize = 0;
 enter_lock = true;
@@ -94,6 +94,7 @@ get_received_info = function() {
             // xTestNew = randomSubset(allX.diff(xTrain), N/4);
             // xTest = shuffle(xTestFromTraining.concat(xTestNew));
             // yTest = [];
+
         },
         error: function (err) {
             console.log(err);
@@ -304,30 +305,10 @@ allowResponse = function() {
     });
 
     // If they take too long, disable response.
-    handleResponseDelays();
+    setTimeout(disableResponseAfterDelay,
+               response_timeout*1000)
+    $(document).click(clearTimeout)
 }
-
-//
-// Monitor participants' behavior for guess responses.
-//
-function handleResponseDelays() { // Thanks to https://stackoverflow.com/a/7071535 for resolution.
-
-  // Create a variable to handle timeout.
-  var idleTimer;
-
-  // Disable response if timer expires.
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(
-    function() {
-      disableResponseAfterDelay();
-      sendDataToServer();
-    },
-    response_timeout*1000
-  );
-
-  // Stop the timer if we click.
-  $(document.body).on('click',clearTimeout);
-};
 
 //
 // Disable participant responses if they take too long.
@@ -347,7 +328,7 @@ function disableResponseAfterDelay(){
   response_background.hide();
 
   // Inform us that the response has timed out and send timeout to server.
-  response = 'timed_out';
+  //response = 'timed_out';
 }
 
 //
@@ -358,10 +339,21 @@ function mousedownEventListener(event) {
     if (click_lock === false) {
         click_lock = true;
 
+        // Track the mouse during response.
+        $(document).mousemove( function(e) {
+            x = e.pageX-response_x_start;
+            response_bar_size = bounds(x, 1*PPU, xMax*PPU);
+            response_bar.attr({ x: response_x_start, width: response_bar_size });
+        });
+
         // Allow user to create a response.
         response = Math.round(response_bar_size/PPU);
+        console.log(Math.round(response_bar_size/PPU))
         response_bar.hide();
         response_background.hide();
+
+        // Stop the timer if we click.
+        $(document).click(function(e) {e.stopPropagation();});
 
         // Increment trial counter and release next stimulus.
         Mousetrap.resume();
@@ -369,7 +361,7 @@ function mousedownEventListener(event) {
         // // Reset for next trial.
         // response_background.hide();
         // response_bar.hide();
-        // click_lock = false;
+        click_lock = false;
 
         // // Training phase
         // if (trialIndex < N/2) {
@@ -579,18 +571,19 @@ changeGuess = function(){
   click_lock = false;
   $("#title").text("Re-create the line length.");
   $(".instructions").text("");
+
   response_background.show();
   response_bar.show();
 
   // Enable response.
   $(document).on('click', mousedownEventListener);
 
-  // Track the mouse during response.
-  $(document).mousemove( function(e) {
-      x = e.pageX-response_x_start;
-      response_bar_size = bounds(x, 1*PPU, xMax*PPU);
-      response_bar.attr({ x: response_x_start, width: response_bar_size });
-  });
+  // // Track the mouse during response.
+  // $(document).mousemove( function(e) {
+  //     x = e.pageX-response_x_start;
+  //     response_bar_size = bounds(x, 1*PPU, xMax*PPU);
+  //     response_bar.attr({ x: response_x_start, width: response_bar_size });
+  // });
 
   // If they take too long, disable response.
   handleResponseDelays();
