@@ -186,8 +186,7 @@ proceedToNextTrial = function () {
         // // Display correction.
         // showCorrectLength();
 
-        // Send data to server.
-        sendDataToServer();
+        // Update the click.
         clicked = false;
 
         // Move on to the next trial.
@@ -204,8 +203,7 @@ proceedToNextTrial = function () {
         // // Confirm guesses.
         // processGuesses();
 
-        // Send data to server.
-        sendDataToServer();
+        // Update the click.
         clicked = false;
 
         // Move on to the next trial.
@@ -250,9 +248,10 @@ sendDataToServer = function(){
         // Prepare data to send to server.
         trialData = JSON.stringify({"trialType": trialType,
                                     "trialNumber": trialNumber,
-                                    "guessNumber": guessNumber,
+                                    "guessCounter": guessCounter,
                                     "length": int_list[trialIndex - 1]*PPU,
-                                    "guess": response});
+                                    "guess": response;
+                                    "acceptType": acceptType;});
 
         // If we're at the last trial, proceed to questionnaire.
         if (trialIndex === testN){
@@ -297,7 +296,8 @@ allowResponse = function() {
     response_bar.show();
 
     // Set the response variable to default and increment guess counter.
-    response = 'timed_out';
+    response = -99;
+    acceptType = 0;
     guessCounter = guessCounter + 1;
 
     // Enable response.
@@ -323,15 +323,16 @@ allowResponse = function() {
 //
 function acknowledgeGuess(){
 
-  // Stop the unresponsive timer.
+  // Stop the unresponsive timer and prevent multiple guesses.
   clearTimeout(unresponsiveParticipant);
-
-  // Stop participants from registering more than one guess.
   $(document).off('click', mousedownEventListener);
 
-  // Inform participant why it's happening.
+  // Update display text.
   $("#title").text("Your response has been recorded.");
   $(".instructions").text("Please wait for your partner's guess.");
+
+  // Submit the data.
+  sendDataToServer();
 }
 
 //
@@ -343,13 +344,14 @@ function disableResponseAfterDelay(){
   $(document).off('click');
   $(document).off('click', mousedownEventListener);
 
-  // Inform participant why it's happening.
+  // Update display text and hide response bars.
   $("#title").text("Reponse period timed out.");
   $(".instructions").text("Please wait for your partner's guess.");
-
-  // Hide response bar.
   response_bar.hide();
   response_background.hide();
+
+  // Submit the data.
+  sendDataToServer();
 }
 
 //
@@ -536,8 +538,20 @@ showPartner = function() {
 //
 acceptPartnerGuess = function() {
 
+  // Remove partner's guesses and buttons.
+  partner_background.hide();
+  partner_bar.hide();
+  $("#myGuess").remove();
+  $("#partnerGuess").remove();
+  $("#changeGuess").remove();
 
+  // Reset text.
+  $("#title").text("Please wait");
+  $(".instructions").text("We are processing your partner's response");
 
+  // Send in the data.
+  acceptType = 2;
+  sendDataToServer();
 }
 
 //
@@ -545,8 +559,20 @@ acceptPartnerGuess = function() {
 //
 acceptOwnGuess = function(){
 
+  // Remove partner's guesses and buttons.
+  partner_background.hide();
+  partner_bar.hide();
+  $("#myGuess").remove();
+  $("#partnerGuess").remove();
+  $("#changeGuess").remove();
 
+  // Reset text.
+  $("#title").text("");
+  $(".instructions").text("");
 
+  // Send in the data.
+  acceptType = 2;
+  sendDataToServer();
 }
 
 //
@@ -554,11 +580,9 @@ acceptOwnGuess = function(){
 //
 changeGuess = function(){
 
-  // Remove partner's guesses.
+  // Remove partner's guesses and buttons.
   partner_background.hide();
   partner_bar.hide();
-
-  // Remove guess buttons
   $("#myGuess").remove();
   $("#partnerGuess").remove();
   $("#changeGuess").remove();
