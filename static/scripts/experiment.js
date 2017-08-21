@@ -173,8 +173,6 @@ proceedToNextTrial = function () {
     setTimeout(allowResponse,
                stimulus_timeout*1000);
 
-    //sendDataToServer();
-
     // nb: this needs to be moved to the training trail bit
     // Show partner's guess.
     setTimeout(getPartnerGuess,
@@ -190,7 +188,7 @@ proceedToNextTrial = function () {
 
         // Move on to the next trial.
         clicked = false;
-        //sendDataToServer();
+        sendDataToServer();
         proceedToNextTrial();
 
     // ... or if this is a test trial ...
@@ -206,7 +204,7 @@ proceedToNextTrial = function () {
 
         // Move on to the next trial.
         clicked = false;
-        //sendDataToServer();
+        sendDataToServer();
         proceedToNextTrial();
 
     // ... or if we're done, finish up.
