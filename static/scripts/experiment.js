@@ -51,6 +51,9 @@ create_agent = function() {
             }
         }
     });
+
+    // Implement time-tracking.
+    var start = new Date();
 };
 
 //
@@ -250,8 +253,9 @@ sendDataToServer = function(){
                                     "trialNumber": trialNumber,
                                     "guessCounter": guessCounter,
                                     "length": int_list[trialIndex - 1]*PPU,
-                                    "guess": response;
-                                    "acceptType": acceptType;});
+                                    "guess": response,
+                                    "acceptType": acceptType,
+                                    "t" = new Date() - start});
 
         // If we're at the last trial, proceed to questionnaire.
         if (trialIndex === testN){
@@ -571,7 +575,7 @@ acceptOwnGuess = function(){
   $(".instructions").text("");
 
   // Send in the data.
-  acceptType = 2;
+  acceptType = 1;
   sendDataToServer();
 }
 
