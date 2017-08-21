@@ -155,11 +155,11 @@ proceedToNextTrial = function () {
 
     // Increment the trial and guess counter.
     trialIndex = trialIndex + 1;
-    guessCounter = 0;
+    guessCounter = -1;
     $("#trial-number").html(trialIndex);
 
     // Print current trial.
-    console.log(trialIndex)
+    console.log('Trial: '+trialIndex)
 
     // Set up the stimuli.
     stimulus_background.show();
@@ -242,6 +242,8 @@ sendDataToServer = function(){
         };
 
         // Prepare data to send to server.
+        console.log('Accept Type: '+acceptType)
+        console.log('Logged guess: '+response);
         trialData = JSON.stringify({"trialType": trialType,
                                     "trialNumber": trialNumber,
                                     "guessCounter": guessCounter,
@@ -293,18 +295,21 @@ allowResponse = function() {
     response_bar.show();
 
     // Set the response variable to default and increment guess counter.
-    response = -99;
     acceptType = 0;
     guessCounter = guessCounter + 1;
 
     // Enable response.
-    $(document).on('click', mousedownEventListener);
+    $(document).one('click', function(){
+        mousedownEventListener();
+    });
 
     // Track the mouse during response.
     $(document).mousemove( function(e) {
         x = e.pageX-response_x_start;
         response_bar_size = bounds(x, 1*PPU, xMax*PPU);
-        response_bar.attr({ x: response_x_start, width: response_bar_size });
+        response_bar.attr({ x: response_x_start,
+                            width: response_bar_size
+                          });
     });
 
     // Monitor for an unresponsive participant.
@@ -313,8 +318,6 @@ allowResponse = function() {
 
     // If they click to submit a response, clear the timeout and update the site text.
     $(document).one('click', acknowledgeGuess);
-    console.log(response)
-    sendDataToServer();
 }
 
 //
@@ -336,15 +339,20 @@ function acknowledgeGuess(){
 //
 function disableResponseAfterDelay(){
 
-  // Turn off click ability and event listener.
+  // Turn off click ability and event listeners.
   $(document).off('click');
   $(document).off('click', mousedownEventListener);
+  $(document).off('click', acknowledgeGuess);
 
   // Update display text and hide response bars.
   $("#title").text("Reponse period timed out.");
   $(".instructions").text("Please wait for your partner's guess.");
   response_bar.hide();
   response_background.hide();
+
+  // Log response as not having been given.
+  response = -99;
+  sendDataToServer();
 }
 
 //
@@ -364,6 +372,8 @@ function mousedownEventListener(event) {
 
         // Register response and hide bars.
         response = Math.round(response_bar_size/PPU);
+        sendDataToServer();
+        console.log('Mouse click: '+response);
         response_bar.hide();
         response_background.hide();
 
@@ -544,6 +554,10 @@ acceptPartnerGuess = function() {
   $("#title").text("");
   $(".instructions").text("");
 
+  // Note whose guess we accepted and send data.
+  acceptType = 2;
+  sendDataToServer();
+
   // Start next trial.
   proceedToNextTrial();
 
@@ -564,6 +578,10 @@ acceptOwnGuess = function(){
   // Reset text.
   $("#title").text("");
   $(".instructions").text("");
+
+  // Note whose guess we accepted and send data.
+  acceptType = 1;
+  sendDataToServer();
 
   // Start next trial.
   proceedToNextTrial();
@@ -587,9 +605,8 @@ changeGuess = function(){
   $(".instructions").text("");
 
   // Open up to allow responses again.
-  setTimeout(function(){
-      allowResponse();
-  }, stimulus_timeout*1000);
+  setTimeout(allowResponse,
+             stimulus_timeout*1000);
   setTimeout(getPartnerGuess,
              partner_timeout*1000);
 
