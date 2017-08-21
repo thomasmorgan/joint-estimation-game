@@ -153,8 +153,9 @@ proceedToNextTrial = function () {
     // Prevent repeat keypresses.
     Mousetrap.pause();
 
-    // Increment the trial counter.
+    // Increment the trial and guess counter.
     trialIndex = trialIndex + 1;
+    guessCounter = 0;
     $("#trial-number").html(trialIndex);
 
     // Set up the stimuli.
@@ -249,6 +250,7 @@ sendDataToServer = function(){
         // Prepare data to send to server.
         trialData = JSON.stringify({"trialType": trialType,
                                     "trialNumber": trialNumber,
+                                    "guessNumber": guessNumber,
                                     "length": int_list[trialIndex - 1]*PPU,
                                     "guess": response});
 
@@ -294,8 +296,9 @@ allowResponse = function() {
     response_background.show();
     response_bar.show();
 
-    // Set the response variable to default.
+    // Set the response variable to default and increment guess counter.
     response = 'timed_out';
+    guessCounter = guessCounter + 1;
 
     // Enable response.
     $(document).on('click', mousedownEventListener);
@@ -560,43 +563,14 @@ changeGuess = function(){
   $("#partnerGuess").remove();
   $("#changeGuess").remove();
 
-  // Create response background.
-  // paper = Raphael(0, 50, 800, 600);
-  // change_background = paper.rect(response_x_start,
-  //                                  response_y_start,
-  //                                  response_bg_width,
-  //                                  response_bg_height-2*inset);
-  // change_background.attr("stroke", "#CCCCCC");
-  // change_background.attr("stroke-dasharray", "--");
-  //
-  // // Draw response bar.
-  // change_bar = paper.rect(response_x_start,
-  //                           response_y_start-inset,
-  //                           response_bg_width,
-  //                           response_bg_height);
-  // change_bar.attr("fill", "#0B486B");
-  // change_bar.attr("stroke", "none");
-
-  // Display response bar and reset instructions.
-  click_lock = false;
-  $("#title").text("Re-create the line length.");
+  // Reset text.
+  $("#title").text("");
   $(".instructions").text("");
 
-  response_background.show();
-  response_bar.show();
-
-  // Enable response.
-  $(document).on('click', mousedownEventListener);
-
-  // // Track the mouse during response.
-  // $(document).mousemove( function(e) {
-  //     x = e.pageX-response_x_start;
-  //     response_bar_size = bounds(x, 1*PPU, xMax*PPU);
-  //     response_bar.attr({ x: response_x_start, width: response_bar_size });
-  // });
-
-  // If they take too long, disable response.
-  handleResponseDelays();
+  // Open up to allow responses again.
+  setTimeout(function(){
+      allowResponse();
+  }, stimulus_timeout*1000);
 
 }
 
