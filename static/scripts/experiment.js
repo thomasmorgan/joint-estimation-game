@@ -182,6 +182,16 @@ proceedToNextTrial = function () {
 
     console.log(trialIndex)
 
+    // NOTES ABOUT TESTING
+    // When the `sendDataToServer()` lines are inserted in the `if` statement, we start a trial 1.
+    // However, we do get issues with the `response` value being passed from the `mousedownEventListener`
+    // function to the `allowResponse` function and from the `allowResponse` function to the
+    // `sendDataToServer` function. We get an error that the `response` variable doesn't exist
+    // (in the Chrome console log).
+    //
+    // Ultimately, this won't fix our problem, though -- because we need the information to be sent
+    // over to the server when each new guess is given.
+
     // If this is a training trial...
     if (trialIndex <= trainN) {
 
@@ -190,7 +200,7 @@ proceedToNextTrial = function () {
 
         // Move on to the next trial.
         clicked = false;
-        //sendDataToServer(); // Possible problem line
+        sendDataToServer(); // Possible problem line
         proceedToNextTrial();
 
     // ... or if this is a test trial ...
@@ -206,7 +216,7 @@ proceedToNextTrial = function () {
 
         // Move on to the next trial.
         clicked = false;
-        //sendDataToServer(); // Possible problem line
+        sendDataToServer(); // Possible problem line
         proceedToNextTrial();
 
     // ... or if we're done, finish up.
@@ -216,7 +226,7 @@ proceedToNextTrial = function () {
         paper.remove();
 
         // Send data back to the server and proceed to questionnaire.
-        //sendDataToServer(); // Possible problem line
+        sendDataToServer(); // Possible problem line
 
     };
 };
@@ -317,6 +327,7 @@ allowResponse = function() {
 
     // If they click to submit a response, clear the timeout and update the site text.
     $(document).one('click', acknowledgeGuess);
+    console.log(response)
 }
 
 //
