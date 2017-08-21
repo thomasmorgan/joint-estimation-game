@@ -158,6 +158,9 @@ proceedToNextTrial = function () {
     guessCounter = 0;
     $("#trial-number").html(trialIndex);
 
+    // Print current trial.
+    console.log(trialIndex)
+
     // Set up the stimuli.
     stimulus_background.show();
     stimulus_bar.attr({ width: int_list[trialIndex - 1]*PPU });
@@ -186,7 +189,7 @@ proceedToNextTrial = function () {
 
         // Move on to the next trial.
         clicked = false;
-        proceedToNextTrial();
+        //proceedToNextTrial();
 
     // ... or if this is a test trial ...
     } else if (trialIndex > trainN && trialIndex <= testN) {
@@ -201,7 +204,7 @@ proceedToNextTrial = function () {
 
         // Move on to the next trial.
         clicked = false;
-        proceedToNextTrial();
+        //proceedToNextTrial();
 
     // ... or if we're done, finish up.
     } else {
@@ -311,6 +314,7 @@ allowResponse = function() {
     // If they click to submit a response, clear the timeout and update the site text.
     $(document).one('click', acknowledgeGuess);
     console.log(response)
+    sendDataToServer();
 }
 
 //
@@ -585,8 +589,6 @@ $(document).keydown(function(e) {
             } else {
                 proceedToNextTrial();
             }
-
-            // proceedToNextTrial();
 
             click_lock = false;
         }
