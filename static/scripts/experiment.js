@@ -590,6 +590,8 @@ changeGuess = function(){
   setTimeout(function(){
       allowResponse();
   }, stimulus_timeout*1000);
+  setTimeout(getPartnerGuess,
+             partner_timeout*1000);
 
 }
 
