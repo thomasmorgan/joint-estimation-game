@@ -533,7 +533,19 @@ showPartner = function() {
 //
 acceptPartnerGuess = function() {
 
+  // Remove partner's guesses and buttons.
+  partner_background.hide();
+  partner_bar.hide();
+  $("#myGuess").remove();
+  $("#partnerGuess").remove();
+  $("#changeGuess").remove();
 
+  // Reset text.
+  $("#title").text("");
+  $(".instructions").text("");
+
+  // Start next trial.
+  proceedToNextTrial();
 
 }
 
@@ -542,7 +554,19 @@ acceptPartnerGuess = function() {
 //
 acceptOwnGuess = function(){
 
+  // Remove partner's guesses and buttons.
+  partner_background.hide();
+  partner_bar.hide();
+  $("#myGuess").remove();
+  $("#partnerGuess").remove();
+  $("#changeGuess").remove();
 
+  // Reset text.
+  $("#title").text("");
+  $(".instructions").text("");
+
+  // Start next trial.
+  proceedToNextTrial();
 
 }
 
