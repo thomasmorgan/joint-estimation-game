@@ -51,9 +51,6 @@ create_agent = function() {
             }
         }
     });
-
-    // Implement time-tracking.
-    var start = new Date();
 };
 
 //
@@ -173,15 +170,17 @@ proceedToNextTrial = function () {
 
     // Allow response only for a limited amount of time.
     var unresponsiveParticipant
-    setTimeout(function(){
-        allowResponse();
-    }, stimulus_timeout*1000);
+    setTimeout(allowResponse,
+               stimulus_timeout*1000);
+
+    //sendDataToServer();
 
     // nb: this needs to be moved to the training trail bit
     // Show partner's guess.
-    setTimeout( function(){
-      getPartnerGuess();
-    }, partner_timeout*1000);
+    setTimeout(getPartnerGuess,
+               partner_timeout*1000);
+
+    console.log(trialIndex)
 
     // If this is a training trial...
     if (trialIndex <= trainN) {
@@ -189,10 +188,9 @@ proceedToNextTrial = function () {
         // // Display correction.
         // showCorrectLength();
 
-        // Update the click.
-        clicked = false;
-
         // Move on to the next trial.
+        clicked = false;
+        //sendDataToServer();
         proceedToNextTrial();
 
     // ... or if this is a test trial ...
@@ -206,10 +204,9 @@ proceedToNextTrial = function () {
         // // Confirm guesses.
         // processGuesses();
 
-        // Update the click.
-        clicked = false;
-
         // Move on to the next trial.
+        clicked = false;
+        //sendDataToServer();
         proceedToNextTrial();
 
     // ... or if we're done, finish up.
@@ -219,7 +216,7 @@ proceedToNextTrial = function () {
         paper.remove();
 
         // Send data back to the server and proceed to questionnaire.
-        sendDataToServer();
+        //sendDataToServer();
 
     };
 };
@@ -254,8 +251,8 @@ sendDataToServer = function(){
                                     "guessCounter": guessCounter,
                                     "length": int_list[trialIndex - 1]*PPU,
                                     "guess": response,
-                                    "acceptType": acceptType,
-                                    "t" = new Date() - start});
+                                    "acceptType": acceptType
+                                  });
 
         // If we're at the last trial, proceed to questionnaire.
         if (trialIndex === testN){
@@ -334,9 +331,6 @@ function acknowledgeGuess(){
   // Update display text.
   $("#title").text("Your response has been recorded.");
   $(".instructions").text("Please wait for your partner's guess.");
-
-  // Submit the data.
-  sendDataToServer();
 }
 
 //
@@ -353,9 +347,6 @@ function disableResponseAfterDelay(){
   $(".instructions").text("Please wait for your partner's guess.");
   response_bar.hide();
   response_background.hide();
-
-  // Submit the data.
-  sendDataToServer();
 }
 
 //
@@ -429,17 +420,18 @@ waitForGuess = function() {
 // Monitor the server to see if partner has guessed.
 //
 getPartnerGuess = function() {
-    reqwest({
-        url: "/node/" + partner_node_id + "/received_infos",
-        method: 'get',
-        type: 'json',
-        success: function (resp) {
-            if (resp.infos.length === 0) {
 
-              // Keep checking until the partner has guessed.
-              waitForGuess();
-
-            } else {
+    // reqwest({
+    //     url: "/node/" + partner_node_id + "/received_infos",
+    //     method: 'get',
+    //     type: 'json',
+    //     success: function (resp) {
+    //         if (resp.infos.length === 0) {
+    //
+    //           // Keep checking until the partner has guessed.
+    //           waitForGuess();
+    //
+    //         } else {
 
               // Grab partner's guess.
               //partner_guess_record = resp.infos[trialNumber+1].contents;
@@ -465,31 +457,31 @@ getPartnerGuess = function() {
               $("#partnerGuess").click(acceptPartnerGuess);
               $("#changeGuess").click(changeGuess);
 
-            }
-
-            // // Get training values
-            // xTrain = data.x;
-            // yTrain = data.y;
-
-            // N = xTrain.length * 2;
-            // $("#total-trials").html(N);
-            // yTrainReported = [];
-
-            // // Get test values.
-            // // half are from training; the rest are new
-            // allX = range(1, xMax);
-            // xTestFromTraining = randomSubset(xTrain, N/4);
-            // xTestNew = randomSubset(allX.diff(xTrain), N/4);
-            // xTest = shuffle(xTestFromTraining.concat(xTestNew));
-            // yTest = [];
-
-        },
-        error: function (err) {
-            console.log(err);
-            err_response = JSON.parse(err.response);
-            $('body').html(err_response.html);
-        }
-    });
+    //         }
+    //
+    //         // // Get training values
+    //         // xTrain = data.x;
+    //         // yTrain = data.y;
+    //
+    //         // N = xTrain.length * 2;
+    //         // $("#total-trials").html(N);
+    //         // yTrainReported = [];
+    //
+    //         // // Get test values.
+    //         // // half are from training; the rest are new
+    //         // allX = range(1, xMax);
+    //         // xTestFromTraining = randomSubset(xTrain, N/4);
+    //         // xTestNew = randomSubset(allX.diff(xTrain), N/4);
+    //         // xTest = shuffle(xTestFromTraining.concat(xTestNew));
+    //         // yTest = [];
+    //
+    //     },
+    //     error: function (err) {
+    //         console.log(err);
+    //         err_response = JSON.parse(err.response);
+    //         $('body').html(err_response.html);
+    //     }
+    // });
 };
 
 //
@@ -498,6 +490,7 @@ getPartnerGuess = function() {
 showPartner = function() {
 
     // Draw partner's background.
+    paper = Raphael(0, 50, 800, 600);
     partner_background = paper.rect(response_x_start,
                                     response_y_start+200,
                                     response_bg_width,
@@ -542,20 +535,8 @@ showPartner = function() {
 //
 acceptPartnerGuess = function() {
 
-  // Remove partner's guesses and buttons.
-  partner_background.hide();
-  partner_bar.hide();
-  $("#myGuess").remove();
-  $("#partnerGuess").remove();
-  $("#changeGuess").remove();
 
-  // Reset text.
-  $("#title").text("Please wait");
-  $(".instructions").text("We are processing your partner's response");
 
-  // Send in the data.
-  acceptType = 2;
-  sendDataToServer();
 }
 
 //
@@ -563,20 +544,8 @@ acceptPartnerGuess = function() {
 //
 acceptOwnGuess = function(){
 
-  // Remove partner's guesses and buttons.
-  partner_background.hide();
-  partner_bar.hide();
-  $("#myGuess").remove();
-  $("#partnerGuess").remove();
-  $("#changeGuess").remove();
 
-  // Reset text.
-  $("#title").text("");
-  $(".instructions").text("");
 
-  // Send in the data.
-  acceptType = 1;
-  sendDataToServer();
 }
 
 //
