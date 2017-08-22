@@ -25,6 +25,11 @@ change_guess_y = stimulus_y_start + stimulus_bg_height
 accept_partner_y = stimulus_y_start + 3*stimulus_bg_height
 accept_own_y = stimulus_y_start + 5*stimulus_bg_height
 
+// Specify colors for own, partner, and stimulus boxes.
+partner_guess_color = "#0b6b13";
+own_guess_color = "#0B486B";
+stimulus_color = "#b32113";
+
 // Create the agent.
 create_agent = function() {
     reqwest({
@@ -124,7 +129,7 @@ drawUserInterface = function () {
                               stimulus_y_start-inset,
                               0,
                               25);
-    stimulus_bar.attr("fill", "#0B486B");
+    stimulus_bar.attr("fill", stimulus_color);
     stimulus_bar.attr("stroke", "none");
 
 };
@@ -278,7 +283,7 @@ allowResponse = function() {
                               response_y_start-inset,
                               response_bg_width,
                               response_bg_height);
-    response_bar.attr("fill", "#0B486B");
+    response_bar.attr("fill", own_guess_color);
     response_bar.attr("stroke", "none");
 
     // Display response bar and reset instructions.
@@ -512,7 +517,7 @@ showPartner = function() {
                              response_y_start-inset+200,
                              response_bg_width,
                              response_bg_height);
-    partner_bar.attr("fill", "#0B486B");
+    partner_bar.attr("fill", partner_guess_color);
     partner_bar.attr("stroke", "none");
     partner_bar.attr({x: response_x_start,
                       width: partner_x_guess*PPU
