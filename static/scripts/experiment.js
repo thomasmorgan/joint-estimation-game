@@ -438,18 +438,22 @@ getPartnerGuess = function() {
             if (resp.infos.length == 0) {
               waitForGuess();
             } else {
+
+              // Grab partner's guess.
+              partner_guess_record = resp.infos[0].contents;
+              partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
+
               // Loop back if the partner hasn't guessed on this trial.
               if (partner_guess_trial != trialIndex){
-                waitForGuess();
-              } else {
 
+                waitForGuess();
+
+              } else {
                 // Grab partner guess and move to display it.
                 enter_lock = false;
                 partner_x_guess = JSON.parse(partner_guess_record)["guess"];
                 showPartner();
-
               }
-            }
 
             // // Get training values
             // xTrain = data.x;
@@ -621,6 +625,8 @@ changeGuess = function(){
   setTimeout(getPartnerGuess,
              partner_timeout*1000);
 
+  // Note: Consider implementing a way to wait to display until the partner has also responded.
+  
 }
 
 //
