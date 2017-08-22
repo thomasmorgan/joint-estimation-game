@@ -174,8 +174,8 @@ proceedToNextTrial = function () {
     if (trialIndex <= trainN) {
 
         // Update header for participant.
-        $("training-or-testing").html("Training");
-        $("total-trials").html(testN);
+        $("#training-or-testing").html("Training");
+        $("#total-trials").html(testN);
 
         // // Display correction.
         // showCorrectLength();
@@ -187,8 +187,8 @@ proceedToNextTrial = function () {
     } else if (trialIndex > trainN && trialIndex <= testN) {
 
         // Update header for participant.
-        $("training-or-testing").html("Testing");
-        $("total-trials").html(testN);
+        $("#training-or-testing").html("Testing");
+        $("#total-trials").html(testN);
 
         // // Show partner's guess.
         // setTimeout( function(){
