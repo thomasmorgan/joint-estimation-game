@@ -502,7 +502,7 @@ showPartner = function() {
   accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>"
 
   // Handle timed-out responses by self or partner.
-  if (partner_x_guess < 0 & response < 0) {
+  if (partner_x_guess < 0 && response < 0) {
 
     // Update information text.
     $("#title").text("Neither you nor your parter submitted a guess in time");
