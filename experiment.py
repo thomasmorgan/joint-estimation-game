@@ -1,4 +1,4 @@
-"""Define a transmission-chain experiment that transmits functional forms."""
+"""Define an experiment to explore joint decision making."""
 
 from dallinger.experiments import Experiment
 from dallinger.models import Network, Node, Info
