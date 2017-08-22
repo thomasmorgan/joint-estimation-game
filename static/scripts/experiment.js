@@ -145,7 +145,7 @@ proceedToNextTrial = function () {
     // Increment the trial and guess counter.
     trialIndex = trialIndex + 1;
     guessCounter = -1;
-    $("#trial-number").html(trialIndex);
+    $("#trial-number").html(trialIndex+1);
 
     // Print current trial.
     console.log('Trial: '+trialIndex)
@@ -173,6 +173,10 @@ proceedToNextTrial = function () {
     // If this is a training trial...
     if (trialIndex <= trainN) {
 
+        // Update header for participant.
+        $("training-or-testing").html("Training");
+        $("total-trials").html(testN);
+
         // // Display correction.
         // showCorrectLength();
 
@@ -181,6 +185,10 @@ proceedToNextTrial = function () {
 
     // ... or if this is a test trial ...
     } else if (trialIndex > trainN && trialIndex <= testN) {
+
+        // Update header for participant.
+        $("training-or-testing").html("Testing");
+        $("total-trials").html(testN);
 
         // // Show partner's guess.
         // setTimeout( function(){
