@@ -437,40 +437,19 @@ getPartnerGuess = function() {
             // Loop back if this is the first trial and the partner hasn't guessed.
             if (resp.infos.length == 0) {
               waitForGuess();
-
             } else {
-
-              // Grab partner's guess.
-              partner_guess_record = resp.infos[0].contents;
-              partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
-
               // Loop back if the partner hasn't guessed on this trial.
               if (partner_guess_trial != trialIndex){
                 waitForGuess();
-
               } else {
 
-              // Update page to display partner's guess and text.
-              $("#title").text("This is your partner's guess");
-              $(".instructions").text("Would you like to accept their guess or keep yours?");
-              partner_x_guess = JSON.parse(partner_guess_record)["guess"];
-              showPartner();
-              enter_lock = false;
-
-              // Initialize buttons.
-              change_guess_button = "<input type='button' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+stimulus_x_start+"px;'>"
-              accept_partner_button = '<input type="button" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+stimulus_x_start+'px;">'
-              accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>"
-
-              // Draw response buttons.
-              $("body").append(change_guess_button);
-              $("body").append(accept_own_button);
-              $("body").append(accept_partner_button);
-              $("#myGuess").click(acceptOwnGuess);
-              $("#partnerGuess").click(acceptPartnerGuess);
-              $("#changeGuess").click(changeGuess);
+                // Grab partner guess and move to display it.
+                enter_lock = false;
+                partner_x_guess = JSON.parse(partner_guess_record)["guess"];
+                showPartner();
 
               }
+            }
 
             // // Get training values
             // xTrain = data.x;
@@ -498,33 +477,77 @@ getPartnerGuess = function() {
     });
 };
 
+
 //
 // Display partner's guess.
 //
 showPartner = function() {
 
-    // Draw partner's background.
-    paper = Raphael(0, 50, 800, 600);
-    partner_background = paper.rect(response_x_start,
-                                    response_y_start+200,
-                                    response_bg_width,
-                                    response_bg_height-2*inset);
-    partner_background.attr("stroke", "#CCCCCC");
-    partner_background.attr("stroke-dasharray", "--");
 
-    // Draw partner's guess.
-    partner_bar = paper.rect(response_x_start,
-                             response_y_start-inset+200,
-                             response_bg_width,
-                             response_bg_height);
-    partner_bar.attr("fill", partner_guess_color);
-    partner_bar.attr("stroke", "none");
-    partner_bar.attr({x: response_x_start,
-                      width: partner_x_guess*PPU
-                      });
+  // Initialize buttons.
+  change_guess_button = "<input type='button' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+stimulus_x_start+"px;'>"
+  accept_partner_button = '<input type="button" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+stimulus_x_start+'px;">'
+  accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>"
 
-    // Handle timed-out responses by partner.
+  // Handle timed-out responses by self or partner.
+  if (partner_x_guess < 0 & response < 0) {
+
+
+
+  } else if (partner_x_guess < 0) {
+
+
+
+  } else if (response < 0) {
+
+
+
+  } else {
+
+    // Display partner's guess.
+    drawPartnerBar();
+
+    // Update information text.
+    $("#title").text("This is your partner's guess");
+    $(".instructions").text("Would you like to accept their guess or keep yours?");
+
+    // Draw response buttons.
+    $("body").append(change_guess_button);
+    $("body").append(accept_own_button);
+    $("body").append(accept_partner_button);
+    $("#myGuess").click(acceptOwnGuess);
+    $("#partnerGuess").click(acceptPartnerGuess);
+    $("#changeGuess").click(changeGuess);
+
+  }
 }
+
+//
+// Draw partner's guess.
+//
+drawPartnerBar = function(){
+
+  // Draw partner's background.
+  paper = Raphael(0, 50, 800, 600);
+  partner_background = paper.rect(response_x_start,
+                                  response_y_start+200,
+                                  response_bg_width,
+                                  response_bg_height-2*inset);
+  partner_background.attr("stroke", "#CCCCCC");
+  partner_background.attr("stroke-dasharray", "--");
+
+  // Draw partner's guess.
+  partner_bar = paper.rect(response_x_start,
+                           response_y_start-inset+200,
+                           response_bg_width,
+                           response_bg_height);
+  partner_bar.attr("fill", partner_guess_color);
+  partner_bar.attr("stroke", "none");
+  partner_bar.attr({x: response_x_start,
+                    width: partner_x_guess*PPU
+                    });
+}
+
 
 //
 // Accept partner's guess.
