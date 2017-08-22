@@ -8,7 +8,7 @@ click_lock = true;
 stimulus_timeout = 1; // Time in seconds for which a stimulus is displayed.
 response_timeout = 2; // Time in seconds for which a response is allowed.
 partner_timeout = 3; // Time in seconds for which partner's guess is displayed.
-trainN = 20; // Define number of training trials.
+trainN = 0; // Define number of training trials.
 testN = trainN + 50; // Define number of test trails (over training trials).
 
 // Specify location information for stimuli, responses, and buttons.
@@ -69,7 +69,7 @@ get_received_info = function() {
         method: 'get',
         type: 'json',
         success: function (resp) {
-            if (resp.infos.length === 0) {
+            if (resp.infos.length == 0) {
                 get_info();
             } else {
                 r = resp.infos[0].contents;
@@ -189,7 +189,6 @@ proceedToNextTrial = function () {
 
         // Move on to the next trial.
         clicked = false;
-        //proceedToNextTrial();
 
     // ... or if this is a test trial ...
     } else if (trialIndex > trainN && trialIndex <= testN) {
@@ -198,21 +197,16 @@ proceedToNextTrial = function () {
         // setTimeout( function(){
         //   getPartnerGuess();
         // }, partner_timeout*1000);
-        //
-        // // Confirm guesses.
-        // processGuesses();
 
         // Move on to the next trial.
         clicked = false;
-        //proceedToNextTrial();
 
     // ... or if we're done, finish up.
     } else {
 
+        // Send data back to the server and proceed to questionnaire.
         $(document).off('click', mousedownEventListener);
         paper.remove();
-
-        // Send data back to the server and proceed to questionnaire.
 
     };
 };
@@ -421,7 +415,7 @@ function mousedownEventListener(event) {
 // Check to see if partner has guessed one time per second.
 //
 waitForGuess = function() {
-    setTimeout(get_received_info, 1000);
+    setTimeout(getPartnerGuess, 1000);
 };
 
 //
@@ -429,26 +423,32 @@ waitForGuess = function() {
 //
 getPartnerGuess = function() {
 
-    // reqwest({
-    //     url: "/node/" + partner_node_id + "/received_infos",
-    //     method: 'get',
-    //     type: 'json',
-    //     success: function (resp) {
-    //         if (resp.infos.length === 0) {
-    //
-    //           // Keep checking until the partner has guessed.
-    //           waitForGuess();
-    //
-    //         } else {
+    reqwest({
+        url: "/node/" + partner_node_id + "/infos",
+        method: 'get',
+        type: 'json',
+        success: function (resp) {
+
+            // Loop back if this is the first trial and the partner hasn't guessed.
+            if (resp.infos.length == 0) {
+              waitForGuess();
+
+            } else {
 
               // Grab partner's guess.
-              //partner_guess_record = resp.infos[trialNumber+1].contents;
-              //partner_x_guess = JSON.parse(partner_guess_record)["length"];
-              partner_x_guess = 50;
+              partner_guess_record = resp.infos[0].contents;
+              partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
+
+              // Loop back if the partner hasn't guessed on this trial.
+              if (partner_guess_trial != trialIndex){
+                waitForGuess();
+
+              } else {
 
               // Update page to display partner's guess and text.
               $("#title").text("This is your partner's guess");
               $(".instructions").text("Would you like to accept their guess or keep yours?");
+              partner_x_guess = JSON.parse(partner_guess_record)["guess"];
               showPartner();
               enter_lock = false;
 
@@ -465,31 +465,32 @@ getPartnerGuess = function() {
               $("#partnerGuess").click(acceptPartnerGuess);
               $("#changeGuess").click(changeGuess);
 
-    //         }
-    //
-    //         // // Get training values
-    //         // xTrain = data.x;
-    //         // yTrain = data.y;
-    //
-    //         // N = xTrain.length * 2;
-    //         // $("#total-trials").html(N);
-    //         // yTrainReported = [];
-    //
-    //         // // Get test values.
-    //         // // half are from training; the rest are new
-    //         // allX = range(1, xMax);
-    //         // xTestFromTraining = randomSubset(xTrain, N/4);
-    //         // xTestNew = randomSubset(allX.diff(xTrain), N/4);
-    //         // xTest = shuffle(xTestFromTraining.concat(xTestNew));
-    //         // yTest = [];
-    //
-    //     },
-    //     error: function (err) {
-    //         console.log(err);
-    //         err_response = JSON.parse(err.response);
-    //         $('body').html(err_response.html);
-    //     }
-    // });
+              }
+
+            // // Get training values
+            // xTrain = data.x;
+            // yTrain = data.y;
+
+            // N = xTrain.length * 2;
+            // $("#total-trials").html(N);
+            // yTrainReported = [];
+
+            // // Get test values.
+            // // half are from training; the rest are new
+            // allX = range(1, xMax);
+            // xTestFromTraining = randomSubset(xTrain, N/4);
+            // xTestNew = randomSubset(allX.diff(xTrain), N/4);
+            // xTest = shuffle(xTestFromTraining.concat(xTestNew));
+            // yTest = [];
+          }
+
+        },
+        error: function (err) {
+            console.log(err);
+            err_response = JSON.parse(err.response);
+            $('body').html(err_response.html);
+        }
+    });
 };
 
 //
@@ -517,26 +518,6 @@ showPartner = function() {
                       width: partner_x_guess
                       });
 }
-
-// //
-// // Allow and capture partners' guesses.
-// //
-// processGuesses = function() {
-//
-//   // Initialize buttons.
-//   change_guess_button = "<input type='button' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+stimulus_x_start+"px;'>";
-//   accept_partner_button = '<input type="button" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+stimulus_x_start+'px;">';
-//   accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>";
-//
-//   // Draw response buttons.
-//   $("body").append(change_guess_button);
-//   $("body").append(accept_own_button);
-//   $("body").append(accept_partner_button);
-//   $("#myGuess").click(acceptOwnGuess);
-//   $("#partnerGuess").click(acceptPartnerGuess);
-//   $("#changeGuess").click(changeGuess);
-//
-// }
 
 //
 // Accept partner's guess.
