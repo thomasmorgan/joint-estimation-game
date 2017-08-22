@@ -127,22 +127,6 @@ drawUserInterface = function () {
     stimulus_bar.attr("fill", "#0B486B");
     stimulus_bar.attr("stroke", "none");
 
-    // Create response background.
-    response_background = paper.rect(response_x_start,
-                                     response_y_start,
-                                     response_bg_width,
-                                     response_bg_height-2*inset);
-    response_background.attr("stroke", "#CCCCCC");
-    response_background.attr("stroke-dasharray", "--");
-
-    // Draw response bar.
-    response_bar = paper.rect(response_x_start,
-                              response_y_start-inset,
-                              response_bg_width,
-                              response_bg_height);
-    response_bar.attr("fill", "#0B486B");
-    response_bar.attr("stroke", "none");
-
 };
 
 //
@@ -280,6 +264,22 @@ allowResponse = function() {
     // Hide stimulus bar.
     stimulus_bar.hide();
     stimulus_background.hide();
+
+    // Create response background.
+    response_background = paper.rect(response_x_start,
+                                     response_y_start,
+                                     response_bg_width,
+                                     response_bg_height-2*inset);
+    response_background.attr("stroke", "#CCCCCC");
+    response_background.attr("stroke-dasharray", "--");
+
+    // Draw response bar.
+    response_bar = paper.rect(response_x_start,
+                              response_y_start-inset,
+                              response_bg_width,
+                              response_bg_height);
+    response_bar.attr("fill", "#0B486B");
+    response_bar.attr("stroke", "none");
 
     // Display response bar and reset instructions.
     click_lock = false;
@@ -515,8 +515,10 @@ showPartner = function() {
     partner_bar.attr("fill", "#0B486B");
     partner_bar.attr("stroke", "none");
     partner_bar.attr({x: response_x_start,
-                      width: partner_x_guess
+                      width: partner_x_guess*PPU
                       });
+
+    // Handle timed-out responses by partner.
 }
 
 //
