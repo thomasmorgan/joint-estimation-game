@@ -139,64 +139,62 @@ drawUserInterface = function () {
 //
 proceedToNextTrial = function () {
 
-    // Prevent repeat keypresses.
-    Mousetrap.pause();
+    // Move to next trial if we haven't hit our target n.
+    if ((trialIndex+1) < testN) {
 
-    // Increment the trial and guess counter.
-    trialIndex = trialIndex + 1;
-    guessCounter = -1;
-    $("#trial-number").html(trialIndex+1);
+      // Prevent repeat keypresses.
+      Mousetrap.pause();
 
-    // Print current trial.
-    console.log('Trial: '+trialIndex)
+      // Increment the trial and guess counter.
+      trialIndex = trialIndex + 1;
+      guessCounter = -1;
+      $("#trial-number").html(trialIndex+1);
 
-    // Set up the stimuli.
-    stimulus_background.show();
-    stimulus_bar.attr({ width: int_list[trialIndex]*PPU });
+      // Print current trial.
+      console.log('Trial: '+trialIndex)
 
-    // Reveal stimulus for set amount of time.
-    $("#title").text("Remember this line length.");
-    $(".instructions").text("");
-    stimulus_background.show();
-    stimulus_bar.show();
+      // Set up the stimuli.
+      stimulus_background.show();
+      stimulus_bar.attr({ width: int_list[trialIndex]*PPU });
 
-    // Allow response only for a limited amount of time.
-    var unresponsiveParticipant
-    setTimeout(allowResponse,
-               stimulus_timeout*1000);
+      // Reveal stimulus for set amount of time.
+      $("#title").text("Remember this line length.");
+      $(".instructions").text("");
+      stimulus_background.show();
+      stimulus_bar.show();
 
-    // nb: this needs to be moved to the training trail bit
-    // Show partner's guess.
-    setTimeout(getPartnerGuess,
-               partner_timeout*1000);
+      // Allow response only for a limited amount of time.
+      var unresponsiveParticipant;
+      setTimeout(allowResponse,
+                 stimulus_timeout*1000);
 
-    // If this is a training trial...
-    if (trialIndex <= trainN) {
+      // If this is a training trial...
+      if (trialIndex < trainN) {
 
-        // Update header for participant.
-        $("#training-or-testing").html("Training");
-        $("#total-trials").html(testN);
+          // Update header for participant.
+          $("#training-or-testing").html("Training");
+          $("#total-trials").html(testN);
 
-        // // Display correction.
-        // showCorrectLength();
+          // // Display correction.
+          // showCorrectLength();
 
-        // Move on to the next trial.
-        clicked = false;
+          // Move on to the next trial.
+          clicked = false;
 
-    // ... or if this is a test trial ...
-    } else if (trialIndex > trainN && trialIndex <= testN) {
+      // ... or if this is a test trial ...
+      } else {
 
-        // Update header for participant.
-        $("#training-or-testing").html("Testing");
-        $("#total-trials").html(testN);
+          // Update header for participant.
+          $("#training-or-testing").html("Testing");
+          $("#total-trials").html(testN);
 
-        // // Show partner's guess.
-        // setTimeout( function(){
-        //   getPartnerGuess();
-        // }, partner_timeout*1000);
+          // Show partner's guess.
+          setTimeout(getPartnerGuess,
+                     partner_timeout*1000);
 
-        // Move on to the next trial.
-        clicked = false;
+          // Move on to the next trial.
+          clicked = false;
+      };
 
     // ... or if we're done, finish up.
     } else {
@@ -204,6 +202,8 @@ proceedToNextTrial = function () {
         // Send data back to the server and proceed to questionnaire.
         $(document).off('click', mousedownEventListener);
         paper.remove();
+        allow_exit();
+        go_to_page('postquestionnaire');
 
     };
 };
@@ -411,16 +411,7 @@ function mousedownEventListener(event) {
         //         stimulusY.hide();
         //         Mousetrap.resume();
         //     }
-        // // Testing phase
-        // } else if (trialIndex <= N) {
-        //     clicked = true;
-        //     $("#training-or-testing").html("Testing");
-        //     yTest.push(yNow);
-        //     feedback.hide();
-        //     stimulusX.hide();
-        //     stimulusY.hide();
-        //     Mousetrap.resume();
-        // }
+
     };
 }
 
