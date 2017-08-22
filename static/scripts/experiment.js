@@ -1,7 +1,7 @@
 // Settings
 PPU = 5; // Pixels per base unit.
 xMax = 100; // Maximum size of a bar in base units.
-trialIndex = 0;
+trialIndex = -1;
 stimulusYSize = 0;
 enter_lock = true;
 click_lock = true;
@@ -163,7 +163,7 @@ proceedToNextTrial = function () {
 
     // Set up the stimuli.
     stimulus_background.show();
-    stimulus_bar.attr({ width: int_list[trialIndex - 1]*PPU });
+    stimulus_bar.attr({ width: int_list[trialIndex]*PPU });
 
     // Reveal stimulus for set amount of time.
     $("#title").text("Remember this line length.");
@@ -235,10 +235,10 @@ sendDataToServer = function(){
         // Identify whether we're in training or testing.
         if (trialIndex <= trainN){
             trialType = "train";
-            trialNumber = trialIndex-1
+            trialNumber = trialIndex
         } else {
             trialType = "test";
-            trialNumber = trialIndex-trainN-1
+            trialNumber = trialIndex-trainN
         };
 
         // Prepare data to send to server.
@@ -247,7 +247,7 @@ sendDataToServer = function(){
         trialData = JSON.stringify({"trialType": trialType,
                                     "trialNumber": trialNumber,
                                     "guessCounter": guessCounter,
-                                    "length": int_list[trialIndex - 1]*PPU,
+                                    "length": int_list[trialIndex]*PPU,
                                     "guess": response,
                                     "acceptType": acceptType
                                   });
@@ -386,7 +386,7 @@ function mousedownEventListener(event) {
 
         // // Training phase
         // if (trialIndex < N/2) {
-        //     yTrue = yTrain[trialIndex-1];
+        //     yTrue = yTrain[trialIndex];
 
         //     // if they are wrong show feedback
         //     yTrainReported.push(yNow);
