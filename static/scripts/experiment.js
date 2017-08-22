@@ -444,11 +444,20 @@ getPartnerGuess = function() {
               partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
 
               // Loop back if the partner hasn't guessed on this trial.
-              if (partner_guess_trial != trialIndex){
+              if (partner_guess_trial < trialIndex){
 
                 waitForGuess();
 
               } else {
+
+                // Go back until we find the partner's last guess on this trial.
+                info_counter = 0;
+                while (partner_guess_trial != trialIndex){
+                  info_counter = info_counter + 1;
+                  partner_guess_record = resp.infos[info_counter].contents;
+                  partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
+                }
+
                 // Grab partner guess and move to display it.
                 enter_lock = false;
                 partner_x_guess = JSON.parse(partner_guess_record)["guess"];
@@ -496,15 +505,38 @@ showPartner = function() {
   // Handle timed-out responses by self or partner.
   if (partner_x_guess < 0 & response < 0) {
 
+    // Update information text.
+    $("#title").text("Neither you nor your parter submitted a guess in time");
+    $(".instructions").text("Please submit a new guess");
 
+    setTimeout(changeGuess,1000);
 
   } else if (partner_x_guess < 0) {
 
+    // Update information text.
+    $("#title").text("Your parter didn't submit a guess in time");
+    $(".instructions").text("Would you like to accept your guess or submit a new guess?");
 
+    // Draw response buttons.
+    $("body").append(change_guess_button);
+    $("body").append(accept_own_button);
+    $("#changeGuess").click(changeGuess);
+    $("#myGuess").click(acceptOwnGuess);
 
   } else if (response < 0) {
 
+    // Display partner's guess.
+    drawPartnerBar();
 
+    // Update information text.
+    $("#title").text("This is your partner's guess");
+    $(".instructions").text("Would you like to accept their guess or submit a new guess?");
+
+    // Draw response buttons.
+    $("body").append(change_guess_button);
+    $("body").append(accept_partner_button);
+    $("#changeGuess").click(changeGuess);
+    $("#partnerGuess").click(acceptPartnerGuess);
 
   } else {
 
@@ -513,15 +545,15 @@ showPartner = function() {
 
     // Update information text.
     $("#title").text("This is your partner's guess");
-    $(".instructions").text("Would you like to accept their guess or keep yours?");
+    $(".instructions").text("Would you like to accept their guess, keep your guess, or change your guess?");
 
     // Draw response buttons.
     $("body").append(change_guess_button);
     $("body").append(accept_own_button);
     $("body").append(accept_partner_button);
+    $("#changeGuess").click(changeGuess);
     $("#myGuess").click(acceptOwnGuess);
     $("#partnerGuess").click(acceptPartnerGuess);
-    $("#changeGuess").click(changeGuess);
 
   }
 }
@@ -626,7 +658,7 @@ changeGuess = function(){
              partner_timeout*1000);
 
   // Note: Consider implementing a way to wait to display until the partner has also responded.
-  
+
 }
 
 //
