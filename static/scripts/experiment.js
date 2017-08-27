@@ -273,20 +273,11 @@ showCorrectLength = function(){
 //
 sendDataToServer = function(){
 
-        // Identify whether we're in training or testing.
-        if (trialType == 'train'){
-            //trialType = "train";
-            trialNumber = trialIndex;
-        } else {
-            //trialType = "test";
-            trialNumber = trialIndex-trainN;
-        };
-
         // Prepare data to send to server.
         console.log('Accept Type: '+acceptType)
         console.log('Logged guess: '+response);
         trialData = JSON.stringify({"trialType": trialType,
-                                    "trialNumber": trialNumber,
+                                    "trialNumber": trialIndex,
                                     "guessCounter": guessCounter,
                                     "length": int_list[trialIndex]*PPU,
                                     "guess": response,
@@ -694,7 +685,6 @@ acceptPartnerGuess = function() {
 
   // Start next trial.
   checkIfPartnerAccepted();
-
 }
 
 //
