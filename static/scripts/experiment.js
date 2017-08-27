@@ -9,8 +9,8 @@ stimulus_timeout = 1; // Time in seconds for which a stimulus is displayed.
 correction_timeout = 2; // Time in seconds for which the correction is displayed.
 response_timeout = 2; // Time in seconds for which a response is allowed.
 partner_timeout = 3; // Time in seconds for which partner's guess is displayed.
-trainN = 2; // Define number of training trials.
-testN = trainN + 10; // Define number of test trails (over training trials).
+trainN = 1; // Define number of training trials.
+testN = trainN + 2; // Define number of test trails (over training trials).
 
 // Specify location information for stimuli, responses, and buttons.
 inset = 1;
@@ -24,7 +24,6 @@ response_bg_width = 500;
 response_bg_height = 25;
 change_guess_y = stimulus_y_start + stimulus_bg_height
 accept_partner_y = stimulus_y_start + 3*stimulus_bg_height
-accept_own_y = stimulus_y_start + 5*stimulus_bg_height
 
 // Specify colors for own, partner, and stimulus boxes.
 partner_guess_color = "#0b6b13";
@@ -478,8 +477,8 @@ function mousedownEventListener(event) {
 // Wait for partner to finish training.
 //
 waitForTraining = function(){
-  $("#title").text("Please wait while your partner finishes training");
-  $(".instructions").text("");
+  $("#title").text("Please wait");
+  $(".instructions").text("Your partner is finishing training");
   setTimeout(checkPartnerTraining,1000);
 }
 
