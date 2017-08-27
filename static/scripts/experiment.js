@@ -9,8 +9,8 @@ stimulus_timeout = 1; // Time in seconds for which a stimulus is displayed.
 correction_timeout = 2; // Time in seconds for which the correction is displayed.
 response_timeout = 2; // Time in seconds for which a response is allowed.
 partner_timeout = 3; // Time in seconds for which partner's guess is displayed.
-trainN = 0; // Define number of training trials.
-testN = trainN + 50; // Define number of test trails (over training trials).
+trainN = 2; // Define number of training trials.
+testN = trainN + 10; // Define number of test trails (over training trials).
 
 // Specify location information for stimuli, responses, and buttons.
 inset = 1;
@@ -551,12 +551,10 @@ getPartnerGuess = function() {
 
               // Loop back if the partner hasn't guessed on this trial.
               if (partner_guess_trial < trialIndex){
-
                 waitForGuess();
 
+              // If the partner has guessed, find their last guess on this trial.
               } else {
-
-                // Go back until we find the partner's last guess on this trial.
                 info_counter = 0;
                 while (partner_guess_trial != trialIndex){
                   info_counter = info_counter + 1;
@@ -569,22 +567,6 @@ getPartnerGuess = function() {
                 partner_x_guess = JSON.parse(partner_guess_record)["guess"];
                 showPartner();
               }
-
-            // // Get training values
-            // xTrain = data.x;
-            // yTrain = data.y;
-
-            // N = xTrain.length * 2;
-            // $("#total-trials").html(N);
-            // yTrainReported = [];
-
-            // // Get test values.
-            // // half are from training; the rest are new
-            // allX = range(1, xMax);
-            // xTestFromTraining = randomSubset(xTrain, N/4);
-            // xTestNew = randomSubset(allX.diff(xTrain), N/4);
-            // xTest = shuffle(xTestFromTraining.concat(xTestNew));
-            // yTest = [];
           }
 
         },
