@@ -768,7 +768,7 @@ checkIfPartnerAccepted = function() {
 
               // If the partner has guessed, see whether they've accepted before moving on.
               } else {
-                partner_accept_status = JSON.parse(esp.infos[0].contents)["acceptType"];
+                partner_accept_status = JSON.parse(resp.infos[0].contents)["acceptType"];
                 if (partner_accept_status == 0){
                   waitToAccept();
                 } else {
