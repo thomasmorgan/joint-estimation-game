@@ -85,23 +85,6 @@ get_received_info = function() {
                 $(".instructions").text("Press enter to begin");
                 enter_lock = false;
             }
-
-            // // Get training values
-            // xTrain = data.x;
-            // yTrain = data.y;
-
-            // N = xTrain.length * 2;
-            // $("#total-trials").html(N);
-            // yTrainReported = [];
-
-            // // Get test values.
-            // // half are from training; the rest are new
-            // allX = range(1, xMax);
-            // xTestFromTraining = randomSubset(xTrain, N/4);
-            // xTestNew = randomSubset(allX.diff(xTrain), N/4);
-            // xTest = shuffle(xTestFromTraining.concat(xTestNew));
-            // yTest = [];
-
         },
         error: function (err) {
             console.log(err);
@@ -495,6 +478,8 @@ function mousedownEventListener(event) {
 // Wait for partner to finish training.
 //
 waitForTraining = function(){
+  $("#title").text("Please wait while your partner finishes training");
+  $(".instructions").text("");
   setTimeout(checkPartnerTraining,1000);
 }
 
@@ -521,7 +506,9 @@ checkPartnerTraining = function() {
 
               // If the partner has finished training, move on.
               if (partner_guess_trial >= (trainN-1)){
-                  proceedToNextTrial();
+                $("#title").text("");
+                $(".instructions").text("");
+                proceedToNextTrial();
 
               // Loop back if the partner hasn't finished training.
               } else {
@@ -705,6 +692,7 @@ acceptPartnerGuess = function() {
   $(".instructions").text("");
 
   // Note whose guess we accepted and send data.
+  response = partner_x_guess;
   acceptType = 2;
   sendDataToServer();
 
@@ -742,8 +730,10 @@ acceptOwnGuess = function(){
 changeGuess = function(){
 
   // Remove partner's guesses and buttons.
-  partner_background.hide();
-  partner_bar.hide();
+  if (partner_background){
+    partner_background.hide();
+    partner_bar.hide();
+  }
   $("#myGuess").remove();
   $("#partnerGuess").remove();
   $("#changeGuess").remove();
@@ -763,6 +753,8 @@ changeGuess = function(){
 // Wait for partner acceptance.
 //
 waitToAccept = function(){
+  $("#title").text("Please wait");
+  $(".instructions").text("Your partner is still finishing the last trial");
   setTimeout(checkIfPartnerAccepted,1000);
 }
 
@@ -780,7 +772,6 @@ checkIfPartnerAccepted = function() {
             // Loop back if this is the first trial and the partner hasn't guessed.
             if (resp.infos.length == 0) {
               waitToAccept();
-
             } else {
 
               // Grab partner's guess.
