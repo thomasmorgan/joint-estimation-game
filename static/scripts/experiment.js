@@ -6,6 +6,7 @@ stimulusYSize = 0;
 enter_lock = true;
 click_lock = true;
 stimulus_timeout = 1; // Time in seconds for which a stimulus is displayed.
+correction_timeout = 2; // Time in seconds for which the correction is displayed.
 response_timeout = 2; // Time in seconds for which a response is allowed.
 partner_timeout = 3; // Time in seconds for which partner's guess is displayed.
 trainN = 0; // Define number of training trials.
@@ -29,6 +30,7 @@ accept_own_y = stimulus_y_start + 5*stimulus_bg_height
 partner_guess_color = "#0b6b13";
 own_guess_color = "#0B486B";
 stimulus_color = "#b32113";
+correction_color = "#8e8e8e";
 
 // Create the agent.
 create_agent = function() {
@@ -139,23 +141,31 @@ drawUserInterface = function () {
 //
 proceedToNextTrial = function () {
 
+    // Increment the trial and guess counter.
+    trialIndex = trialIndex + 1;
+    guessCounter = -1;
+
+    // Identify whether we're in training or testing.
+    if (trialIndex < trainN){
+        trialType = "train";
+    } else {
+        trialType = "test";
+    };
+
     // Move to next trial if we haven't hit our target n.
     if ((trialIndex+1) < testN) {
 
       // Prevent repeat keypresses.
       Mousetrap.pause();
 
-      // Increment the trial and guess counter.
-      trialIndex = trialIndex + 1;
-      guessCounter = -1;
-      $("#trial-number").html(trialIndex+1);
-
       // Print current trial.
+      $("#trial-number").html(trialIndex+1);
       console.log('Trial: '+trialIndex)
 
       // Set up the stimuli.
       stimulus_background.show();
       stimulus_bar.attr({ width: int_list[trialIndex]*PPU });
+      console.log('Stimulus width: '+int_list[trialIndex])
 
       // Reveal stimulus for set amount of time.
       $("#title").text("Remember this line length.");
@@ -169,14 +179,11 @@ proceedToNextTrial = function () {
                  stimulus_timeout*1000);
 
       // If this is a training trial...
-      if (trialIndex < trainN) {
+      if (trialType == 'train') {
 
           // Update header for participant.
           $("#training-or-testing").html("Training");
           $("#total-trials").html(testN);
-
-          // // Display correction.
-          // showCorrectLength();
 
           // Move on to the next trial.
           clicked = false;
@@ -213,10 +220,53 @@ proceedToNextTrial = function () {
 //
 showCorrectLength = function(){
 
-  //
+  // Draw correction background.
+  correction_background = paper.rect(response_x_start,
+                                    response_y_start + 2*response_bg_height,
+                                    response_bg_width,
+                                    response_bg_height-2*inset);
+  correction_background.attr("stroke", "#CCCCCC");
+  correction_background.attr("stroke-dasharray", "--");
 
+  // Draw correction bar.
+  correction_bar = paper.rect(response_x_start,
+                              response_y_start-inset + 2*response_bg_height,
+                              response_bg_width,
+                              response_bg_height);
+  correction_bar.attr("fill", correction_color);
+  correction_bar.attr("stroke", "none");
+  correction_bar.attr({x: response_x_start,
+                       width: int_list[trialIndex]*PPU
+                       });
 
-}
+  // Show the participant's guess.
+  response_background.show();
+  response_bar.show();
+  correction_bar.show();
+  correction_bar.show();
+  if (response == -99){
+    response_bar.attr({x:response_x_start,
+                       width: 1
+                      });
+  } else {
+    response_bar.attr({x:response_x_start,
+                       width: response*PPU
+                       });
+  }
+
+  // Update text to reflect accuracy.
+  if (Math.abs(response - int_list[trialIndex]) < 4) {
+    $("#title").text("Your guess was correct!");
+    $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
+  } else if (response == -99){
+    $("#title").text("You didn't respond in time");
+    $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.\nThe grey bar is the correct answer.");
+  } else {
+    $("#title").text("Your guess was incorrect");
+    $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
+  }
+
+};
 
 //
 // Send the data back to the server.
@@ -224,12 +274,12 @@ showCorrectLength = function(){
 sendDataToServer = function(){
 
         // Identify whether we're in training or testing.
-        if (trialIndex <= trainN){
-            trialType = "train";
-            trialNumber = trialIndex
+        if (trialType == 'train'){
+            //trialType = "train";
+            trialNumber = trialIndex;
         } else {
-            trialType = "test";
-            trialNumber = trialIndex-trainN
+            //trialType = "test";
+            trialNumber = trialIndex-trainN;
         };
 
         // Prepare data to send to server.
@@ -244,7 +294,7 @@ sendDataToServer = function(){
                                   });
 
         // If we're at the last trial, proceed to questionnaire.
-        if (trialIndex === testN){
+        if ((trialIndex+1) == testN){
             reqwest({
                 url: "/info/" + my_node_id,
                 method: 'post',
@@ -311,13 +361,7 @@ allowResponse = function() {
     });
 
     // Track the mouse during response.
-    $(document).mousemove( function(e) {
-        x = e.pageX-response_x_start;
-        response_bar_size = bounds(x, 1*PPU, xMax*PPU);
-        response_bar.attr({ x: response_x_start,
-                            width: response_bar_size
-                          });
-    });
+    $(document).mousemove(trackMouseMovement);
 
     // Monitor for an unresponsive participant.
     unresponsiveParticipant = setTimeout(disableResponseAfterDelay,
@@ -336,9 +380,59 @@ function acknowledgeGuess(){
   clearTimeout(unresponsiveParticipant);
   $(document).off('click', mousedownEventListener);
 
-  // Update display text.
-  $("#title").text("Your response has been recorded.");
-  $(".instructions").text("Please wait for your partner's guess.");
+  // If a training trial, display correction; if test, update text.
+  if (trialType == 'train'){
+
+    // Turn off bar movement.
+    $(document).off("mousemove",trackMouseMovement);
+
+    // Display correct length.
+    showCorrectLength();
+
+    // If this is the last training trial, prepare them for test trials.
+    if (trialIndex == (trainN-1)){
+
+      console.log("And... we're done.")
+
+      setTimeout(function(){
+
+        // Get the bars to disappear after the correct time.
+        response_bar.hide();
+        response_background.hide();
+        correction_bar.hide();
+        correction_background.hide();
+
+        // Update the text.
+        $("#title").text("Congrats! You've finished the training trials");
+        $(".instructions").html("Your next trial will be a <b>test</b> trial.");
+
+      }, correction_timeout*1000);
+
+      // Move to next trial.
+      setTimeout(function(){
+        $("#title").text("");
+        $(".instructions").html("");
+        proceedToNextTrial();
+      }, 5000 + (correction_timeout*1000));
+
+    } else {
+
+      // If it's not the last training trial, clean up and advance to next turn.
+      setTimeout(function() {
+        response_bar.hide();
+        response_background.hide();
+        correction_bar.hide();
+        correction_background.hide();
+
+        // Move on to the next trial.
+        proceedToNextTrial();
+      }, correction_timeout*1000);
+    };
+
+  } else {
+    $("#title").text("Your response has been recorded.");
+    $(".instructions").text("Please wait for your partner's guess.");
+  };
 }
 
 //
@@ -351,16 +445,36 @@ function disableResponseAfterDelay(){
   $(document).off('click', mousedownEventListener);
   $(document).off('click', acknowledgeGuess);
 
-  // Update display text and hide response bars.
-  $("#title").text("Reponse period timed out.");
-  $(".instructions").text("Please wait for your partner's guess.");
+  // Hide response bars.
   response_bar.hide();
   response_background.hide();
 
   // Log response as not having been given.
   response = -99;
   sendDataToServer();
+
+  // Show the correct length if we're in training.
+  if (trialType == 'train'){
+    showCorrectLength();
+
+  // Just update the text if we're in a test trial.
+  } else {
+    $("#title").text("Response period timed out.");
+    $(".instructions").text("Please wait for your partner's guess.");
+  };
 }
+
+//
+// Track mouse movement during response.
+//
+trackMouseMovement = function(e) {
+  currentXLocation = e.pageX-response_x_start;
+  response_bar_size = bounds(currentXLocation,
+                             1*PPU,
+                             xMax*PPU);
+  response_bar.attr({ x: response_x_start,
+                      width: response_bar_size });
+};
 
 //
 // Listen for clicks and act accordingly.
@@ -369,13 +483,6 @@ function mousedownEventListener(event) {
 
     if (click_lock === false) {
         click_lock = true;
-
-        // Track the mouse during response.
-        $(document).mousemove( function(e) {
-            x = e.pageX-response_x_start;
-            response_bar_size = bounds(x, 1*PPU, xMax*PPU);
-            response_bar.attr({ x: response_x_start, width: response_bar_size });
-        });
 
         // Register response and hide bars.
         response = Math.round(response_bar_size/PPU);
