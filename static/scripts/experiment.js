@@ -578,7 +578,6 @@ getPartnerGuess = function() {
     });
 };
 
-
 //
 // Display partner's guess.
 //
@@ -694,7 +693,7 @@ acceptPartnerGuess = function() {
   sendDataToServer();
 
   // Start next trial.
-  proceedToNextTrial();
+  checkIfPartnerAccepted();
 
 }
 
@@ -719,8 +718,7 @@ acceptOwnGuess = function(){
   sendDataToServer();
 
   // Start next trial.
-  proceedToNextTrial();
-
+  checkIfPartnerAccepted();
 }
 
 //
@@ -744,10 +742,60 @@ changeGuess = function(){
              stimulus_timeout*1000);
   setTimeout(getPartnerGuess,
              partner_timeout*1000);
-
-  // Note: Consider implementing a way to wait to display until the partner has also responded.
-
 }
+
+//
+// Wait for partner acceptance.
+//
+waitToAccept = function(){
+  setTimeout(checkIfPartnerAccepted,1000);
+}
+
+//
+// Montior the server to see if their partner's accepted a guess.
+//
+checkIfPartnerAccepted = function() {
+
+    reqwest({
+        url: "/node/" + partner_node_id + "/infos",
+        method: 'get',
+        type: 'json',
+        success: function (resp) {
+
+            // Loop back if this is the first trial and the partner hasn't guessed.
+            if (resp.infos.length == 0) {
+              waitToAccept();
+
+            } else {
+
+              // Grab partner's guess.
+              partner_guess_record = resp.infos[0].contents;
+              partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
+
+              // Loop back if the partner hasn't guessed on this trial.
+              if (partner_guess_trial < trialIndex){
+                waitToAccept();
+
+              // If the partner has guessed, see whether they've accepted before moving on.
+              } else {
+                partner_accept_status = JSON.parse(esp.infos[0].contents)["acceptType"];
+                if (partner_accept_status == 0){
+                  waitToAccept();
+                } else {
+                  proceedToNextTrial();
+                }
+              }
+          }
+
+        },
+        error: function (err) {
+            console.log(err);
+            err_response = JSON.parse(err.response);
+            $('body').html(err_response.html);
+        }
+    });
+};
+
 
 //
 $(document).keydown(function(e) {
