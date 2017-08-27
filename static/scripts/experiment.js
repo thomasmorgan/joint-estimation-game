@@ -403,7 +403,7 @@ function acknowledgeGuess(){
       setTimeout(function(){
         $("#title").text("");
         $(".instructions").html("");
-        proceedToNextTrial();
+        checkPartnerTraining();
       }, 5000 + (correction_timeout*1000));
 
     } else {
@@ -488,30 +488,55 @@ function mousedownEventListener(event) {
         // Reset for next trial.
         Mousetrap.resume();
         click_lock = false;
-
-        // // Training phase
-        // if (trialIndex < N/2) {
-        //     yTrue = yTrain[trialIndex];
-
-        //     // if they are wrong show feedback
-        //     yTrainReported.push(yNow);
-        //     feedback.attr({ y: 400 - yTrue * PPU, height: yTrue * PPU });
-        //     feedback.show();
-        //     feedback.animate({fill: "#666"}, 100, "<", function () {
-        //         this.animate({fill: "#CCC"}, 100, ">");
-        //     });
-
-        //     // Move on to next trial if response is correct.
-        //     if(Math.abs(yNow - yTrue) < 4) {
-        //         clicked = true;
-        //         feedback.hide();
-        //         stimulusX.hide();
-        //         stimulusY.hide();
-        //         Mousetrap.resume();
-        //     }
-
     };
 }
+
+//
+// Wait for partner to finish training.
+//
+waitForTraining = function(){
+  setTimeout(checkPartnerTraining,1000);
+}
+
+//
+// Montior the server to see if their partner's finished training.
+//
+checkPartnerTraining = function() {
+
+    reqwest({
+        url: "/node/" + partner_node_id + "/infos",
+        method: 'get',
+        type: 'json',
+        success: function (resp) {
+
+            // Loop back if this is the first trial and the partner hasn't guessed.
+            if (resp.infos.length == 0) {
+              waitForTraining();
+
+            } else {
+
+              // Grab partner's guess.
+              partner_guess_record = resp.infos[0].contents;
+              partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
+
+              // If the partner has finished training, move on.
+              if (partner_guess_trial >= (trainN-1)){
+                  proceedToNextTrial();
+
+              // Loop back if the partner hasn't finished training.
+              } else {
+                waitForTraining();
+              }
+            }
+        },
+        error: function (err) {
+            console.log(err);
+            err_response = JSON.parse(err.response);
+            $('body').html(err_response.html);
+        }
+    });
+};
+
 
 //
 // Check to see if partner has guessed one time per second.
