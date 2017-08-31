@@ -1,63 +1,46 @@
 lock = false;
 
-submit_responses = function() {
-    if (lock===false) {
-        lock=true;
-        reqwest({
-            url: "/question/" + participant_id,
-            method: 'post',
-            type: 'json',
-            data: {
-                question: "engagement",
-                question_id: 1,
-                response: $("#engagement").val()
-            },
-            success: function (resp) {
-                reqwest({
-                    url: "/question/" + participant_id,
-                    method: 'post',
-                    type: 'json',
-                    data: {
-                        question: "difficulty",
-                        question_id: 2,
-                        response: $("#difficulty").val()
-                    },
-                    success: function(resp) {
-                        reqwest({
-                            url: "/question/" + participant_id,
-                            method: 'post',
-                            type: 'json',
-                            data: {
-                                question: "relationship",
-                                question_id: 3,
-                                response: $("#relationship").val()
-                            },
-                            success: function(resp) {
-                                submit_assignment();
-                            },
-                            error: function (err) {
-                                err_response = JSON.parse(err.response);
-                                if (err_response.hasOwnProperty('html')) {
-                                    $('body').html(err_response.html);
-                                }
-                            }
-                        });
-                    },
-                    error: function (err) {
-                        err_response = JSON.parse(err.response);
-                        if (err_response.hasOwnProperty('html')) {
-                            $('body').html(err_response.html);
-                        }
-                    }
-                });
-            },
-            error: function (err) {
-                console.log(err);
-                err_response = JSON.parse(err.response);
-                if (err_response.hasOwnProperty('html')) {
-                    $('body').html(err_response.html);
-                }
-            }
-        });
+// Add new (not yet released) code from Dallinger.
+Dallinger.submitQuestionnaire = function (name) {
+  var formSerialized = $("form").serializeArray(),
+      formDict = {},
+      deferred = $.Deferred();
+
+  formSerialized.forEach(function (field) {
+      formDict[field.name] = field.value;
+  });
+
+  reqwest({
+    method: "post",
+    url: "/question/" + participantId,
+    data: {
+      question: name || "questionnaire",
+      number: 1,
+      response: JSON.stringify(formDict),
+    },
+    type: "json",
+    success: function (resp) {
+      deferred.resolve();
+    },
+    error: function (err) {
+      deferred.reject();
+      var errorResponse = JSON.parse(err.response);
+      $("body").html(errorResponse.html);
     }
+  });
+
+  return deferred;
 };
+
+// Cribbed from Dallinger Griduniverse repo:
+// https://github.com/Dallinger/Griduniverse/blob/master/dlgr/griduniverse/static/scripts/questionnaire.js
+$(document).ready( function() {
+
+  // Submit the questionnaire.
+  $("#submit-questionnaire").click(function() {
+    var $elements = [$("form :input"), $(this)],
+        questionSubmission = Dallinger.submitQuestionnaire("questionnaire");
+        console.log("Submitting questionnaire.");
+    questionSubmission.done(submitAssignment);
+  });
+});
