@@ -23,7 +23,8 @@ response_y_start = 350;
 response_bg_width = 500;
 response_bg_height = 25;
 change_guess_y = stimulus_y_start + stimulus_bg_height
-accept_partner_y = stimulus_y_start + 3*stimulus_bg_height
+accept_own_y = stimulus_y_start + 3*stimulus_bg_height
+accept_partner_y = stimulus_y_start + 5*stimulus_bg_height
 
 // Specify colors for own, partner, and stimulus boxes.
 partner_guess_color = "#0b6b13";
