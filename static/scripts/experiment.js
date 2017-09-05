@@ -757,8 +757,10 @@ acceptPartnerGuess = function() {
   // Remove partners' guesses and buttons.
   partner_background.hide();
   partner_bar.hide();
+  partner_label.hide();
   response_background.hide();
   response_bar.hide();
+  own_label.hide();
   $("#myGuess").remove();
   $("#partnerGuess").remove();
   $("#changeGuess").remove();
@@ -784,8 +786,10 @@ acceptOwnGuess = function(){
   // Remove partners' guesses and buttons.
   partner_background.hide();
   partner_bar.hide();
+  partner_label.hide();
   response_background.hide();
   response_bar.hide();
+  own_label.hide();
   $("#myGuess").remove();
   $("#partnerGuess").remove();
   $("#changeGuess").remove();
@@ -811,6 +815,12 @@ changeGuess = function(){
   if (partner_background){
     partner_background.hide();
     partner_bar.hide();
+    partner_label.hide();
+  }
+  if (response_background){
+    response_background.hide();
+    response_bar.hide();
+    own_label.hide();
   }
   $("#myGuess").remove();
   $("#partnerGuess").remove();
