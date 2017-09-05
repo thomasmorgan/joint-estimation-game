@@ -716,6 +716,14 @@ showPartnerGuess = function(){
   partner_bar.attr({x: response_x_start,
                     width: partner_x_guess*PPU
                     });
+
+  // Label the bar.
+  partner_label = paper.text(response_x_start+10,
+                             response_y_start-inset+150,
+                             "Your partner's guess");
+  partner_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                      'font-size': '14px',
+                      'text-anchor': 'start'});
 }
 
 //
