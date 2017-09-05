@@ -655,7 +655,7 @@ showPartner = function() {
   } else if (response < 0) {
 
     // Display partner's guess.
-    drawPartnerBar();
+    showPartnerGuess();
 
     // Update information text.
     $("#title").text("This is your partner's guess");
@@ -670,7 +670,7 @@ showPartner = function() {
   } else {
 
     // Display partner's guess.
-    drawPartnerBar();
+    showPartnerGuess();
 
     // Update information text.
     $("#title").text("This is your partner's guess");
@@ -690,7 +690,7 @@ showPartner = function() {
 //
 // Draw partner's guess.
 //
-drawPartnerBar = function(){
+showPartnerGuess = function(){
 
   // Draw partner's background.
   paper = Raphael(0, 50, 800, 600);
