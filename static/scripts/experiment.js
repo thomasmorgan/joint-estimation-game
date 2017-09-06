@@ -24,6 +24,7 @@ response_y_start = 350;
 response_bg_width = 500;
 response_bg_height = 25;
 done_button_y = stimulus_y_start + stimulus_bg_height
+change_button_y = done_button_y + 50
 
 // Specify colors for own, partner, and stimulus boxes.
 partner_guess_color = "#0b6b13";
@@ -649,9 +650,14 @@ getPartnerGuess = function() {
 showPartner = function() {
 
   // Initialize done button.
-  done_button = '<input type="button" class="btn btn-secondary btn-lg active" id="doneButton" value="I\'m Done" style="position:absolute;top:'+done_button_y+'px;left:'+response_x_start+'px;">'
-  $("body").append(done_button);
+  done_button = '<input type="button" class="btn btn-secondary btn-lg" id="doneButton" value="I\'m done" style="position:absolute;top:'+done_button_y+'px;left:'+response_x_start+'px;">'
+  $("body").append(done_button)
   $("#doneButton").click(acceptGuess);
+
+  // Initialize change button.
+  change_button = '<input type="button" class="btn btn-secondary btn-lg" id="changeButton" value="Change my guess" style="position:absolute;top:'+change_button_y+'px;left:'+response_x_start+'px;">'
+  $("body").append(change_button);
+  $("#changeButton").click(changeGuess);
 
   // Show both partners' guesses.
   showOwnGuess();
@@ -773,11 +779,11 @@ changeGuess = function(){
   $("#title").text("");
   $(".instructions").text("");
 
-  // Open up to allow responses again.
-  setTimeout(allowResponse,
-             stimulus_timeout*1000);
-  setTimeout(getPartnerGuess,
-             partner_timeout*1000);
+  // Enable response.
+  $(document).one('click', function(){
+      mousedownEventListener();
+  });
+
 }
 
 //
