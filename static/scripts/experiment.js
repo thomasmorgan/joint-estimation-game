@@ -11,6 +11,7 @@ response_timeout = 2; // Time in seconds for which a response is allowed.
 partner_timeout = 3; // Time in seconds for which partner's guess is displayed.
 trainN = 1; // Define number of training trials.
 testN = trainN + 2; // Define number of test trails (over training trials).
+trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
 // Specify location information for stimuli, responses, and buttons.
 inset = 1;
@@ -22,9 +23,7 @@ response_x_start = 100;
 response_y_start = 350;
 response_bg_width = 500;
 response_bg_height = 25;
-change_guess_y = stimulus_y_start + stimulus_bg_height
-accept_own_y = stimulus_y_start + 3*stimulus_bg_height
-accept_partner_y = stimulus_y_start + 5*stimulus_bg_height
+done_button_y = stimulus_y_start + stimulus_bg_height
 
 // Specify colors for own, partner, and stimulus boxes.
 partner_guess_color = "#0b6b13";
@@ -205,15 +204,15 @@ showCorrectLength = function(){
 
   // Draw correction background.
   correction_background = paper.rect(response_x_start,
-                                    response_y_start + 2*response_bg_height,
-                                    response_bg_width,
-                                    response_bg_height-2*inset);
+                                     response_y_start - 100,
+                                     response_bg_width,
+                                     response_bg_height-2*inset);
   correction_background.attr("stroke", "#CCCCCC");
   correction_background.attr("stroke-dasharray", "--");
 
   // Draw correction bar.
   correction_bar = paper.rect(response_x_start,
-                              response_y_start-inset + 2*response_bg_height,
+                              response_y_start - inset - 100,
                               response_bg_width,
                               response_bg_height);
   correction_bar.attr("fill", correction_color);
@@ -222,11 +221,27 @@ showCorrectLength = function(){
                        width: int_list[trialIndex]*PPU
                        });
 
+  // Show labels.
+  correction_label = paper.text(response_x_start+10,
+                                response_y_start - inset - 50,
+                                "Correct length");
+  correction_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                         'font-size': '14px',
+                         'text-anchor': 'start'});
+   own_label = paper.text(response_x_start+10,
+                          response_y_start-inset+50,
+                          "Your guess");
+   own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                    'font-size': '14px',
+                    'text-anchor': 'start'});
+
   // Show the participant's guess.
   response_background.show();
   response_bar.show();
+  own_label.show();
   correction_bar.show();
   correction_bar.show();
+  correction_label.show();
   if (response == -99){
     response_bar.attr({x:response_x_start,
                        width: 1
@@ -238,7 +253,7 @@ showCorrectLength = function(){
   }
 
   // Update text to reflect accuracy.
-  if (Math.abs(response - int_list[trialIndex]) < 4) {
+  if (Math.abs(response - int_list[trialIndex]) < trial_correct_error) {
     $("#title").text("Your guess was correct!");
     $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
   } else if (response == -99){
@@ -371,8 +386,10 @@ function acknowledgeGuess(){
         // Get the bars to disappear after the correct time.
         response_bar.hide();
         response_background.hide();
+        own_label.hide();
         correction_bar.hide();
         correction_background.hide();
+        correction_label.hide();
 
         // Update the text.
         $("#title").text("Congrats! You've finished the training trials");
@@ -393,8 +410,10 @@ function acknowledgeGuess(){
       setTimeout(function() {
         response_bar.hide();
         response_background.hide();
+        own_label.hide();
         correction_bar.hide();
         correction_background.hide();
+        correction_label.hide();
 
         // Move on to the next trial.
         proceedToNextTrial();
@@ -439,8 +458,10 @@ function disableResponseAfterDelay(){
         // Get the bars to disappear after the correct time.
         response_bar.hide();
         response_background.hide();
+        own_label.hide();
         correction_bar.hide();
         correction_background.hide();
+        correction_label.hide();
 
         // Update the text.
         $("#title").text("Congrats! You've finished the training trials");
@@ -461,8 +482,10 @@ function disableResponseAfterDelay(){
       setTimeout(function() {
         response_bar.hide();
         response_background.hide();
+        own_label.hide()
         correction_bar.hide();
         correction_background.hide();
+        correction_label.hide();
 
         // Move on to the next trial.
         proceedToNextTrial();
@@ -625,71 +648,30 @@ getPartnerGuess = function() {
 //
 showPartner = function() {
 
-  // Initialize buttons.
-  change_guess_button = "<input type='button' class='btn btn-secondary btn-lg active' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+response_x_start+"px;'>"
-  accept_partner_button = '<input type="button" class="btn btn-secondary btn-lg active" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+response_x_start+'px;">'
-  accept_own_button = "<input type='button' class='btn btn-secondary btn-lg active' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+response_x_start+"px;'>"
+  // Initialize done button.
+  done_button = '<input type="button" class="btn btn-secondary btn-lg active" id="doneButton" value="I\'m Done" style="position:absolute;top:'+done_button_y+'px;left:'+response_x_start+'px;">'
+  $("body").append(done_button);
+  $("#doneButton").click(acceptGuess);
 
-  // Handle timed-out responses by self or partner.
+  // Show both partners' guesses.
+  showOwnGuess();
+  showPartnerGuess();
+
+  // Update text based on who responded.
   if (partner_x_guess < 0 && response < 0) {
-
-    // Update information text.
     $("#title").text("Neither you nor your parter submitted a guess in time");
     $(".instructions").text("Please submit a new guess");
-
-    setTimeout(changeGuess,1000);
-
   } else if (partner_x_guess < 0) {
-
-    // Show both partners' guesses.
-    showOwnGuess();
-    showPartnerGuess();
-
-    // Update information text.
     $("#title").text("Your parter didn't submit a guess in time");
     $(".instructions").text("Would you like to accept your guess or submit a new guess?");
-
-    // Draw response buttons.
-    $("body").append(change_guess_button);
-    $("body").append(accept_own_button);
-    $("#changeGuess").click(changeGuess);
-    $("#myGuess").click(acceptOwnGuess);
-
   } else if (response < 0) {
-
-    // Display both partners' guesses.
-    showPartnerGuess();
-    showOwnGuess();
-
-    // Update information text.
     $("#title").text("This is your partner's guess");
     $(".instructions").text("Would you like to accept their guess or submit a new guess?");
-
-    // Draw response buttons.
-    $("body").append(change_guess_button);
-    $("body").append(accept_partner_button);
-    $("#changeGuess").click(changeGuess);
-    $("#partnerGuess").click(acceptPartnerGuess);
-
   } else {
-
-    // Display both partners' guesses.
-    showPartnerGuess();
-    showOwnGuess();
-
-    // Update information text.
     $("#title").text("This is your partner's guess");
     $(".instructions").text("Would you like to accept their guess, keep your guess, or change your guess?");
+  };
 
-    // Draw response buttons.
-    $("body").append(change_guess_button);
-    $("body").append(accept_own_button);
-    $("body").append(accept_partner_button);
-    $("#changeGuess").click(changeGuess);
-    $("#myGuess").click(acceptOwnGuess);
-    $("#partnerGuess").click(acceptPartnerGuess);
-
-  }
 }
 
 //
@@ -706,16 +688,18 @@ showPartnerGuess = function(){
   partner_background.attr("stroke", "#CCCCCC");
   partner_background.attr("stroke-dasharray", "--");
 
-  // Draw partner's guess.
-  partner_bar = paper.rect(response_x_start,
-                           response_y_start-inset+100,
-                           response_bg_width,
-                           response_bg_height);
-  partner_bar.attr("fill", partner_guess_color);
-  partner_bar.attr("stroke", "none");
-  partner_bar.attr({x: response_x_start,
-                    width: partner_x_guess*PPU
-                    });
+  // Fill in partner's bar if they guessed.
+  if (partner_x_guess > 0){
+    partner_bar = paper.rect(response_x_start,
+                             response_y_start-inset+100,
+                             response_bg_width,
+                             response_bg_height);
+    partner_bar.attr("fill", partner_guess_color);
+    partner_bar.attr("stroke", "none");
+    partner_bar.attr({x: response_x_start,
+                      width: partner_x_guess*PPU
+                      });
+  };
 
   // Label the bar.
   partner_label = paper.text(response_x_start+10,
@@ -734,11 +718,13 @@ showOwnGuess = function(){
   // Turn off mousetracking.
   $(document).off('mousemove',trackMouseMovement);
 
-  // Show bar.
-  response_bar.show().attr({x: response_x_start,
-                            width: response*PPU
-                          });
+  // Fill in the response bar if they responded.
   response_background.show();
+  if (response > 0) {
+    response_bar.show().attr({x: response_x_start,
+                              width: response*PPU
+                            });
+  };
 
   // Label the bar.
   own_label = paper.text(response_x_start+10,
@@ -750,38 +736,9 @@ showOwnGuess = function(){
 }
 
 //
-// Accept partner's guess.
-//
-acceptPartnerGuess = function() {
-
-  // Remove partners' guesses and buttons.
-  partner_background.hide();
-  partner_bar.hide();
-  partner_label.hide();
-  response_background.hide();
-  response_bar.hide();
-  own_label.hide();
-  $("#myGuess").remove();
-  $("#partnerGuess").remove();
-  $("#changeGuess").remove();
-
-  // Reset text.
-  $("#title").text("");
-  $(".instructions").text("");
-
-  // Note whose guess we accepted and send data.
-  response = partner_x_guess;
-  acceptType = 2;
-  sendDataToServer();
-
-  // Start next trial.
-  checkIfPartnerAccepted();
-}
-
-//
 // Accept own guess.
 //
-acceptOwnGuess = function(){
+acceptGuess = function(){
 
   // Remove partners' guesses and buttons.
   partner_background.hide();
@@ -790,15 +747,13 @@ acceptOwnGuess = function(){
   response_background.hide();
   response_bar.hide();
   own_label.hide();
-  $("#myGuess").remove();
-  $("#partnerGuess").remove();
-  $("#changeGuess").remove();
+  $("#doneButton").remove();
 
   // Reset text.
   $("#title").text("");
   $(".instructions").text("");
 
-  // Note whose guess we accepted and send data.
+  // Note that we accepted and send data.
   acceptType = 1;
   sendDataToServer();
 
@@ -811,20 +766,8 @@ acceptOwnGuess = function(){
 //
 changeGuess = function(){
 
-  // Remove partner's guesses and buttons.
-  if (partner_background){
-    partner_background.hide();
-    partner_bar.hide();
-    partner_label.hide();
-  }
-  if (response_background){
-    response_background.hide();
-    response_bar.hide();
-    own_label.hide();
-  }
-  $("#myGuess").remove();
-  $("#partnerGuess").remove();
-  $("#changeGuess").remove();
+  // Allow participant to guess again.
+  $(document).mousemove(trackMouseMovement);
 
   // Reset text.
   $("#title").text("");
