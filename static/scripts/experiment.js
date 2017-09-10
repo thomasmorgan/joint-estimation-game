@@ -206,15 +206,15 @@ showCorrectLength = function(){
 
   // Draw correction background.
   correction_background = paper.rect(response_x_start,
-                                    response_y_start + 2*response_bg_height,
+                                    response_y_start - 100,
                                     response_bg_width,
-                                    response_bg_height-2*inset);
+                                    response_bg_height - 2 * inset);
   correction_background.attr("stroke", "#CCCCCC");
   correction_background.attr("stroke-dasharray", "--");
 
   // Draw correction bar.
   correction_bar = paper.rect(response_x_start,
-                              response_y_start-inset + 2*response_bg_height,
+                              response_y_start - inset - 100,
                               response_bg_width,
                               response_bg_height);
   correction_bar.attr("fill", correction_color);
@@ -224,14 +224,14 @@ showCorrectLength = function(){
                        });
 
    // Show labels.
-   correction_label = paper.text(response_x_start+10,
+   correction_label = paper.text(response_x_start + 10,
                                  response_y_start - inset - 50,
                                  "Correct length");
    correction_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
                           'font-size': '14px',
                           'text-anchor': 'start'});
-    own_label = paper.text(response_x_start+10,
-                           response_y_start-inset+50,
+    own_label = paper.text(response_x_start + 10,
+                           response_y_start-inset + 50,
                            "Your guess");
     own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
                      'font-size': '14px',
