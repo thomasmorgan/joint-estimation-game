@@ -625,11 +625,10 @@ getPartnerGuess = function() {
 //
 showPartner = function() {
 
-
   // Initialize buttons.
-  change_guess_button = "<input type='button' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+stimulus_x_start+"px;'>"
-  accept_partner_button = '<input type="button" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+stimulus_x_start+'px;">'
-  accept_own_button = "<input type='button' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+stimulus_x_start+"px;'>"
+  change_guess_button = "<input type='button' class='btn btn-secondary btn-lg active' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+response_x_start+"px;'>"
+  accept_partner_button = '<input type="button" class="btn btn-secondary btn-lg active" id="partnerGuess" value="Accept partner\'s guess" style="position:absolute;top:'+accept_partner_y+'px;left:'+response_x_start+'px;">'
+  accept_own_button = "<input type='button' class='btn btn-secondary btn-lg active' id='myGuess' value='Accept my guess' style='position:absolute;top:"+accept_own_y+"px;left:"+response_x_start+"px;'>"
 
   // Handle timed-out responses by self or partner.
   if (partner_x_guess < 0 && response < 0) {
@@ -655,7 +654,7 @@ showPartner = function() {
   } else if (response < 0) {
 
     // Display partner's guess.
-    drawPartnerBar();
+    showPartnerGuess();
 
     // Update information text.
     $("#title").text("This is your partner's guess");
@@ -670,7 +669,7 @@ showPartner = function() {
   } else {
 
     // Display partner's guess.
-    drawPartnerBar();
+    showPartnerGuess();
 
     // Update information text.
     $("#title").text("This is your partner's guess");
@@ -690,7 +689,7 @@ showPartner = function() {
 //
 // Draw partner's guess.
 //
-drawPartnerBar = function(){
+showPartnerGuess = function(){
 
   // Draw partner's background.
   paper = Raphael(0, 50, 800, 600);
