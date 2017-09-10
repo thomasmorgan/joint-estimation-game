@@ -650,10 +650,12 @@ getPartnerGuess = function() {
 showPartner = function() {
 
   // Initialize buttons.
-  change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change guess' style='position:absolute;top:"+change_guess_y+"px;left:"+response_x_start+"px;'>"
-  accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="myGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+response_x_start+'px;">'
+  change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+response_x_start+"px;'>"
+  accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+response_x_start+'px;">'
 
-  // Show both partners' guesses.
+  // Show both partners' guesses and update instructions.
+  $("#title").text("Would you like to accept your guess or change it?");
+  $(".instructions").text("Your guess is shown below in green, and your partner's guess is shown in blue.");
   showOwnGuess();
   showPartnerGuess();
 
@@ -661,36 +663,12 @@ showPartner = function() {
   $("body").append(change_guess_button);
   $("body").append(accept_guess_button);
   $("#changeGuess").click(changeGuess);
-  $("#myGuess").click(acceptGuess);
+  $("#acceptGuess").click(acceptGuess);
 
-  // Handle timed-out responses by self or partner.
+  // Handle what happens if neither person guessed.
   if (partner_x_guess < 0 && response < 0) {
-
-    // Update information text.
-    $("#title").text("Neither you nor your parter submitted a guess in time");
-    $(".instructions").text("Please submit a new guess");
-
     setTimeout(changeGuess,1000);
-
-  } else if (partner_x_guess < 0) {
-
-    // Update information text.
-    $("#title").text("Your parter didn't submit a guess in time");
-    $(".instructions").text("Would you like to accept your guess or submit a new guess?");
-
-  } else if (response < 0) {
-
-    // Update information text.
-    $("#title").text("This is your partner's guess");
-    $(".instructions").text("Would you like to accept their guess or submit a new guess?");
-
-  } else {
-
-    // Update information text.
-    $("#title").text("This is your partner's guess");
-    $(".instructions").text("Would you like to accept their guess, keep your guess, or change your guess?");
-
-  }
+  };
 }
 
 //
@@ -718,7 +696,11 @@ showPartnerGuess = function(){
       partner_bar.attr({x: response_x_start,
                         width: partner_x_guess*PPU
                         });
-  }
+  } else {
+    partner_bar.attr({x: response_x_start,
+                      width: 0
+                      });
+  };
 
   // Label the bar.
   partner_label = paper.text(response_x_start + 10,
@@ -742,7 +724,7 @@ showOwnGuess = function(){
   if (response > 0) {
     response_bar.show().attr({x: response_x_start,
                               width: response*PPU
-                            });
+                             });
   };
 
   // Label the bar.
@@ -766,8 +748,7 @@ acceptGuess = function(){
   response_background.hide();
   response_bar.hide();
   own_label.hide();
-  $("#myGuess").remove();
-  $("#partnerGuess").remove();
+  $("#acceptGuess").remove();
   $("#changeGuess").remove();
 
   // Reset text.
@@ -787,19 +768,14 @@ acceptGuess = function(){
 //
 changeGuess = function(){
 
-  // Remove partner's guesses and buttons.
-  if (partner_background){
-    partner_background.hide();
-    partner_bar.hide();
-    partner_label.hide();
-  }
-  if (response_background){
-    response_background.hide();
-    response_bar.hide();
-    own_label.hide();
-  }
-  $("#myGuess").remove();
-  $("#partnerGuess").remove();
+  // Remove guesses, labels, and buttons.
+  partner_background.hide();
+  response_background.hide();
+  partner_label.hide();
+  own_label.hide();
+  partner_bar.hide();
+  response_bar.hide();
+  $("#acceptGuess").remove();
   $("#changeGuess").remove();
 
   // Reset text.
