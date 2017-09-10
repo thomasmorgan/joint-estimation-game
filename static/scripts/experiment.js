@@ -11,6 +11,7 @@ response_timeout = 2; // Time in seconds for which a response is allowed.
 partner_timeout = 3; // Time in seconds for which partner's guess is displayed.
 trainN = 1; // Define number of training trials.
 testN = trainN + 2; // Define number of test trails (over training trials).
+trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
 // Specify location information for stimuli, responses, and buttons.
 inset = 1;
@@ -222,12 +223,28 @@ showCorrectLength = function(){
                        width: int_list[trialIndex]*PPU
                        });
 
-  // Show the participant's guess.
-  response_background.show();
-  response_bar.show();
-  correction_bar.show();
-  correction_bar.show();
-  if (response == -99){
+   // Show labels.
+   correction_label = paper.text(response_x_start+10,
+                                 response_y_start - inset - 50,
+                                 "Correct length");
+   correction_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                          'font-size': '14px',
+                          'text-anchor': 'start'});
+    own_label = paper.text(response_x_start+10,
+                           response_y_start-inset+50,
+                           "Your guess");
+    own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                     'font-size': '14px',
+                     'text-anchor': 'start'});
+
+   // Show the participant's guess.
+   response_background.show();
+   response_bar.show();
+   own_label.show();
+   correction_bar.show();
+   correction_bar.show();
+   correction_label.show();
+   if (response == -99){
     response_bar.attr({x:response_x_start,
                        width: 1
                       });
@@ -238,7 +255,7 @@ showCorrectLength = function(){
   }
 
   // Update text to reflect accuracy.
-  if (Math.abs(response - int_list[trialIndex]) < 4) {
+  if (Math.abs(response - int_list[trialIndex]) < trial_correct_error) {
     $("#title").text("Your guess was correct!");
     $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
   } else if (response == -99){
@@ -371,8 +388,10 @@ function acknowledgeGuess(){
         // Get the bars to disappear after the correct time.
         response_bar.hide();
         response_background.hide();
+        own_label.hide();
         correction_bar.hide();
         correction_background.hide();
+        correction_label.hide();
 
         // Update the text.
         $("#title").text("Congrats! You've finished the training trials");
@@ -393,8 +412,10 @@ function acknowledgeGuess(){
       setTimeout(function() {
         response_bar.hide();
         response_background.hide();
+        own_label.hide()
         correction_bar.hide();
         correction_background.hide();
+        correction_label.hide();
 
         // Move on to the next trial.
         proceedToNextTrial();
@@ -439,8 +460,10 @@ function disableResponseAfterDelay(){
         // Get the bars to disappear after the correct time.
         response_bar.hide();
         response_background.hide();
+        own_label.hide();
         correction_bar.hide();
         correction_background.hide();
+        correction_label.hide();
 
         // Update the text.
         $("#title").text("Congrats! You've finished the training trials");
@@ -461,8 +484,10 @@ function disableResponseAfterDelay(){
       setTimeout(function() {
         response_bar.hide();
         response_background.hide();
+        own_label.hide();
         correction_bar.hide();
         correction_background.hide();
+        correction_label.hide();
 
         // Move on to the next trial.
         proceedToNextTrial();
@@ -734,11 +759,13 @@ showOwnGuess = function(){
   // Turn off mousetracking.
   $(document).off('mousemove',trackMouseMovement);
 
-  // Show bar.
-  response_bar.show().attr({x: response_x_start,
-                            width: response*PPU
-                          });
+  // Fill in the response bar if they responded.
   response_background.show();
+  if (response > 0) {
+    response_bar.show().attr({x: response_x_start,
+                              width: response*PPU
+                            });
+  };
 
   // Label the bar.
   own_label = paper.text(response_x_start+10,
