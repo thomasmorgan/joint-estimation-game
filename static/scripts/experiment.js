@@ -353,12 +353,10 @@ function acknowledgeGuess(){
   // Stop the unresponsive timer and prevent multiple guesses.
   clearTimeout(unresponsiveParticipant);
   $(document).off('click', mousedownEventListener);
+  $(document).off("mousemove",trackMouseMovement);
 
   // If a training trial, display correction; if test, update text.
   if (trialType == 'train'){
-
-    // Turn off bar movement.
-    $(document).off("mousemove",trackMouseMovement);
 
     // Display correct length.
     showCorrectLength();
@@ -418,6 +416,7 @@ function disableResponseAfterDelay(){
   $(document).off('click');
   $(document).off('click', mousedownEventListener);
   $(document).off('click', acknowledgeGuess);
+  $(document).off('mousemove',trackMouseMovement);
 
   // Hide response bars.
   response_bar.hide();
@@ -429,7 +428,46 @@ function disableResponseAfterDelay(){
 
   // Show the correct length if we're in training.
   if (trialType == 'train'){
+
+    // Display correct length.
     showCorrectLength();
+
+    // If this is the last training trial, prepare them for test trials.
+    if (trialIndex == (trainN-1)){
+      setTimeout(function(){
+
+        // Get the bars to disappear after the correct time.
+        response_bar.hide();
+        response_background.hide();
+        correction_bar.hide();
+        correction_background.hide();
+
+        // Update the text.
+        $("#title").text("Congrats! You've finished the training trials");
+        $(".instructions").html("Your next trial will be a <b>test</b> trial.");
+
+      }, correction_timeout*1000);
+
+      // Move to next trial.
+      setTimeout(function(){
+        $("#title").text("");
+        $(".instructions").html("");
+        checkPartnerTraining();
+      }, 5000 + (correction_timeout*1000));
+
+    } else {
+
+      // If it's not the last training trial, clean up and advance to next turn.
+      setTimeout(function() {
+        response_bar.hide();
+        response_background.hide();
+        correction_bar.hide();
+        correction_background.hide();
+
+        // Move on to the next trial.
+        proceedToNextTrial();
+      }, correction_timeout*1000);
+    };
 
   // Just update the text if we're in a test trial.
   } else {
@@ -569,8 +607,9 @@ getPartnerGuess = function() {
                 enter_lock = false;
                 partner_x_guess = JSON.parse(partner_guess_record)["guess"];
                 showPartner();
+
               }
-          }
+          };
 
         },
         error: function (err) {
