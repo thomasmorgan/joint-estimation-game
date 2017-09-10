@@ -641,6 +641,10 @@ showPartner = function() {
 
   } else if (partner_x_guess < 0) {
 
+    // Show both partners' guesses.
+    showOwnGuess();
+    showPartnerGuess();
+
     // Update information text.
     $("#title").text("Your parter didn't submit a guess in time");
     $(".instructions").text("Would you like to accept your guess or submit a new guess?");
@@ -653,8 +657,9 @@ showPartner = function() {
 
   } else if (response < 0) {
 
-    // Display partner's guess.
+    // Display both partners' guesses.
     showPartnerGuess();
+    showOwnGuess();
 
     // Update information text.
     $("#title").text("This is your partner's guess");
@@ -668,8 +673,9 @@ showPartner = function() {
 
   } else {
 
-    // Display partner's guess.
+    // Display both partners' guesses.
     showPartnerGuess();
+    showOwnGuess();
 
     // Update information text.
     $("#title").text("This is your partner's guess");
@@ -694,7 +700,7 @@ showPartnerGuess = function(){
   // Draw partner's background.
   paper = Raphael(0, 50, 800, 600);
   partner_background = paper.rect(response_x_start,
-                                  response_y_start+200,
+                                  response_y_start+100,
                                   response_bg_width,
                                   response_bg_height-2*inset);
   partner_background.attr("stroke", "#CCCCCC");
@@ -702,7 +708,7 @@ showPartnerGuess = function(){
 
   // Draw partner's guess.
   partner_bar = paper.rect(response_x_start,
-                           response_y_start-inset+200,
+                           response_y_start-inset+100,
                            response_bg_width,
                            response_bg_height);
   partner_bar.attr("fill", partner_guess_color);
@@ -712,15 +718,39 @@ showPartnerGuess = function(){
                     });
 }
 
+//
+// Show own guess.
+//
+showOwnGuess = function(){
+
+  // Turn off mousetracking.
+  $(document).off('mousemove',trackMouseMovement);
+
+  // Show bar.
+  response_bar.show().attr({x: response_x_start,
+                            width: response*PPU
+                          });
+  response_background.show();
+
+  // Label the bar.
+  own_label = paper.text(response_x_start+10,
+                         response_y_start-inset+50,
+                         "Your guess");
+  own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                   'font-size': '14px',
+                   'text-anchor': 'start'});
+}
 
 //
 // Accept partner's guess.
 //
 acceptPartnerGuess = function() {
 
-  // Remove partner's guesses and buttons.
+  // Remove partners' guesses and buttons.
   partner_background.hide();
   partner_bar.hide();
+  response_background.hide();
+  response_bar.hide();
   $("#myGuess").remove();
   $("#partnerGuess").remove();
   $("#changeGuess").remove();
@@ -743,9 +773,11 @@ acceptPartnerGuess = function() {
 //
 acceptOwnGuess = function(){
 
-  // Remove partner's guesses and buttons.
+  // Remove partners' guesses and buttons.
   partner_background.hide();
   partner_bar.hide();
+  response_background.hide();
+  response_bar.hide();
   $("#myGuess").remove();
   $("#partnerGuess").remove();
   $("#changeGuess").remove();
