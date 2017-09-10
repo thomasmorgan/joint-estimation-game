@@ -4,7 +4,6 @@ xMax = 100; // Maximum size of a bar in base units.
 trialIndex = -1;
 stimulusYSize = 0;
 enter_lock = true;
-click_lock = true;
 stimulus_timeout = 1; // Time in seconds for which a stimulus is displayed.
 correction_timeout = 2; // Time in seconds for which the correction is displayed.
 response_timeout = 2; // Time in seconds for which a response is allowed.
@@ -190,7 +189,6 @@ proceedToNextTrial = function () {
     } else {
 
         // Send data back to the server and proceed to questionnaire.
-        $(document).off('click', mousedownEventListener);
         paper.remove();
         allow_exit();
         go_to_page('postquestionnaire');
@@ -314,51 +312,56 @@ sendDataToServer = function(){
 //
 allowResponse = function() {
 
-    // Hide stimulus bar.
-    stimulus_bar.hide();
-    stimulus_background.hide();
+    // If this is their first guess...
+    if (trialType == 'train' || guessCounter < 0){
+        console.log('Yes, we need to clear -- it is training or a first guess')
 
-    // Create response background.
-    response_background = paper.rect(response_x_start,
-                                     response_y_start,
-                                     response_bg_width,
-                                     response_bg_height-2*inset);
-    response_background.attr("stroke", "#CCCCCC");
-    response_background.attr("stroke-dasharray", "--");
+        // Hide stimulus bar.
+        stimulus_bar.hide();
+        stimulus_background.hide();
 
-    // Draw response bar.
-    response_bar = paper.rect(response_x_start,
-                              response_y_start-inset,
-                              response_bg_width,
-                              response_bg_height);
-    response_bar.attr("fill", own_guess_color);
-    response_bar.attr("stroke", "none");
+        // Create response background.
+        response_background = paper.rect(response_x_start,
+                                         response_y_start,
+                                         response_bg_width,
+                                         response_bg_height-2*inset);
+        response_background.attr("stroke", "#CCCCCC");
+        response_background.attr("stroke-dasharray", "--");
+        response_background.show();
+
+        // Draw response bar.
+        response_bar = paper.rect(response_x_start,
+                                  response_y_start-inset,
+                                  response_bg_width,
+                                  response_bg_height);
+        response_bar.attr("fill", own_guess_color);
+        response_bar.attr("stroke", "none");
+    };
 
     // Display response bar and reset instructions.
-    click_lock = false;
     $("#title").text("Re-create the line length.");
     $(".instructions").text("");
-    response_background.show();
     response_bar.show();
 
     // Set the response variable to default and increment guess counter.
     acceptType = 0;
     guessCounter = guessCounter + 1;
 
-    // Enable response.
-    $(document).one('click', function(){
-        mousedownEventListener();
-    });
-
     // Track the mouse during response.
     $(document).mousemove(trackMouseMovement);
 
-    // Monitor for an unresponsive participant.
-    unresponsiveParticipant = setTimeout(disableResponseAfterDelay,
-                                         response_timeout*1000);
+    // Now we're figuring out what's wrong with the changing guess.
+    if (guessCounter > 0){
+        console.log("Yes, we've changed our guess.")
 
-    // If they click to submit a response, clear the timeout and update the site text.
-    $(document).one('click', acknowledgeGuess);
+        // Monitor for an unresponsive participant.
+        unresponsiveParticipant = setTimeout(disableResponseAfterDelay,
+                                             response_timeout*1000);
+
+        // If they click to submit a response, clear the timeout and update the site text.
+        acknowledge_lock = false;
+        $(document).click(acknowledgeGuess);
+  }
 }
 
 //
@@ -366,65 +369,84 @@ allowResponse = function() {
 //
 function acknowledgeGuess(){
 
-  // Stop the unresponsive timer and prevent multiple guesses.
-  clearTimeout(unresponsiveParticipant);
-  $(document).off('click', mousedownEventListener);
-  $(document).off("mousemove",trackMouseMovement);
+  // Only allow them to guess in certain settings.
+  if (acknowledge_lock === false){
 
-  // If a training trial, display correction; if test, update text.
-  if (trialType == 'train'){
+      // Register response and hide bars.
+      response = Math.round(response_bar_size/PPU);
+      sendDataToServer();
+      console.log('Mouse click: '+response);
+      response_bar.hide();
+      response_background.hide();
 
-    // Display correct length.
-    showCorrectLength();
+      // Stop the timer if we click.
+      $(document).click(function(e) { e.stopPropagation(); });
 
-    // If this is the last training trial, prepare them for test trials.
-    if (trialIndex == (trainN-1)){
+      // Reset for next trial.
+      Mousetrap.resume();
 
-      console.log("And... we're done.")
+      // Stop the unresponsive timer and prevent multiple guesses.
+      clearTimeout(unresponsiveParticipant);
+      $(document).off("mousemove",trackMouseMovement);
 
-      setTimeout(function(){
+      // If a training trial, display correction; if test, update text.
+      if (trialType == 'train'){
 
-        // Get the bars to disappear after the correct time.
-        response_bar.hide();
-        response_background.hide();
-        own_label.hide();
-        correction_bar.hide();
-        correction_background.hide();
-        correction_label.hide();
+        // Display correct length.
+        showCorrectLength();
 
-        // Update the text.
-        $("#title").text("Congrats! You've finished the training trials");
-        $(".instructions").html("Your next trial will be a <b>test</b> trial.");
+        // If this is the last training trial, prepare them for test trials.
+        if (trialIndex == (trainN-1)){
 
-      }, correction_timeout*1000);
+          console.log("And... we're done.")
 
-      // Move to next trial.
-      setTimeout(function(){
-        $("#title").text("");
-        $(".instructions").html("");
-        checkPartnerTraining();
-      }, 5000 + (correction_timeout*1000));
+          setTimeout(function(){
 
-    } else {
+            // Get the bars to disappear after the correct time.
+            response_bar.hide();
+            response_background.hide();
+            own_label.hide();
+            correction_bar.hide();
+            correction_background.hide();
+            correction_label.hide();
 
-      // If it's not the last training trial, clean up and advance to next turn.
-      setTimeout(function() {
-        response_bar.hide();
-        response_background.hide();
-        own_label.hide()
-        correction_bar.hide();
-        correction_background.hide();
-        correction_label.hide();
+            // Update the text.
+            $("#title").text("Congrats! You've finished the training trials");
+            $(".instructions").html("Your next trial will be a <b>test</b> trial.");
 
-        // Move on to the next trial.
-        proceedToNextTrial();
-      }, correction_timeout*1000);
+          }, correction_timeout*1000);
+
+          // Move to next trial.
+          setTimeout(function(){
+            $("#title").text("");
+            $(".instructions").html("");
+            checkPartnerTraining();
+          }, 5000 + (correction_timeout*1000));
+
+        } else {
+
+          // If it's not the last training trial, clean up and advance to next turn.
+          setTimeout(function() {
+            response_bar.hide();
+            response_background.hide();
+            own_label.hide()
+            correction_bar.hide();
+            correction_background.hide();
+            correction_label.hide();
+
+            // Move on to the next trial.
+            proceedToNextTrial();
+          }, correction_timeout*1000);
+        };
+
+      } else {
+        $("#title").text("Your response has been recorded.");
+        $(".instructions").text("Please wait for your partner's guess.");
+      };
+
+      // Only allow them to acknowledge once.
+      acknowledge_lock = true;
     };
-
-  } else {
-    $("#title").text("Your response has been recorded.");
-    $(".instructions").text("Please wait for your partner's guess.");
-  };
 }
 
 //
@@ -434,7 +456,6 @@ function disableResponseAfterDelay(){
 
   // Turn off click ability and event listeners.
   $(document).off('click');
-  $(document).off('click', mousedownEventListener);
   $(document).off('click', acknowledgeGuess);
   $(document).off('mousemove',trackMouseMovement);
 
@@ -511,30 +532,6 @@ trackMouseMovement = function(e) {
   response_bar.attr({ x: response_x_start,
                       width: response_bar_size });
 };
-
-//
-// Listen for clicks and act accordingly.
-//
-function mousedownEventListener(event) {
-
-    if (click_lock === false) {
-        click_lock = true;
-
-        // Register response and hide bars.
-        response = Math.round(response_bar_size/PPU);
-        sendDataToServer();
-        console.log('Mouse click: '+response);
-        response_bar.hide();
-        response_background.hide();
-
-        // Stop the timer if we click.
-        $(document).click(function(e) { e.stopPropagation(); });
-
-        // Reset for next trial.
-        Mousetrap.resume();
-        click_lock = false;
-    };
-}
 
 //
 // Wait for partner to finish training.
@@ -782,9 +779,8 @@ changeGuess = function(){
   $("#title").text("");
   $(".instructions").text("");
 
-  // Open up to allow responses again.
-  setTimeout(allowResponse,
-             stimulus_timeout*1000);
+  // Get partner's guess.
+  allowResponse();
   setTimeout(getPartnerGuess,
              partner_timeout*1000);
 }
@@ -795,7 +791,7 @@ changeGuess = function(){
 waitToAccept = function(){
   $("#title").text("Please wait");
   $(".instructions").text("Your partner is still finishing the last trial");
-  setTimeout(checkIfPartnerAccepted,1000);
+  setTimeout(checkIfPartnerAccepted, 1000);
 }
 
 //
@@ -863,8 +859,6 @@ $(document).keydown(function(e) {
             } else {
                 proceedToNextTrial();
             }
-
-            click_lock = false;
         }
     }
 });
