@@ -347,18 +347,13 @@ allowResponse = function() {
     Mousetrap.pause();
     $(document).mousemove(trackMouseMovement);
 
-    // Now we're figuring out what's wrong with the changing guess.
-    if (guessCounter == 0){
-        console.log("This is our first guess.")
+    // Monitor for an unresponsive participant.
+    unresponsiveParticipant = setTimeout(disableResponseAfterDelay,
+                                         response_timeout*1000);
 
-        // Monitor for an unresponsive participant.
-        unresponsiveParticipant = setTimeout(disableResponseAfterDelay,
-                                             response_timeout*1000);
-
-        // If they click to submit a response, clear the timeout and update the site text.
-        acknowledge_lock = false;
-        $(document).click(acknowledgeGuess);
-    };
+    // If they click to submit a response, clear the timeout and update the site text.
+    acknowledge_lock = false;
+    $(document).click(acknowledgeGuess);
 }
 
 //
@@ -767,16 +762,12 @@ acceptOwnGuess = function(){
 //
 changeOwnGuess = function(){
 
+  // Add a brief timeout between pressing button and allowing the change.
   setTimeout( function() {
 
-      // Send a note to our console.
-      console.log("Now, we're changing our guess.")
-
-      // Remove buttons.
+      // Remove buttons and update text.
       $("#acceptGuess").remove();
       $("#changeGuess").remove();
-
-      // Display response bar and reset instructions.
       $("#title").text("Re-create the line length.");
       $(".instructions").text("");
 
@@ -794,7 +785,7 @@ changeOwnGuess = function(){
       $(document).click(acknowledgeChangedGuess);
 
       // Get partner's guess.
-      setTimeout( function(){
+      setTimeout( function() {
             partner_bar.hide();
             partner_background.hide();
             partner_label.hide();
@@ -803,8 +794,7 @@ changeOwnGuess = function(){
             response_background.hide();
             getPartnerGuess();
           }, partner_timeout*1000);
-
-    }, 1);
+  }, 1);
 }
 
 //
@@ -822,10 +812,6 @@ acknowledgeChangedGuess = function() {
 
         // Reset for next trial.
         Mousetrap.resume();
-
-        // Stop the unresponsive timer and prevent multiple guesses.
-        // clearTimeout(unresponsiveParticipant);
-        console.log("And now my changed guess is acknowledged.")
         $(document).off("mousemove",trackMouseMovement);
 
         // Update text.
