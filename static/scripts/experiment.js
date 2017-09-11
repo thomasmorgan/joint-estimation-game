@@ -312,47 +312,43 @@ sendDataToServer = function(){
 //
 allowResponse = function() {
 
-    // If this is their first guess...
-    if (trialType == 'train' || guessCounter < 0){
-        console.log('Yes, we need to clear -- it is training or a first guess')
+    // Hide stimulus bar.
+    stimulus_bar.hide();
+    stimulus_background.hide();
 
-        // Hide stimulus bar.
-        stimulus_bar.hide();
-        stimulus_background.hide();
+    // Create response background.
+    response_background = paper.rect(response_x_start,
+                                     response_y_start,
+                                     response_bg_width,
+                                     response_bg_height-2*inset);
+    response_background.attr("stroke", "#CCCCCC");
+    response_background.attr("stroke-dasharray", "--");
+    response_background.show();
 
-        // Create response background.
-        response_background = paper.rect(response_x_start,
-                                         response_y_start,
-                                         response_bg_width,
-                                         response_bg_height-2*inset);
-        response_background.attr("stroke", "#CCCCCC");
-        response_background.attr("stroke-dasharray", "--");
-        response_background.show();
-
-        // Draw response bar.
-        response_bar = paper.rect(response_x_start,
-                                  response_y_start-inset,
-                                  response_bg_width,
-                                  response_bg_height);
-        response_bar.attr("fill", own_guess_color);
-        response_bar.attr("stroke", "none");
-    };
+    // Draw response bar.
+    response_bar = paper.rect(response_x_start,
+                              response_y_start-inset,
+                              response_bg_width,
+                              response_bg_height);
+    response_bar.attr("fill", own_guess_color);
+    response_bar.attr("stroke", "none");
 
     // Display response bar and reset instructions.
     $("#title").text("Re-create the line length.");
     $(".instructions").text("");
-    response_bar.show();
+    response_bar.show().attr({width: 0});
 
     // Set the response variable to default and increment guess counter.
     acceptType = 0;
     guessCounter = guessCounter + 1;
 
     // Track the mouse during response.
+    Mousetrap.pause();
     $(document).mousemove(trackMouseMovement);
 
     // Now we're figuring out what's wrong with the changing guess.
-    if (guessCounter > 0){
-        console.log("Yes, we've changed our guess.")
+    if (guessCounter == 0){
+        console.log("This is our first guess.")
 
         // Monitor for an unresponsive participant.
         unresponsiveParticipant = setTimeout(disableResponseAfterDelay,
@@ -361,7 +357,7 @@ allowResponse = function() {
         // If they click to submit a response, clear the timeout and update the site text.
         acknowledge_lock = false;
         $(document).click(acknowledgeGuess);
-  }
+    };
 }
 
 //
@@ -388,6 +384,7 @@ function acknowledgeGuess(){
       // Stop the unresponsive timer and prevent multiple guesses.
       clearTimeout(unresponsiveParticipant);
       $(document).off("mousemove",trackMouseMovement);
+      $(document).off('click');
 
       // If a training trial, display correction; if test, update text.
       if (trialType == 'train'){
@@ -456,7 +453,6 @@ function disableResponseAfterDelay(){
 
   // Turn off click ability and event listeners.
   $(document).off('click');
-  $(document).off('click', acknowledgeGuess);
   $(document).off('mousemove',trackMouseMovement);
 
   // Hide response bars.
@@ -583,7 +579,6 @@ checkPartnerTraining = function() {
     });
 };
 
-
 //
 // Check to see if partner has guessed one time per second.
 //
@@ -652,19 +647,21 @@ showPartner = function() {
 
   // Show both partners' guesses and update instructions.
   $("#title").text("Would you like to accept your guess or change it?");
-  $(".instructions").text("Your guess is shown below in green, and your partner's guess is shown in blue.");
+  $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
   showOwnGuess();
   showPartnerGuess();
 
   // Add response buttons.
+  $(document).unbind('click');
+  $(document).off('click');
   $("body").append(change_guess_button);
   $("body").append(accept_guess_button);
-  $("#changeGuess").click(changeGuess);
-  $("#acceptGuess").click(acceptGuess);
+  $("#changeGuess").click(changeOwnGuess);
+  $("#acceptGuess").click(acceptOwnGuess);
 
   // Handle what happens if neither person guessed.
   if (partner_x_guess < 0 && response < 0) {
-    setTimeout(changeGuess,1000);
+    setTimeout(changeOwnGuess,1000);
   };
 }
 
@@ -690,11 +687,11 @@ showPartnerGuess = function(){
   partner_bar.attr("fill", partner_guess_color);
   partner_bar.attr("stroke", "none");
   if (partner_x_guess > 0){
-      partner_bar.attr({x: response_x_start,
+      partner_bar.show().attr({x: response_x_start,
                         width: partner_x_guess*PPU
                         });
   } else {
-    partner_bar.attr({x: response_x_start,
+    partner_bar.show().attr({x: response_x_start,
                       width: 0
                       });
   };
@@ -722,6 +719,10 @@ showOwnGuess = function(){
     response_bar.show().attr({x: response_x_start,
                               width: response*PPU
                              });
+  } else {
+    response_bar.show().attr({x: response_x_start,
+                              width: 0
+                             });
   };
 
   // Label the bar.
@@ -736,7 +737,7 @@ showOwnGuess = function(){
 //
 // Accept own guess.
 //
-acceptGuess = function(){
+acceptOwnGuess = function(){
 
   // Remove partners' guesses and buttons.
   partner_background.hide();
@@ -763,27 +764,78 @@ acceptGuess = function(){
 //
 // Change guess.
 //
-changeGuess = function(){
+changeOwnGuess = function(){
 
-  // Remove guesses, labels, and buttons.
-  partner_background.hide();
-  response_background.hide();
-  partner_label.hide();
-  own_label.hide();
-  partner_bar.hide();
-  response_bar.hide();
-  $("#acceptGuess").remove();
-  $("#changeGuess").remove();
+  setTimeout( function() {
 
-  // Reset text.
-  $("#title").text("");
-  $(".instructions").text("");
+      // Send a note to our console.
+      console.log("Now, we're changing our guess.")
 
-  // Get partner's guess.
-  allowResponse();
-  setTimeout(getPartnerGuess,
-             partner_timeout*1000);
+      // Remove buttons.
+      $("#acceptGuess").remove();
+      $("#changeGuess").remove();
+
+      // Display response bar and reset instructions.
+      $("#title").text("Re-create the line length.");
+      $(".instructions").text("");
+
+      // Set the response variable to default and increment guess counter.
+      acceptType = 0;
+      guessCounter = guessCounter + 1;
+
+      // Track the mouse during response.
+      response = undefined;
+      response_bar_size = undefined;
+      $(document).mousemove(trackMouseMovement);
+
+      // If they click to submit a response, clear the timeout and update the site text.
+      change_lock = false;
+      $(document).click(acknowledgeChangedGuess);
+
+      // Get partner's guess.
+      setTimeout( function(){
+            partner_bar.hide();
+            partner_background.hide();
+            partner_label.hide();
+            own_label.hide();
+            response_bar.hide();
+            response_background.hide();
+            getPartnerGuess();
+          }, partner_timeout*1000);
+
+    }, 1);
 }
+
+//
+// Acknowledge that they've submitted a new guess.
+//
+acknowledgeChangedGuess = function() {
+
+    // Only allow them to guess in certain settings.
+    if (change_lock === false){
+
+        // Register response and hide bars.
+        response = Math.round(response_bar_size/PPU);
+        sendDataToServer();
+        console.log('Mouse click: '+response);
+
+        // Reset for next trial.
+        Mousetrap.resume();
+
+        // Stop the unresponsive timer and prevent multiple guesses.
+        // clearTimeout(unresponsiveParticipant);
+        console.log("And now my changed guess is acknowledged.")
+        $(document).off("mousemove",trackMouseMovement);
+
+        // Update text.
+        $("#title").text("Your updated response has been recorded.");
+        $(".instructions").text("Please wait for your partner's guess.");
+
+        // Only allow them to acknowledge once.
+        change_lock = true;
+    };
+}
+
 
 //
 // Wait for partner acceptance.
