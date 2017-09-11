@@ -4,10 +4,16 @@ xMax = 100; // Maximum size of a bar in base units.
 trialIndex = -1;
 stimulusYSize = 0;
 enter_lock = true;
-stimulus_timeout = 1; // Time in seconds for which a stimulus is displayed.
-correction_timeout = 2; // Time in seconds for which the correction is displayed.
-response_timeout = 2; // Time in seconds for which a response is allowed.
-partner_timeout = 3; // Time in seconds for which partner's guess is displayed.
+
+// Set a series of timeouts (in seconds).
+stimulus_timeout = 1; // Time for which a stimulus is displayed.
+correction_timeout = 2; // Time for which the correction is displayed.
+response_timeout = 2; // Time for which a response is allowed.
+partner_timeout = 3; // Time for which partner's guess is displayed.
+partner_change_announcement = 2; // Time for which the partner's change announcement is displayed.
+inter_trial_time = 3; // Time to wait between trials.
+
+// Set training information.
 trainN = 1; // Define number of training trials.
 testN = 2; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
@@ -127,6 +133,7 @@ proceedToNextTrial = function () {
     // Increment the trial and guess counter.
     trialIndex = trialIndex + 1;
     guessCounter = -1;
+    last_guess_counter = -1;
 
     // Identify whether we're in training or testing.
     if (trialIndex < trainN){
@@ -746,8 +753,8 @@ acceptOwnGuess = function(){
   $("#changeGuess").remove();
 
   // Reset text.
-  $("#title").text("");
-  $(".instructions").text("");
+  $("#title").text("Please wait...");
+  $(".instructions").text("Checking to see if your partner has responded.");
 
   // Note whose guess we accepted and send data.
   acceptType = 1;
@@ -823,13 +830,10 @@ acknowledgeChangedGuess = function() {
     };
 }
 
-
 //
 // Wait for partner acceptance.
 //
 waitToAccept = function(){
-  $("#title").text("Please wait");
-  $(".instructions").text("Your partner is still finishing the last trial");
   setTimeout(checkIfPartnerAccepted, 1000);
 }
 
@@ -854,19 +858,61 @@ checkIfPartnerAccepted = function() {
               partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
 
               // Loop back if the partner hasn't guessed on this trial.
-              if (partner_guess_trial < trialIndex){
+              if (partner_guess_trial < trialIndex) {
                 waitToAccept();
+
+              // If the partner has already indicated that they're done, move on.
+              } else if (partner_guess_trial > trialIndex) {
+                $("#title").text("Beginning next trial");
+                $(".instructions").text("");
+                setTimeout(proceedToNextTrial,inter_trial_time * 1000);
 
               // If the partner has guessed, see whether they've accepted before moving on.
               } else {
-                partner_accept_status = JSON.parse(resp.infos[0].contents)["acceptType"];
-                if (partner_accept_status == 0){
-                  waitToAccept();
+
+                // Check to see whether they've accepted.
+                partner_accept_status = JSON.parse(partner_guess_record)["acceptType"];
+
+                // If they have accepted, move on to the next trial.
+                if (partner_accept_status == 1){
+                  last_guess_counter = -1;
+                  $("#title").text("Beginning next trial");
+                  $(".instructions").text("");
+                  setTimeout(proceedToNextTrial,inter_trial_time * 1000);
+
+                // If they haven't accepted yet...
                 } else {
-                  proceedToNextTrial();
-                }
-              }
-          }
+                    partner_guess_counter = JSON.parse(partner_guess_record)["guessCounter"];
+
+                    // Check to see if we've already tried to log a guess.
+                    if (last_guess_counter > -1) {
+
+                        // If they haven't submitted a guess, wait again.
+                        if (partner_guess_counter===0) {
+                            waitToAccept();
+
+                        // If their guess counter hasn't changed since the last time we checked, wait again.
+                        } else if (partner_guess_counter == last_guess_counter) {
+                            waitToAccept();
+
+                        // If they've upped their guess counter, get their new guess.
+                        } else {
+                            last_guess_counter = partner_guess_counter;
+
+                            // Update text.
+                            $("#title").text("Your partner chose to change their guess.");
+                            $(".instructions").text("");
+                            setTimeout(getPartnerGuess, partner_change_announcement * 1000);
+                        };
+
+                    // If we haven't checked the guess before, update the variable.
+                    } else {
+                      last_guess_counter = 0;
+                      waitToAccept();
+                    };
+                };
+              };
+          };
 
         },
         error: function (err) {
