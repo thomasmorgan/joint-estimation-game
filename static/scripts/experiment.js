@@ -9,7 +9,8 @@ correction_timeout = 2; // Time in seconds for which the correction is displayed
 response_timeout = 2; // Time in seconds for which a response is allowed.
 partner_timeout = 3; // Time in seconds for which partner's guess is displayed.
 trainN = 1; // Define number of training trials.
-testN = trainN + 2; // Define number of test trails (over training trials).
+testN = 2; // Define number of test trails (over training trials).
+totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
 // Specify location information for stimuli, responses, and buttons.
@@ -135,7 +136,7 @@ proceedToNextTrial = function () {
     };
 
     // Move to next trial if we haven't hit our target n.
-    if ((trialIndex+1) < testN) {
+    if ((trialIndex+1) < totalN) {
 
       // Prevent repeat keypresses.
       Mousetrap.pause();
@@ -165,7 +166,7 @@ proceedToNextTrial = function () {
 
           // Update header for participant.
           $("#training-or-testing").html("Training");
-          $("#total-trials").html(testN);
+          $("#total-trials").html(totalN-1);
 
           // Move on to the next trial.
           clicked = false;
@@ -175,7 +176,7 @@ proceedToNextTrial = function () {
 
           // Update header for participant.
           $("#training-or-testing").html("Testing");
-          $("#total-trials").html(testN);
+          $("#total-trials").html(totalN-1);
 
           // Show partner's guess.
           setTimeout(getPartnerGuess,
@@ -282,7 +283,7 @@ sendDataToServer = function(){
                                   });
 
         // If we're at the last trial, proceed to questionnaire.
-        if ((trialIndex+1) == testN){
+        if ((trialIndex+1) == totalN){
             reqwest({
                 url: "/info/" + my_node_id,
                 method: 'post',
