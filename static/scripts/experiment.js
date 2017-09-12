@@ -7,6 +7,7 @@ enter_lock = true;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
+wait_time = 0; // Time between stimulus viewing and response.
 correction_timeout = 2; // Time for which the correction is displayed.
 response_timeout = 2; // Time for which a response is allowed.
 partner_timeout = 3; // Time for which partner's guess is displayed.
@@ -18,6 +19,23 @@ trainN = 1; // Define number of training trials.
 testN = 2; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
+
+// Create the websocket channel to serve as an inter-trial waiting room.
+var channel = 'experiment';
+var ws_scheme = (window.location.protocol === "https:") ? 'wss://' : 'ws://';
+var socket = new ReconnectingWebSocket(ws_scheme + location.host + "/chat?channel=" + channel);
+
+// Check for incoming messages.
+socket.onmessage = function (msg) {
+
+ // The message is prefixed with the channel name and a colon
+  var ready_signal_data = JSON.parse(msg.data.substring(channel.length + 1));
+
+  // Log the guess and then sum with the ready signals.
+  console.log(ready_signal_data);
+  current_ready_signals = current_ready_signals + ready_signal_data;
+
+};
 
 // Specify location information for stimuli, responses, and buttons.
 inset = 1;
@@ -114,6 +132,7 @@ drawUserInterface = function () {
                                      stimulus_bg_height-2*inset);
     stimulus_background.attr("stroke", "#CCCCCC");
     stimulus_background.attr("stroke-dasharray", "--");
+    stimulus_background.hide();
 
     // Draw the stimulus bar with the next line length in the list.
     stimulus_bar = paper.rect(stimulus_x_start,
@@ -134,6 +153,10 @@ proceedToNextTrial = function () {
     trialIndex = trialIndex + 1;
     guessCounter = -1;
     last_guess_counter = -1;
+    acceptType = 0;
+    partner_accept_status = 0;
+    partner_guess_time = 0;
+    current_ready_signals = 0;
 
     // Identify whether we're in training or testing.
     if (trialIndex < trainN){
@@ -145,28 +168,32 @@ proceedToNextTrial = function () {
     // Move to next trial if we haven't hit our target n.
     if ((trialIndex+1) < totalN) {
 
-      // Prevent repeat keypresses.
-      Mousetrap.pause();
-
-      // Print current trial.
-      $("#trial-number").html(trialIndex+1);
-      console.log('Trial: '+trialIndex)
-
-      // Set up the stimuli.
-      stimulus_background.show();
-      stimulus_bar.attr({ width: int_list[trialIndex]*PPU });
-      console.log('Stimulus width: '+int_list[trialIndex])
-
-      // Reveal stimulus for set amount of time.
-      $("#title").text("Remember this line length.");
+      $("#title").text("Beginning next round");
       $(".instructions").text("");
-      stimulus_background.show();
-      stimulus_bar.show();
+      setTimeout( function() {
 
-      // Allow response only for a limited amount of time.
-      var unresponsiveParticipant;
-      setTimeout(allowResponse,
-                 stimulus_timeout*1000);
+          // Prevent repeat keypresses.
+          Mousetrap.pause();
+
+          // Print current trial.
+          $("#trial-number").html(trialIndex+1);
+          console.log('Trial: '+trialIndex)
+
+          // Reveal stimulus for set amount of time.
+          console.log('Stimulus width: '+int_list[trialIndex])
+          $("#title").text("Remember this line length.");
+          $(".instructions").text("");
+          stimulus_background.show();
+          stimulus_bar.show().attr({ width: int_list[trialIndex]*PPU });
+
+          // Allow response only for a limited amount of time.
+          var unresponsiveParticipant;
+          setTimeout(waitToGuess,
+                     stimulus_timeout*1000);
+          setTimeout(allowResponse,
+                     (stimulus_timeout+wait_time)*1000);
+
+      }, inter_trial_time * 1000);
 
       // If this is a training trial...
       if (trialType == 'train') {
@@ -175,9 +202,6 @@ proceedToNextTrial = function () {
           $("#training-or-testing").html("Training");
           $("#total-trials").html(totalN-1);
 
-          // Move on to the next trial.
-          clicked = false;
-
       // ... or if this is a test trial ...
       } else {
 
@@ -185,12 +209,6 @@ proceedToNextTrial = function () {
           $("#training-or-testing").html("Testing");
           $("#total-trials").html(totalN-1);
 
-          // Show partner's guess.
-          setTimeout(getPartnerGuess,
-                     partner_timeout*1000);
-
-          // Move on to the next trial.
-          clicked = false;
       };
 
     // ... or if we're done, finish up.
@@ -250,13 +268,13 @@ showCorrectLength = function(){
    correction_bar.show();
    correction_label.show();
    if (response == -99){
-    response_bar.attr({x:response_x_start,
-                       width: 1
-                      });
+      response_bar.attr({x:response_x_start,
+                         width: 1
+                        });
   } else {
-    response_bar.attr({x:response_x_start,
-                       width: response*PPU
-                       });
+      response_bar.attr({x:response_x_start,
+                         width: response*PPU
+                         });
   }
 
   // Update text to reflect accuracy.
@@ -316,13 +334,22 @@ sendDataToServer = function(){
 }
 
 //
+// Wait between trials.
+//
+waitToGuess = function(){
+
+    // Hide stimulus bar and text.
+    stimulus_bar.hide();
+    stimulus_background.hide();
+    $("#title").text("");
+    $(".instructions").text("");
+
+}
+
+//
 // Allow user response only for a set number of seconds.
 //
 allowResponse = function() {
-
-    // Hide stimulus bar.
-    stimulus_bar.hide();
-    stimulus_background.hide();
 
     // Create response background.
     response_background = paper.rect(response_x_start,
@@ -347,6 +374,7 @@ allowResponse = function() {
     response_bar.show().attr({width: 0});
 
     // Set the response variable to default and increment guess counter.
+    last_accept_type = acceptType;
     acceptType = 0;
     guessCounter = guessCounter + 1;
 
@@ -440,8 +468,12 @@ function acknowledgeGuess(){
         };
 
       } else {
+
+        // Wait for partner to guess.
         $("#title").text("Your response has been recorded.");
         $(".instructions").text("Please wait for your partner's guess.");
+        setTimeout(getPartnerGuess, 1000);
+
       };
 
       // Only allow them to acknowledge once.
@@ -517,6 +549,7 @@ function disableResponseAfterDelay(){
   } else {
     $("#title").text("Response period timed out.");
     $(".instructions").text("Please wait for your partner's guess.");
+    getPartnerGuess();
   };
 }
 
@@ -603,6 +636,8 @@ getPartnerGuess = function() {
             // Loop back if this is the first trial and the partner hasn't guessed.
             if (resp.infos.length == 0) {
               waitForGuess();
+
+            // Move forward if the partner has guessed.
             } else {
 
               // Grab partner's guess.
@@ -757,7 +792,10 @@ acceptOwnGuess = function(){
   $(".instructions").text("Checking to see if your partner has responded.");
 
   // Note whose guess we accepted and send data.
+  last_accept_type = acceptType;
   acceptType = 1;
+  ready_signal = 1;
+  socket.send(channel + ':' + JSON.stringify(ready_signal));
   sendDataToServer();
 
   // Start next trial.
@@ -779,8 +817,13 @@ changeOwnGuess = function(){
       $(".instructions").text("");
 
       // Set the response variable to default and increment guess counter.
+      last_accept_type = acceptType;
       acceptType = 0;
       guessCounter = guessCounter + 1;
+
+      // Send out that we're not ready.
+      ready_signal = -1;
+      socket.send(channel + ':' + JSON.stringify(ready_signal));
 
       // Track the mouse during response.
       response = undefined;
@@ -800,7 +843,7 @@ changeOwnGuess = function(){
             response_bar.hide();
             response_background.hide();
             getPartnerGuess();
-          }, partner_timeout*1000);
+          }, response_timeout*1000);
   }, 1);
 }
 
@@ -855,6 +898,9 @@ checkIfPartnerAccepted = function() {
 
               // Grab partner's guess.
               partner_guess_record = resp.infos[0].contents;
+              last_partner_guess_time = partner_guess_time;
+              partner_guess_time = resp.infos[0].id;
+              console.log("Recorded ID: "+partner_guess_time)
               partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
 
               // Loop back if the partner hasn't guessed on this trial.
@@ -863,24 +909,26 @@ checkIfPartnerAccepted = function() {
 
               // If the partner has already indicated that they're done, move on.
               } else if (partner_guess_trial > trialIndex) {
-                $("#title").text("Beginning next trial");
-                $(".instructions").text("");
-                setTimeout(proceedToNextTrial,inter_trial_time * 1000);
+                console.log("My partner's already moved on, so I will, too.")
+                proceedToNextTrial();
 
               // If the partner has guessed, see whether they've accepted before moving on.
               } else {
 
                 // Check to see whether they've accepted.
+                partner_last_accept = partner_accept_status;
                 partner_accept_status = JSON.parse(partner_guess_record)["acceptType"];
 
-                // If they have accepted, move on to the next trial.
-                if (partner_accept_status == 1){
-                  last_guess_counter = -1;
-                  $("#title").text("Beginning next trial");
-                  $(".instructions").text("");
-                  setTimeout(proceedToNextTrial,inter_trial_time * 1000);
+                // If we've both accepted, move into the final checking phase.
+                if (partner_accept_status == 1 && acceptType == 1){
 
-                // If they haven't accepted yet...
+                       // Update text.
+                       $("#title").text("Processing your guess...");
+                       $(".instructions").text("");
+                       setTimeout(tryToFinalize,
+                                  partner_change_announcement * 1000);
+
+                // If we haven't both accepted yet...
                 } else {
                     partner_guess_counter = JSON.parse(partner_guess_record)["guessCounter"];
 
@@ -902,7 +950,9 @@ checkIfPartnerAccepted = function() {
                             // Update text.
                             $("#title").text("Your partner chose to change their guess.");
                             $(".instructions").text("");
-                            setTimeout(getPartnerGuess, partner_change_announcement * 1000);
+                            setTimeout(getPartnerGuess,
+                                       partner_change_announcement * 1000
+                                      );
                         };
 
                     // If we haven't checked the guess before, update the variable.
@@ -923,6 +973,21 @@ checkIfPartnerAccepted = function() {
     });
 };
 
+//
+// Figure out if we're ready to move on to the next trial.
+//
+tryToFinalize = function() {
+
+    // If we have 2 ready signals (1 for each participant), we're ready to move on.
+    if (current_ready_signals == 2){
+      proceedToNextTrial();
+
+    // If we don't have two ready signals, loop back.
+    } else {
+      checkIfPartnerAccepted();
+    }
+
+}
 
 //
 $(document).keydown(function(e) {
