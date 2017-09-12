@@ -168,16 +168,16 @@ proceedToNextTrial = function () {
     // Move to next trial if we haven't hit our target n.
     if ((trialIndex+1) < totalN) {
 
+      // Update announcements and current trial info.
       $("#title").text("Beginning next round");
       $(".instructions").text("");
+      $("#trial-number").html(trialIndex+1);
+      console.log('Trial: '+trialIndex)
+
       setTimeout( function() {
 
           // Prevent repeat keypresses.
           Mousetrap.pause();
-
-          // Print current trial.
-          $("#trial-number").html(trialIndex+1);
-          console.log('Trial: '+trialIndex)
 
           // Reveal stimulus for set amount of time.
           console.log('Stimulus width: '+int_list[trialIndex])
