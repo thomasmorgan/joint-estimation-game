@@ -24,6 +24,9 @@ class JointEstimation(Experiment):
         self.experiment_repeats = 1
         self.setup()
         self.initial_recruitment_size = 2
+        self.completion_bonus_payment = .33
+        self.accuracy_bonus_payment = 1.33
+        self.total_test_trials = 40
 
     def create_network(self):
         """Create a new network."""
@@ -47,3 +50,20 @@ class JointEstimation(Experiment):
                 self.session.add(network)
                 self.models.ListSource(network=network)
             self.session.commit()
+
+    def bonus(self, participant):
+        """Calculate a participant's bonus."""
+        nodes = participant.nodes()
+        nets = Network.query.filter_by(role="experiment").all()
+        net_ids = [net.id for net in nets]
+        nodes = [node for node in nodes if node.network_id in net_ids]
+
+        # Specify bonus for accuracy.
+        score = [node.score for node in nodes]
+        score = filter(lambda a: a != 0, score)
+        score = score + [0] * (self.total_trials - len(score))
+        accuracy = float(sum(score))/float(self.total_test_trials)
+
+        # Calculate actual bonus.
+        bonus = round(max(0.0, ((accuracy * self.accuracy_bonus_payment) + self.completion_bonus_payment)), 2)
+        return bonus
