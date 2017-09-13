@@ -157,6 +157,7 @@ proceedToNextTrial = function () {
     partner_accept_status = 0;
     partner_guess_time = 0;
     current_ready_signals = 0;
+    final_accuracy = 0;
 
     // Identify whether we're in training or testing.
     if (trialIndex < trainN){
@@ -302,9 +303,10 @@ sendDataToServer = function(){
         trialData = JSON.stringify({"trialType": trialType,
                                     "trialNumber": trialIndex,
                                     "guessCounter": guessCounter,
-                                    "length": int_list[trialIndex]*PPU,
+                                    "length": int_list[trialIndex],
                                     "guess": response,
-                                    "acceptType": acceptType
+                                    "acceptType": acceptType,
+                                    "finalAccuracy": final_accuracy
                                   });
 
         // If we're at the last trial, proceed to questionnaire.
@@ -980,6 +982,12 @@ tryToFinalize = function() {
 
     // If we have 2 ready signals (1 for each participant), we're ready to move on.
     if (current_ready_signals == 2){
+
+      // Send the final guess to the server for bonuses.
+      final_accuracy = (100 - Math.abs(int_list[trialIndex] - response))/100;
+      sendDataToServer();
+
+      // Move on to the next trial.
       proceedToNextTrial();
 
     // If we don't have two ready signals, loop back.
