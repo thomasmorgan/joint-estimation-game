@@ -4,8 +4,8 @@ mode = sandbox
 [webdriver_type = chrome] [not yet implemented in current version of Dallinger]
 
 [MTurk]
-title = Estimation game
-description = Learn the relationship between the sizes of two objects.
+title = Line estimation memory game
+description = Test your memory skills!
 keywords = Psychology, game, learning
 base_payment = 1.00
 lifetime = 24
@@ -14,7 +14,7 @@ us_only = true
 approve_requirement = 95
 contact_email_on_error = paxton.alexandra@berkeley.edu
 ad_group = Estimation game
-organization_name = Monsters University
+organization_name = University of California, Berkeley
 browser_exclude_rule = MSIE, mobile, tablet
 
 [Database]
