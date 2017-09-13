@@ -4,6 +4,7 @@ xMax = 100; // Maximum size of a bar in base units.
 trialIndex = -1;
 stimulusYSize = 0;
 enter_lock = true;
+abandonment_signal = 0;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
@@ -13,6 +14,8 @@ response_timeout = 2; // Time for which a response is allowed.
 partner_timeout = 3; // Time for which partner's guess is displayed.
 partner_change_announcement = 2; // Time for which the partner's change announcement is displayed.
 inter_trial_time = 3; // Time to wait between trials.
+abandonment_timer = 20; // Time to wait before kicking someone out.
+abandonment_announcement = 5; // Time to wait before moving forward after being abandoned.
 
 // Set training information.
 trainN = 1; // Define number of training trials.
@@ -28,13 +31,41 @@ var socket = new ReconnectingWebSocket(ws_scheme + location.host + "/chat?channe
 // Check for incoming messages.
 socket.onmessage = function (msg) {
 
- // The message is prefixed with the channel name and a colon
-  var ready_signal_data = JSON.parse(msg.data.substring(channel.length + 1));
+    // The message is prefixed with the channel name and a colon
+    var ready_signal_data = JSON.parse(msg.data.substring(channel.length + 1));
 
-  // Log the guess and then sum with the ready signals.
-  console.log(ready_signal_data);
-  current_ready_signals = current_ready_signals + ready_signal_data;
+    // Log the guess.
+    console.log(ready_signal_data);
 
+    // If the websocket reads the abandonment signal, terminate the experiment.
+    if (ready_signal_data==-99) {
+
+        // Differentiate between whether the participant or their partner abandoned.
+        if (abandonment_signal==0){
+
+            // If their partner abandoned it, go to the postquestionnaire.
+            $("#title").text("Your partner has abandoned the experiment.");
+            $(".instructions").text("You will receive your bonuses and base pay.");
+            setTimeout( function () {
+                allow_exit();
+                go_to_page('postquestionnaire');
+            }, abandonment_announcement*1000);
+
+        } else {
+
+            // If the participant abandoned it, go to debriefing.
+            $("#title").text("You have abandoned the experiment.");
+            $(".instructions").text("You will only your base pay.");
+            setTimeout( function () {
+                allow_exit();
+                go_to_page('debriefing');
+            }, abandonment_announcement*1000);
+        };
+
+    // Otherwise, just sum it.
+    } else {
+        current_ready_signals = current_ready_signals + ready_signal_data;
+    };
 };
 
 // Specify location information for stimuli, responses, and buttons.
@@ -702,6 +733,11 @@ showPartner = function() {
   // Handle what happens if neither person guessed.
   if (partner_x_guess < 0 && response < 0) {
     setTimeout(changeOwnGuess,1000);
+
+  // As long as someone guessed, start the abandonment timer.
+  } else {
+    var abandoned_participant;
+    abandoned_participant = setTimeout(monitorForAbandoned, abandonment_timer*1000)
   };
 }
 
@@ -779,6 +815,10 @@ showOwnGuess = function(){
 //
 acceptOwnGuess = function(){
 
+  // Stop the abandonment timer.
+  $(document).click(function(e) { e.stopPropagation(); });
+  clearTimeout(abandonment_timeout);
+
   // Remove partners' guesses and buttons.
   partner_background.hide();
   partner_bar.hide();
@@ -811,6 +851,10 @@ changeOwnGuess = function(){
 
   // Add a brief timeout between pressing button and allowing the change.
   setTimeout( function() {
+
+      // Stop the abandonment timer.
+      $(document).click(function(e) { e.stopPropagation(); });
+      clearTimeout(abandonment_timeout);
 
       // Remove buttons and update text.
       $("#acceptGuess").remove();
@@ -994,6 +1038,31 @@ tryToFinalize = function() {
     } else {
       checkIfPartnerAccepted();
     }
+
+}
+
+//
+// Monitor for unresponsive participants.
+//
+monitorForAbandoned = function(){
+
+  // Turn off click ability and event listeners.
+  $(document).off('click');
+  $(document).off('mousemove',trackMouseMovement);
+
+  // Remove partners' guesses and buttons.
+  partner_background.hide();
+  partner_bar.hide();
+  partner_label.hide();
+  response_background.hide();
+  response_bar.hide();
+  own_label.hide();
+  $("#acceptGuess").remove();
+  $("#changeGuess").remove();
+
+  // Log response as being abandoned.
+  abandonment_signal = -99;
+  socket.send(channel + ':' + JSON.stringify(abandonment_signal));
 
 }
 
