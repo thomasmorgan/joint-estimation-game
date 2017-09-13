@@ -4,6 +4,7 @@
     <script src="/static/scripts/reqwest.min.js" type="text/javascript"> </script>
     <script src="/static/scripts/dallinger.js" type="text/javascript"> </script>
 </head>
+
 <body>
     <div class="main_div">
 
@@ -11,25 +12,45 @@
 
         <hr>
 
-        <p>In the second half of the game, you will be tested. You will now be working with a partner who has also finished training. Each of you will see the line at the same time and will make your first guess.</p>
+        <div class="row">
 
-        <p>After each of you has submitted your guess, you will both be shown your guess and your partner's guess.  You will not be able to see the correct answer, but each of you can decide whether to (1) accept your partner's guess, (2) accept your guess, or (3) submit a new guess. You and your partner will repeat this until you both agree on a guess to submit. After you finish each trial, you and your partner will move onto the next trial.</p>
+            <div class="col-xs-4">
 
-        <p>During the game, you will have the opportunity to earn two bonuses during each trial:
+              <p>Once you've finished the training rounds, you will play the game with a partner who has also finished training. Again, your goal is to submit the most accurate guess possible.</p>
 
-        <ul>
-            <li>You can earn a bonus for accuracy, earning up to $XX.XX per trial.  (You will earn a greater percentage of that bonus for greater accuracy.)</li>
-            <li>You will also earn a flat bonus of $XX.XX per completed trial, regardless of accuracy.</li>
-        </ul>
+              <p>At the beginning of each round, you and your partner will be shown a red line. It will appear for 1 second and then disappear.</p>
 
-        <p><b>Remember</b>:  You will not earn any bonus for faster performance, but you must submit each guess within XXX seconds.  If you have not entered your response within that time, your game will time out, and you will only earn the base compensation rate for participation.  You will not retain any of the bonuses from any trials that you have already completed.</p>
+              <p><img src = "/static/images/red_stimulus_bar.png" width = 200px alt = "The stimulus will always be shown in red.">​</p>
+
+            </div>
+            <div class="col-xs-4">
+
+                <p>Two seconds later, you will have 2 seconds to make your first guess individually. Again, move the mouse left and right to adjust the size of the blue bar, and then click to enter your response.</p>
+
+                <p>After you and your partner have submitted your first guess, you will see your guess (in blue) above your partner's guess (in green).</p>
+
+                <p><img src = "/static/images/blue_response_bar.png" width = 200px alt = "Your guess will always be shown in blue.">​
+                <br>
+                <img src = "/static/images/green_partner_guess.png" width = 200px alt = "During testing, your partner's guess will be shown in green.">​</p>
+
+            </div>
+            <div class="col-xs-4">
+
+                <p>You and your partner will not be able to see the correct answer, but each of you can decide whether to accept your guess or submit a new guess. If either of you submits a new guess, you will both be asked to decide again to accept your guess or submit a new one.</p>
+
+                <p>You and your partner will repeat this until you both decide not to make any additional changes and submit your final guesses.</p>
+
+                <p>After you finish each round, you and your partner will move onto the next round.</p>
+
+            </div>
+
+        </div>
 
         <hr>
 
-        <button type="button" class="btn btn-primary btn-lg" onClick="allow_exit();go_to_page('instructions/instruct-2');" style="float: left;">Back
+        <button type="button" class="btn btn-primary btn-lg" onClick="allow_exit();go_to_page('instructions/instruct-1');" style="float: left;">Back
         </button>
-        <button type="button" class="btn btn-primary btn-lg" onClick="allow_exit();go_to_page('instructions/instruct-ready');" style="float: right;">Next
+        <button type="button" class="btn btn-primary btn-lg" onClick="allow_exit();go_to_page('instructions/instruct-4');" style="float: right;">Next
         </button>
-
     </div>
 </body>
