@@ -9,13 +9,13 @@ ready_signal = 0;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
-wait_time = 0; // Time between stimulus viewing and response.
+wait_time = 2; // Time between stimulus viewing and response.
 correction_timeout = 2; // Time for which the correction is displayed.
 response_timeout = 2; // Time for which a response is allowed.
 partner_timeout = 3; // Time for which partner's guess is displayed.
 partner_change_announcement = 2; // Time for which the partner's change announcement is displayed.
-inter_trial_time = 3; // Time to wait between trials.
-abandonment_timer = 20; // Time to wait before kicking someone out.
+inter_trial_time = 5; // Time to wait between trials.
+abandonment_timer = 60; // Time to wait before kicking someone out.
 abandonment_announcement = 5; // Time to wait before moving forward after being abandoned.
 
 // Set training information.
