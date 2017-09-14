@@ -24,6 +24,31 @@ testN = 2; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
+// Specify location information for stimuli, responses, and buttons.
+inset = 1;
+stimulus_x_start = 50;
+stimulus_y_start = 150;
+stimulus_bg_width = 500;
+stimulus_bg_height = 25;
+response_x_start = 100;
+response_y_start = 350;
+response_bg_width = 500;
+response_bg_height = 25;
+partner_y_start = response_y_start + 100; // 450
+partner_x_start = response_x_start;
+correction_y_start = response_y_start - 100; // 250
+correction_x_start = response_x_start;
+change_guess_y = partner_y_start + 200;
+change_guess_x = response_x_start;
+accept_guess_y = partner_y_start + 200;
+accept_guess_x = response_x_start * 3;
+
+// Specify colors for own, partner, and stimulus boxes.
+partner_guess_color = "#0b6b13";
+own_guess_color = "#0B486B";
+stimulus_color = "#b32113";
+correction_color = "#8e8e8e";
+
 // Create the websocket channel to serve as an inter-trial waiting room.
 var channel = 'experiment';
 var ws_scheme = (window.location.protocol === "https:") ? 'wss://' : 'ws://';
@@ -81,31 +106,6 @@ socket.onmessage = function (msg) {
         };
     };
 };
-
-// Specify location information for stimuli, responses, and buttons.
-inset = 1;
-stimulus_x_start = 50;
-stimulus_y_start = 150;
-stimulus_bg_width = 500;
-stimulus_bg_height = 25;
-response_x_start = 100;
-response_y_start = 350;
-response_bg_width = 500;
-response_bg_height = 25;
-partner_y_start = response_y_start + 100; // 450
-partner_x_start = response_x_start;
-correction_y_start = response_y_start - 100; // 250
-correction_x_start = response_x_start;
-change_guess_y = partner_y_start + 200;
-change_guess_x = response_x_start;
-accept_guess_y = partner_y_start + 200;
-accept_guess_x = response_x_start * 3;
-
-// Specify colors for own, partner, and stimulus boxes.
-partner_guess_color = "#0b6b13";
-own_guess_color = "#0B486B";
-stimulus_color = "#b32113";
-correction_color = "#8e8e8e";
 
 // Create the agent.
 create_agent = function() {
