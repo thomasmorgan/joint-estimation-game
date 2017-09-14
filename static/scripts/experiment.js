@@ -5,6 +5,7 @@ trialIndex = -1;
 stimulusYSize = 0;
 enter_lock = true;
 abandonment_signal = 0;
+ready_signal = 0;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
@@ -31,40 +32,53 @@ var socket = new ReconnectingWebSocket(ws_scheme + location.host + "/chat?channe
 // Check for incoming messages.
 socket.onmessage = function (msg) {
 
-    // The message is prefixed with the channel name and a colon
-    var ready_signal_data = JSON.parse(msg.data.substring(channel.length + 1));
+    // Prevent us from clogging up the log with errors from empty messages.
+    if (Object.keys(msg.data.substring(channel.length + 1)).length > 0){
 
-    // Log the guess.
-    console.log(ready_signal_data);
+        // The message is prefixed with the channel name and a colon.
+        var ready_signal_data = JSON.parse(msg.data.substring(channel.length + 1));
 
-    // If the websocket reads the abandonment signal, terminate the experiment.
-    if (ready_signal_data==-99) {
+        // Log the guess.
+        for (var signal in ready_signal_data){
+          var next_signal = ready_signal_data[signal];
+          console.log("Received signal: "+next_signal);
+        }
 
-        // Differentiate between whether the participant or their partner abandoned.
-        if (abandonment_signal==0){
+        // If the websocket reads the abandonment signal, terminate the experiment.
+        if (next_signal==-99) {
 
-            // If their partner abandoned it, go to the postquestionnaire.
-            $("#title").text("Your partner has abandoned the experiment.");
-            $(".instructions").text("You will receive your bonuses and base pay.");
-            setTimeout( function () {
-                allow_exit();
-                go_to_page('postquestionnaire');
-            }, abandonment_announcement*1000);
+            // Differentiate between whether the participant or their partner abandoned.
+            if (abandonment_signal==0){
 
+                // If their partner abandoned it, go to the postquestionnaire.
+                $("#title").text("Your partner has abandoned the experiment.");
+                $(".instructions").text("You will receive your bonuses and base pay.");
+                setTimeout( function () {
+                    allow_exit();
+                    go_to_page('postquestionnaire');
+                }, abandonment_announcement*1000);
+
+            } else {
+
+                // If the participant abandoned it, go to debriefing.
+                $("#title").text("You have abandoned the experiment.");
+                $(".instructions").text("You will only your base pay.");
+                setTimeout( function () {
+                    allow_exit();
+                    go_to_page('debriefing');
+                }, abandonment_announcement*1000);
+            };
+
+        // Otherwise, just sum it.
         } else {
+            current_ready_signals = current_ready_signals + next_signal;
+            console.log("Current ready signals: "+ current_ready_signals);
 
-            // If the participant abandoned it, go to debriefing.
-            $("#title").text("You have abandoned the experiment.");
-            $(".instructions").text("You will only your base pay.");
-            setTimeout( function () {
-                allow_exit();
-                go_to_page('debriefing');
-            }, abandonment_announcement*1000);
+            // If we have a -2 (both people fail to respond), reset ready signal.
+            if (current_ready_signals == -2) {
+               current_ready_signals = -1;
+             };
         };
-
-    // Otherwise, just sum it.
-    } else {
-        current_ready_signals = current_ready_signals + ready_signal_data;
     };
 };
 
@@ -78,8 +92,14 @@ response_x_start = 100;
 response_y_start = 350;
 response_bg_width = 500;
 response_bg_height = 25;
-change_guess_y = stimulus_y_start + stimulus_bg_height
-accept_guess_y = stimulus_y_start + 3 * stimulus_bg_height
+partner_y_start = response_y_start + 100; // 450
+partner_x_start = response_x_start;
+correction_y_start = response_y_start - 100; // 250
+correction_x_start = response_x_start;
+change_guess_y = partner_y_start + 200;
+change_guess_x = response_x_start;
+accept_guess_y = partner_y_start + 200;
+accept_guess_x = response_x_start * 3;
 
 // Specify colors for own, partner, and stimulus boxes.
 partner_guess_color = "#0b6b13";
@@ -103,7 +123,7 @@ create_agent = function() {
             get_info();
         },
         error: function (err) {
-            console.log(err);
+            console.log("Error when initializing participant: "+ err);
             err_response = JSON.parse(err.response);
             if (err_response.hasOwnProperty('html')) {
                 $('body').html(err_response.html);
@@ -142,7 +162,7 @@ get_received_info = function() {
             }
         },
         error: function (err) {
-            console.log(err);
+            console.log("Error when checking if partner is connected: "+err);
             err_response = JSON.parse(err.response);
             $('body').html(err_response.html);
         }
@@ -204,7 +224,7 @@ proceedToNextTrial = function () {
       $("#title").text("Beginning next round");
       $(".instructions").text("");
       $("#trial-number").html(trialIndex+1);
-      console.log('Trial: '+trialIndex)
+      console.log('BEGINNING TRIAL '+trialIndex)
 
       setTimeout( function() {
 
@@ -260,33 +280,33 @@ proceedToNextTrial = function () {
 showCorrectLength = function(){
 
   // Draw correction background.
-  correction_background = paper.rect(response_x_start,
-                                    response_y_start - 100,
+  correction_background = paper.rect(correction_x_start,
+                                    correction_y_start,
                                     response_bg_width,
                                     response_bg_height - 2 * inset);
   correction_background.attr("stroke", "#CCCCCC");
   correction_background.attr("stroke-dasharray", "--");
 
   // Draw correction bar.
-  correction_bar = paper.rect(response_x_start,
-                              response_y_start - inset - 100,
+  correction_bar = paper.rect(correction_x_start,
+                              correction_y_start - inset,
                               response_bg_width,
                               response_bg_height);
   correction_bar.attr("fill", correction_color);
   correction_bar.attr("stroke", "none");
-  correction_bar.attr({x: response_x_start,
+  correction_bar.attr({x: correction_x_start,
                        width: int_list[trialIndex]*PPU
                        });
 
    // Show labels.
-   correction_label = paper.text(response_x_start + 10,
-                                 response_y_start - inset - 50,
+   correction_label = paper.text(correction_x_start + 10,
+                                 correction_y_start - inset + 50,
                                  "Correct length");
    correction_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
                           'font-size': '14px',
                           'text-anchor': 'start'});
     own_label = paper.text(response_x_start + 10,
-                           response_y_start-inset + 50,
+                           response_y_start - inset + 50,
                            "Your guess");
     own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
                      'font-size': '14px',
@@ -458,9 +478,6 @@ function acknowledgeGuess(){
 
         // If this is the last training trial, prepare them for test trials.
         if (trialIndex == (trainN-1)){
-
-          console.log("And... we're done.")
-
           setTimeout(function(){
 
             // Get the bars to disappear after the correct time.
@@ -641,7 +658,7 @@ checkPartnerTraining = function() {
             }
         },
         error: function (err) {
-            console.log(err);
+            console.log("Error when trying to see if partner finished training: "+err);
             err_response = JSON.parse(err.response);
             $('body').html(err_response.html);
         }
@@ -700,7 +717,7 @@ getPartnerGuess = function() {
 
         },
         error: function (err) {
-            console.log(err);
+            console.log("Error when getting partner's guess: "+err);
             err_response = JSON.parse(err.response);
             $('body').html(err_response.html);
         }
@@ -712,32 +729,51 @@ getPartnerGuess = function() {
 //
 showPartner = function() {
 
-  // Initialize buttons.
-  change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+response_x_start+"px;'>"
-  accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+response_x_start+'px;">'
+  // Start the abandonment timer.
+  var abandoned_participant;
+  abandoned_participant = setTimeout(monitorForAbandoned,
+                                      abandonment_timer*1000);
 
-  // Show both partners' guesses and update instructions.
-  $("#title").text("Would you like to accept your guess or change it?");
-  $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
+  // Initialize change button.
+  change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+change_guess_x+"px;'>"
+  $("body").append(change_guess_button);
+  $(document).unbind('click');
+  $(document).off('click');
+
+  // If they change their guess, stop the abandonment timer and allow to change.
+  $("#changeGuess").click(function(){
+    $(document).click(function(e) { e.stopPropagation(); });
+    clearTimeout(abandoned_participant);
+    changeOwnGuess();
+  });
+
+  // Show both guesses.
   showOwnGuess();
   showPartnerGuess();
 
-  // Add response buttons.
-  $(document).unbind('click');
-  $(document).off('click');
-  $("body").append(change_guess_button);
-  $("body").append(accept_guess_button);
-  $("#changeGuess").click(changeOwnGuess);
-  $("#acceptGuess").click(acceptOwnGuess);
-
-  // Handle what happens if neither person guessed.
+  // If nobody guesses, ask them to go back and guess.
   if (partner_x_guess < 0 && response < 0) {
-    setTimeout(changeOwnGuess,1000);
 
-  // As long as someone guessed, start the abandonment timer.
+    $("#title").text("Neither you nor your partner submitted a guess.");
+    $(".instructions").text("Please submit your guess by clicking 'Change my guess'.");
+
+  // If they guessed, allow them to accept it.
   } else {
-    var abandoned_participant;
-    abandoned_participant = setTimeout(monitorForAbandoned, abandonment_timer*1000)
+
+    // If someone submitted a guess, allow them to accept.
+    accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+accept_guess_x+'px;">'
+
+    // Show update instructions.
+    $("#title").text("Would you like to accept your guess or change it?");
+    $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
+
+    // If they submitted a guess, allow them to accept it and stop the abandonment timer.
+    $("body").append(accept_guess_button);
+    $("#acceptGuess").click(function() {
+      $(document).click(function(e) { e.stopPropagation(); });
+      clearTimeout(abandoned_participant);
+      acceptOwnGuess();
+    });
   };
 }
 
@@ -748,33 +784,33 @@ showPartnerGuess = function(){
 
   // Draw partner's background.
   paper = Raphael(0, 50, 800, 600);
-  partner_background = paper.rect(response_x_start,
-                                  response_y_start + 100,
+  partner_background = paper.rect(partner_x_start,
+                                  partner_y_start,
                                   response_bg_width,
                                   response_bg_height - 2 * inset);
   partner_background.attr("stroke", "#CCCCCC");
   partner_background.attr("stroke-dasharray", "--");
 
   // Draw partner's guess.
-  partner_bar = paper.rect(response_x_start,
-                           response_y_start - inset + 100,
+  partner_bar = paper.rect(partner_x_start,
+                           partner_y_start - inset,
                            response_bg_width,
                            response_bg_height);
   partner_bar.attr("fill", partner_guess_color);
   partner_bar.attr("stroke", "none");
   if (partner_x_guess > 0){
-      partner_bar.show().attr({x: response_x_start,
+      partner_bar.show().attr({x: partner_x_start,
                         width: partner_x_guess*PPU
                         });
   } else {
-    partner_bar.show().attr({x: response_x_start,
+    partner_bar.show().attr({x: partner_x_start,
                       width: 0
                       });
   };
 
   // Label the bar.
-  partner_label = paper.text(response_x_start + 10,
-                             response_y_start - inset + 150,
+  partner_label = paper.text(partner_x_start + 10,
+                             partner_y_start - inset + 50,
                              "Your partner's guess");
   partner_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
                       'font-size': '14px',
@@ -815,10 +851,6 @@ showOwnGuess = function(){
 //
 acceptOwnGuess = function(){
 
-  // Stop the abandonment timer.
-  $(document).click(function(e) { e.stopPropagation(); });
-  clearTimeout(abandonment_timeout);
-
   // Remove partners' guesses and buttons.
   partner_background.hide();
   partner_bar.hide();
@@ -837,7 +869,7 @@ acceptOwnGuess = function(){
   last_accept_type = acceptType;
   acceptType = 1;
   ready_signal = 1;
-  socket.send(channel + ':' + JSON.stringify(ready_signal));
+  socket.send(channel + ':' + JSON.stringify({ready_signal}));
   sendDataToServer();
 
   // Start next trial.
@@ -852,10 +884,6 @@ changeOwnGuess = function(){
   // Add a brief timeout between pressing button and allowing the change.
   setTimeout( function() {
 
-      // Stop the abandonment timer.
-      $(document).click(function(e) { e.stopPropagation(); });
-      clearTimeout(abandonment_timeout);
-
       // Remove buttons and update text.
       $("#acceptGuess").remove();
       $("#changeGuess").remove();
@@ -869,7 +897,7 @@ changeOwnGuess = function(){
 
       // Send out that we're not ready.
       ready_signal = -1;
-      socket.send(channel + ':' + JSON.stringify(ready_signal));
+      socket.send(channel + ':' + JSON.stringify({ready_signal}));
 
       // Track the mouse during response.
       response = undefined;
@@ -946,7 +974,7 @@ checkIfPartnerAccepted = function() {
               partner_guess_record = resp.infos[0].contents;
               last_partner_guess_time = partner_guess_time;
               partner_guess_time = resp.infos[0].id;
-              console.log("Recorded ID: "+partner_guess_time)
+              console.log("Partner's last guess logged at "+partner_guess_time)
               partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
 
               // Loop back if the partner hasn't guessed on this trial.
@@ -955,7 +983,6 @@ checkIfPartnerAccepted = function() {
 
               // If the partner has already indicated that they're done, move on.
               } else if (partner_guess_trial > trialIndex) {
-                console.log("My partner's already moved on, so I will, too.")
                 proceedToNextTrial();
 
               // If the partner has guessed, see whether they've accepted before moving on.
@@ -1012,7 +1039,7 @@ checkIfPartnerAccepted = function() {
 
         },
         error: function (err) {
-            console.log(err);
+            console.log("Error when checking if partner accepted: "+err);
             err_response = JSON.parse(err.response);
             $('body').html(err_response.html);
         }
@@ -1062,7 +1089,7 @@ monitorForAbandoned = function(){
 
   // Log response as being abandoned.
   abandonment_signal = -99;
-  socket.send(channel + ':' + JSON.stringify(abandonment_signal));
+  socket.send(channel + ':' + JSON.stringify({abandonment_signal}));
 
 }
 
