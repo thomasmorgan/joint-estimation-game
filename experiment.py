@@ -25,7 +25,7 @@ class JointEstimation(Experiment):
         self.setup()
         self.initial_recruitment_size = 2
         self.completion_bonus_payment = .33
-        self.accuracy_bonus_payment = 1.33
+        self.accuracy_bonus_payment = 2
         self.total_test_trials = 40
 
     def create_network(self):
@@ -63,6 +63,10 @@ class JointEstimation(Experiment):
         score = filter(lambda a: a != 0, score)
         score = score + [0] * (self.total_trials - len(score))
         accuracy = float(sum(score))/float(self.total_test_trials)
+
+        # Specify a bonus for completion.
+        if accuracy < 0:
+            self.completion_bonus_payment = 0
 
         # Calculate actual bonus.
         bonus = round(max(0.0, ((accuracy * self.accuracy_bonus_payment) + self.completion_bonus_payment)), 2)
