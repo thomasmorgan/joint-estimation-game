@@ -365,7 +365,7 @@ sendDataToServer = function(){
                                   });
 
         // If someone abandoned, just send the data and let the abandonment function proceed.
-        if (next_signal==-99) {
+        if (websocket_signal == -99) {
           reqwest({
               url: "/info/" + my_node_id,
               method: 'post',
