@@ -6,6 +6,7 @@ stimulusYSize = 0;
 enter_lock = true;
 abandonment_signal = 0;
 ready_signal = 0;
+websocket_signal = 0;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
@@ -70,6 +71,7 @@ socket.onmessage = function (msg) {
         }
 
         // If the websocket reads the abandonment signal, terminate the experiment.
+        websocket_signal = next_signal;
         if (next_signal==-99) {
 
             // Differentiate between whether the participant or their partner abandoned.
