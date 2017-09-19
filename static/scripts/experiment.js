@@ -79,6 +79,7 @@ socket.onmessage = function (msg) {
                 $("#title").text("Your partner has abandoned the experiment.");
                 $(".instructions").text("You will receive your bonuses and base pay.");
                 setTimeout( function () {
+                    sendDataToServer();
                     allow_exit();
                     go_to_page('postquestionnaire');
                 }, abandonment_announcement*1000);
@@ -89,6 +90,7 @@ socket.onmessage = function (msg) {
                 $("#title").text("You have abandoned the experiment.");
                 $(".instructions").text("You will only your base pay.");
                 setTimeout( function () {
+                    sendDataToServer();
                     allow_exit();
                     go_to_page('debriefing');
                 }, abandonment_announcement*1000);
@@ -360,8 +362,19 @@ sendDataToServer = function(){
                                     "finalAccuracy": final_accuracy
                                   });
 
+        // If someone abandoned, just send the data and let the abandonment function proceed.
+        if (next_signal==-99) {
+          reqwest({
+              url: "/info/" + my_node_id,
+              method: 'post',
+              data: {
+                  contents: trialData,
+                  info_type: "Info"
+              }
+          });
+
         // If we're at the last trial, proceed to questionnaire.
-        if ((trialIndex+1) == totalN){
+        } else if ((trialIndex+1) == totalN){
             reqwest({
                 url: "/info/" + my_node_id,
                 method: 'post',
@@ -1089,6 +1102,7 @@ monitorForAbandoned = function(){
 
   // Log response as being abandoned.
   abandonment_signal = -99;
+  final_accuracy = -9999999999999999999999999999;
   socket.send(channel + ':' + JSON.stringify({abandonment_signal}));
 
 }
