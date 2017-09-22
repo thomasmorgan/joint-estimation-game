@@ -14,38 +14,17 @@
 		<p>Thank you for your participation in our study!  Your anonymous data makes an
 		important contribution to our understanding of human learning and behavior. </p>
 
-		<p>During this study, we are looking to understand how people learn to cooperate 
-		with one another. Previous research has shown that people working together tend 
+		<p>During this study, we are looking to understand how people learn to cooperate
+		with one another. Previous research has shown that people working together tend
 		to calibrate their behavior to match their partner's. Our experiment hopes to answer
 		whether this calibration can occur even for <i>perceptual</i> or <i>low-level sensory</i>
 		behaviors. In other words, we want to see whether you and your partner tended to
 		become more similar and more accurate in your estimations of line lengths during
 		the course of the experiment.</p>
-		
-		<p>If you have any questions about this research, you may contact the
-		researcher, Dr. Alexandra Paxton at <a href = "mailto:paxton.alexandra@berkeley.edu" target="_blank">paxton.alexandra@berkeley.edu</a>.</p>
+
+		<p>If you have any questions about this research or would like to have your data withheld from the study, you may contact Dr. Alexandra Paxton at <a href = "mailto:paxton.alexandra@berkeley.edu" target="_blank">paxton.alexandra@berkeley.edu</a>.</p>
 		</div>
 
-			<p class="cool">Do you agree to the following statement?</p>
-			<div id="affirmationbox">
-				<p>I feel that I have been adequately debriefed about the nature
-					of the study.  The investigator has explained the purposes of the
-					research to me, and I feel that any questions I have asked were
-					satisfactorily answered.</p>
-					<table><tr>
-						<td id="affirmative" onClick="javascript:document.forms['accept'].submit()">Yes, I agree.</td>
-						<td id="negative" onClick="javascript:document.forms['decline'].submit()">No, please withhold my data. I will contact the experimenter with questions.</td>
-					</tr></table> 
-					<form id="accept" action="complete" method="post">
-						<input type="hidden" name="uniqueid" value="{{ uniqueId }}" />
-						<input type="hidden" name="agree" value="true" />
-					</form>
-					<form id="decline" action="complete" method="post">
-						<input type="hidden" name="uniqueid" value="{{ uniqueId }}" />
-						<input type="hidden" name="agree" value="false" />
-					</form>
-			</div>
 	</div>
 </body>
-
 </html>
