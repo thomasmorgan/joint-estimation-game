@@ -2,6 +2,7 @@
 auto_recruit = true
 mode = sandbox
 [webdriver_type = chrome] [not yet implemented in current version of Dallinger]
+clock_on = False
 
 [MTurk]
 title = Line estimation memory game
