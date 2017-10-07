@@ -23,6 +23,7 @@ class JointEstimation(Experiment):
         self.models = models
         self.experiment_repeats = 1
         self.setup()
+        self.num_participants = 2
         self.initial_recruitment_size = 2
         self.completion_bonus_payment = .33
         self.accuracy_bonus_payment = 2
