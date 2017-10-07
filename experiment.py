@@ -23,11 +23,11 @@ class JointEstimation(Experiment):
         self.models = models
         self.experiment_repeats = 1
         self.setup()
-        self.num_participants = 2
+        self.num_participants = 30  # Remember: These are dyads.
         self.initial_recruitment_size = 2
         self.completion_bonus_payment = .33
         self.accuracy_bonus_payment = 2
-        self.total_test_trials = 40
+        self.total_test_trials = 15
 
     def create_network(self):
         """Create a new network."""

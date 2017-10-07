@@ -20,8 +20,8 @@ abandonment_timer = 60; // Time to wait before kicking someone out.
 abandonment_announcement = 5; // Time to wait before moving forward after being abandoned.
 
 // Set training information.
-trainN = 1; // Define number of training trials.
-testN = 2; // Define number of test trails (over training trials).
+trainN = 5; // Define number of training trials.
+testN = 15; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
