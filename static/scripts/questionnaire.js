@@ -41,6 +41,9 @@ $(document).ready( function() {
     var $elements = [$("form :input"), $(this)],
         questionSubmission = Dallinger.submitQuestionnaire("questionnaire");
         console.log("Submitting questionnaire.");
-    questionSubmission.done(submitAssignment);
+    questionSubmission.done(function()
+        {
+          go_to_page('debriefing');
+        });
   });
 });
