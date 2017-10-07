@@ -106,7 +106,12 @@ socket.onmessage = function (msg) {
             // If we have a -2 (both people fail to respond), reset ready signal.
             if (current_ready_signals == -2) {
                current_ready_signals = -1;
-             };
+               console.log("Adjusted ready signals: "+ current_ready_signals);
+            // If we have more ready signals than expected, reset it, too.
+            } else if (current_ready_signals > 2){
+               current_ready_signals = 2;
+               console.log("Adjusted ready signals: "+ current_ready_signals);
+            };
         };
     };
 };
@@ -196,7 +201,6 @@ drawUserInterface = function () {
                               25);
     stimulus_bar.attr("fill", stimulus_color);
     stimulus_bar.attr("stroke", "none");
-
 };
 
 //
@@ -744,6 +748,9 @@ getPartnerGuess = function() {
 //
 showPartner = function() {
 
+  // Reset the ready signals when we display our partner.
+  current_ready_signals = 0
+
   // Start the abandonment timer.
   var abandoned_participant;
   abandoned_participant = setTimeout(monitorForAbandoned,
@@ -910,8 +917,9 @@ changeOwnGuess = function(){
       acceptType = 0;
       guessCounter = guessCounter + 1;
 
-      // Send out that we're not ready.
+      // Prep signal that we're not ready.
       ready_signal = -1;
+      response = -99;
       socket.send(channel + ':' + JSON.stringify({ready_signal}));
 
       // Track the mouse during response.
@@ -925,6 +933,12 @@ changeOwnGuess = function(){
 
       // Get partner's guess.
       setTimeout( function() {
+
+            // Send data and ready signal.
+            sendDataToServer();
+            socket.send(channel + ':' + JSON.stringify({ready_signal}));
+
+            // Show and hide objects as needed.
             partner_bar.hide();
             partner_background.hide();
             partner_label.hide();
@@ -932,6 +946,7 @@ changeOwnGuess = function(){
             response_bar.hide();
             response_background.hide();
             getPartnerGuess();
+
           }, response_timeout*1000);
   }, 1);
 }
@@ -946,7 +961,7 @@ acknowledgeChangedGuess = function() {
 
         // Register response and hide bars.
         response = Math.round(response_bar_size/PPU);
-        sendDataToServer();
+        ready_signal = 1;
         console.log('Mouse click: '+response);
 
         // Reset for next trial.
@@ -1066,8 +1081,8 @@ checkIfPartnerAccepted = function() {
 //
 tryToFinalize = function() {
 
-    // If we have 2 ready signals (1 for each participant), we're ready to move on.
-    if (current_ready_signals == 2){
+    // If we have 2 ready signals or have been hanging on finalization, we're ready to move on.
+    if (current_ready_signals >= 2){
 
       // Send the final guess to the server for bonuses.
       final_accuracy = (100 - Math.abs(int_list[trialIndex] - response))/100;
