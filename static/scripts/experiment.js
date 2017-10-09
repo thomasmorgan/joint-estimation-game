@@ -8,6 +8,7 @@ abandonment_signal = 0;
 ready_signal = 0;
 partner_ready_signal = 0;
 websocket_signal = 0;
+partner_accept_type = 0;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
@@ -231,7 +232,7 @@ proceedToNextTrial = function () {
     guessCounter = -1;
     last_guess_counter = -1;
     acceptType = 0;
-    partner_accept_status = 0;
+    partner_accept_type = 0;
     partner_guess_time = 0;
     current_ready_signals = 0;
     final_accuracy = 0;
