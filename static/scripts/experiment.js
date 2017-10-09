@@ -6,6 +6,7 @@ stimulusYSize = 0;
 enter_lock = true;
 abandonment_signal = 0;
 ready_signal = 0;
+partner_ready_signal = 0;
 websocket_signal = 0;
 
 // Set a series of timeouts (in seconds).
@@ -18,10 +19,11 @@ partner_change_announcement = 2; // Time for which the partner's change announce
 inter_trial_time = 5; // Time to wait between trials.
 abandonment_timer = 60; // Time to wait before kicking someone out.
 abandonment_announcement = 5; // Time to wait before moving forward after being abandoned.
+finalize_cutoff = 61;
 
 // Set training information.
-trainN = 5; // Define number of training trials.
-testN = 15; // Define number of test trails (over training trials).
+trainN = 1; // Define number of training trials.
+testN = 10; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
@@ -64,18 +66,21 @@ socket.onmessage = function (msg) {
         // The message is prefixed with the channel name and a colon.
         var ready_signal_data = JSON.parse(msg.data.substring(channel.length + 1));
 
-        // Log the guess.
-        for (var signal in ready_signal_data){
-          var next_signal = ready_signal_data[signal];
-          console.log("Received signal: "+next_signal);
-        }
+        // Identify the ready signal and the sender.
+        next_signal = Object.values(ready_signal_data)[0];
+        next_sender = Object.keys(ready_signal_data)[0];
+
+        // If we received a signal, let us know what it was.
+        if (next_sender == partner_node_id){
+            console.log("Partner's signal: "+next_signal);
+        };
 
         // If the websocket reads the abandonment signal, terminate the experiment.
         websocket_signal = next_signal;
         if (next_signal==-99) {
 
             // Differentiate between whether the participant or their partner abandoned.
-            if (abandonment_signal==0){
+            if (next_sender == partner_node_id){
 
                 // If their partner abandoned it, go to the postquestionnaire.
                 $("#title").text("Your partner has abandoned the experiment.");
@@ -98,20 +103,31 @@ socket.onmessage = function (msg) {
                 }, abandonment_announcement*1000);
             };
 
+        // If it's a reset signal, reset the current ready signals.
+        } else if (next_signal == "Reset") {
+
+            current_ready_signals = 0;
+            console.log("Ready signals reset.");
+
+        // If one partner detects that they've been hanging, fix it.
+        } else if (next_signal == "Hanging") {
+
+          current_ready_signals = 2;
+          console.log("Correct hanging trial.");
+
         // Otherwise, just sum it.
         } else {
+
+            // Track the partner's ready signal.
+            if (next_sender == partner_node_id){
+                partner_ready_signal = next_signal;
+                console.log("Partner's ready signal: "+ current_ready_signals);
+            };
+
+            // Sum all ready signals.
             current_ready_signals = current_ready_signals + next_signal;
             console.log("Current ready signals: "+ current_ready_signals);
 
-            // If we have a -2 (both people fail to respond), reset ready signal.
-            if (current_ready_signals == -2) {
-               current_ready_signals = -1;
-               console.log("Adjusted ready signals: "+ current_ready_signals);
-            // If we have more ready signals than expected, reset it, too.
-            } else if (current_ready_signals > 2){
-               current_ready_signals = 2;
-               console.log("Adjusted ready signals: "+ current_ready_signals);
-            };
         };
     };
 };
@@ -133,13 +149,14 @@ create_agent = function() {
         },
         error: function (err) {
             console.log("Error when initializing participant: "+ err);
-            err_response = JSON.parse(err.response);
-            if (err_response.hasOwnProperty('html')) {
-                $('body').html(err_response.html);
-            } else {
-                allow_exit();
-                go_to_page('postquestionnaire');
-            }
+            $("#title").text("An error has occurred.");
+            $(".instructions").text("Please close this window and return this HIT.");
+            // err_response = JSON.parse(err.response);
+            // if (err_response.hasOwnProperty('html')) {
+            //     $('body').html(err_response.html);
+            //      allow_exit();
+            //      go_to_page('debriefing');
+            // };
         }
     });
 };
@@ -163,6 +180,7 @@ get_received_info = function() {
             if (resp.infos.length == 0) {
                 get_info();
             } else {
+
                 r = resp.infos[0].contents;
                 int_list = JSON.parse(r);
                 $("#title").text("Partner connected");
@@ -662,7 +680,8 @@ checkPartnerTraining = function() {
 
               // Grab partner's guess.
               partner_guess_record = resp.infos[0].contents;
-              partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
+              partner_guess_json = JSON.parse(partner_guess_record)
+              partner_guess_trial = partner_guess_json["trialNumber"];
 
               // If the partner has finished training, move on.
               if (partner_guess_trial >= (trainN-1)){
@@ -696,51 +715,41 @@ waitForGuess = function() {
 //
 getPartnerGuess = function() {
 
-    reqwest({
-        url: "/node/" + partner_node_id + "/infos",
-        method: 'get',
-        type: 'json',
-        success: function (resp) {
+    // Get partner's data.
+    fetchPartnerData();
 
-            // Loop back if this is the first trial and the partner hasn't guessed.
-            if (resp.infos.length == 0) {
-              waitForGuess();
+    // If partner hasn't responded, wait.
+    if (partner_guess_record == NaN) {
+        waitForGuess();
 
-            // Move forward if the partner has guessed.
-            } else {
+    // Move forward if the partner has guessed.
+    } else {
 
-              // Grab partner's guess.
-              partner_guess_record = resp.infos[0].contents;
-              partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
+      // Derive guess information from data.
+      partner_guess_json = JSON.parse(partner_guess_record)
+      partner_guess_trial = partner_guess_json["trialNumber"];
+      console.log("Partner's current trial: "+partner_guess_trial)
 
-              // Loop back if the partner hasn't guessed on this trial.
-              if (partner_guess_trial < trialIndex){
-                waitForGuess();
+      // Loop back if the partner hasn't guessed on this trial.
+      if (partner_guess_trial < trialIndex){
+        waitForGuess();
 
-              // If the partner has guessed, find their last guess on this trial.
-              } else {
-                info_counter = 0;
-                while (partner_guess_trial != trialIndex){
-                  info_counter = info_counter + 1;
-                  partner_guess_record = resp.infos[info_counter].contents;
-                  partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
-                }
-
-                // Grab partner guess and move to display it.
-                enter_lock = false;
-                partner_x_guess = JSON.parse(partner_guess_record)["guess"];
-                showPartner();
-
-              }
-          };
-
-        },
-        error: function (err) {
-            console.log("Error when getting partner's guess: "+err);
-            err_response = JSON.parse(err.response);
-            $('body').html(err_response.html);
+      // If the partner has guessed, find their last guess on this trial.
+      } else {
+        info_counter = 0;
+        while (partner_guess_trial != trialIndex){
+          info_counter = info_counter + 1;
+          partner_guess_record = resp.infos[info_counter].contents;
+          partner_guess_trial = partner_guess_json["trialNumber"];
         }
-    });
+
+        // Grab partner guess and move to display it.
+        enter_lock = false;
+        partner_x_guess = partner_guess_json["guess"];
+        showPartner();
+
+      }
+  };
 };
 
 //
@@ -748,8 +757,15 @@ getPartnerGuess = function() {
 //
 showPartner = function() {
 
+  // When we show our partner's guess, send out a signal to prevent them from moving on.
+  reset_signal = "Reset";
+  socket.send(channel + ':' + JSON.stringify({reset_signal}));
+
   // Reset the ready signals when we display our partner.
-  current_ready_signals = 0
+  current_ready_signals = 2;
+  ready_signal = 0;
+  partner_ready_signal = 0;
+  tried_to_finalize = 0;
 
   // Start the abandonment timer.
   var abandoned_participant;
@@ -891,11 +907,20 @@ acceptOwnGuess = function(){
   last_accept_type = acceptType;
   acceptType = 1;
   ready_signal = 1;
-  socket.send(channel + ':' + JSON.stringify({ready_signal}));
+  sendReadySignal(ready_signal);
   sendDataToServer();
 
   // Start next trial.
   checkIfPartnerAccepted();
+}
+
+//
+// Send websocket ready signal.
+//
+sendReadySignal = function(signal_value){
+    signal_data = {};
+    signal_data[my_node_id] = ready_signal;
+    socket.send(channel + ':' + JSON.stringify(signal_data));
 }
 
 //
@@ -918,9 +943,9 @@ changeOwnGuess = function(){
       guessCounter = guessCounter + 1;
 
       // Prep signal that we're not ready.
-      ready_signal = -1;
       response = -99;
-      socket.send(channel + ':' + JSON.stringify({ready_signal}));
+      ready_signal = -1;
+      sendReadySignal(ready_signal);
 
       // Track the mouse during response.
       response = undefined;
@@ -935,8 +960,8 @@ changeOwnGuess = function(){
       setTimeout( function() {
 
             // Send data and ready signal.
+            sendReadySignal(ready_signal);
             sendDataToServer();
-            socket.send(channel + ':' + JSON.stringify({ready_signal}));
 
             // Show and hide objects as needed.
             partner_bar.hide();
@@ -985,95 +1010,130 @@ waitToAccept = function(){
 }
 
 //
+// Grab partner's most recent data entry.
+//
+fetchPartnerData = function(){
+
+  reqwest({
+      url: "/node/" + partner_node_id + "/infos",
+      method: 'get',
+      type: 'json',
+      success: function (resp) {
+
+        // If the partner does have something to fetch...
+        if (resp.infos.length > 0) {
+
+          // Grab the IDs for all items.
+          entire_guess_history = $.map(resp.infos, function(el) { return el.id });
+
+          // Grab only the most recent guess.
+          most_recent_guess = Math.max.apply(Math,entire_guess_history);
+          most_recent_line = $.grep(resp.infos, function(v) {
+            return v.id==most_recent_guess;
+          })[0];
+
+          // Strip out only the contents of that most recent guess.
+          partner_guess_record = most_recent_line.contents;
+
+        } else {
+
+          // If we don't have anything yet, return NaN.
+          partner_guess_record = NaN
+
+        };
+      },
+      error: function (err) {
+          console.log("Error when fetching partner's data: "+err);
+          err_response = JSON.parse(err.response);
+          $('body').html(err_response.html);
+      }
+  });
+}
+
+//
 // Montior the server to see if their partner's accepted a guess.
 //
 checkIfPartnerAccepted = function() {
 
-    reqwest({
-        url: "/node/" + partner_node_id + "/infos",
-        method: 'get',
-        type: 'json',
-        success: function (resp) {
+    // Get partner's data and increment finalization counter.
+    tried_to_finalize = tried_to_finalize + 1;
+    fetchPartnerData();
 
-            // Loop back if this is the first trial and the partner hasn't guessed.
-            if (resp.infos.length == 0) {
-              waitToAccept();
-            } else {
+    // Loop back if this is the first trial and the partner hasn't guessed.
+    if (partner_guess_record == NaN) {
+      waitToAccept();
+    } else {
 
-              // Grab partner's guess.
-              partner_guess_record = resp.infos[0].contents;
-              last_partner_guess_time = partner_guess_time;
-              partner_guess_time = resp.infos[0].id;
-              console.log("Partner's last guess logged at "+partner_guess_time)
-              partner_guess_trial = JSON.parse(partner_guess_record)["trialNumber"];
+      // Grab partner's guess data.
+      partner_guess_json = JSON.parse(partner_guess_record)
+      last_partner_guess_time = partner_guess_time;
+      partner_guess_time = most_recent_guess;
+      partner_guess_trial = partner_guess_json["trialNumber"];
+      console.log("Partner's last guess logged at "+partner_guess_time+", trial "+partner_guess_trial);
 
-              // Loop back if the partner hasn't guessed on this trial.
-              if (partner_guess_trial < trialIndex) {
-                waitToAccept();
+      // If the partner hasn't guessed on this trial:
+      if (partner_guess_trial < trialIndex) {
 
-              // If the partner has already indicated that they're done, move on.
-              } else if (partner_guess_trial > trialIndex) {
-                proceedToNextTrial();
+        // Try to finalize if we've been hanging, ...
+        if (tried_to_finalize > finalize_cutoff/3){
+          tryToFinalize();
 
-              // If the partner has guessed, see whether they've accepted before moving on.
-              } else {
+        // but just keep checking if we haven't been hanging.
+        } else {
+          waitToAccept();
+        };
 
-                // Check to see whether they've accepted.
-                partner_last_accept = partner_accept_status;
-                partner_accept_status = JSON.parse(partner_guess_record)["acceptType"];
+      // If the partner has already indicated that they're done, move on.
+      } else if (partner_guess_trial > trialIndex) {
+        proceedToNextTrial();
 
-                // If we've both accepted, move into the final checking phase.
-                if (partner_accept_status == 1 && acceptType == 1){
+      // If the partner has guessed and is still on this trial, see whether they've accepted before moving on.
+      } else {
 
-                       // Update text.
-                       $("#title").text("Processing your guess...");
-                       $(".instructions").text("");
-                       setTimeout(tryToFinalize,
-                                  partner_change_announcement * 1000);
+        // If we've both accepted, move into the final checking phase.
+        if ((partner_ready_signal == 1 && acceptType==1) | (tried_to_finalize > finalize_cutoff/3)){
 
-                // If we haven't both accepted yet...
+               // Update text.
+               $("#title").text("Processing your guess...");
+               $(".instructions").text("");
+               setTimeout(tryToFinalize,
+                          partner_change_announcement * 1000);
+
+        // If we haven't both accepted yet...
+        } else {
+            partner_guess_counter = partner_guess_json["guessCounter"];
+
+            // Check to see if we've already tried to log a guess.
+            if (last_guess_counter > -1) {
+
+                // If they haven't submitted a guess, wait again.
+                if (partner_guess_counter===0) {
+                    waitToAccept();
+
+                // If their guess counter hasn't changed since the last time we checked, wait again.
+                } else if (partner_guess_counter == last_guess_counter) {
+                    waitToAccept();
+
+                // If they've upped their guess counter, get their new guess.
                 } else {
-                    partner_guess_counter = JSON.parse(partner_guess_record)["guessCounter"];
+                    last_guess_counter = partner_guess_counter;
 
-                    // Check to see if we've already tried to log a guess.
-                    if (last_guess_counter > -1) {
-
-                        // If they haven't submitted a guess, wait again.
-                        if (partner_guess_counter===0) {
-                            waitToAccept();
-
-                        // If their guess counter hasn't changed since the last time we checked, wait again.
-                        } else if (partner_guess_counter == last_guess_counter) {
-                            waitToAccept();
-
-                        // If they've upped their guess counter, get their new guess.
-                        } else {
-                            last_guess_counter = partner_guess_counter;
-
-                            // Update text.
-                            $("#title").text("Your partner chose to change their guess.");
-                            $(".instructions").text("");
-                            setTimeout(getPartnerGuess,
-                                       partner_change_announcement * 1000
-                                      );
-                        };
-
-                    // If we haven't checked the guess before, update the variable.
-                    } else {
-                      last_guess_counter = 0;
-                      waitToAccept();
-                    };
+                    // Update text.
+                    $("#title").text("Your partner chose to change their guess.");
+                    $(".instructions").text("");
+                    setTimeout(getPartnerGuess,
+                               partner_change_announcement * 1000
+                              );
                 };
-              };
-          };
 
-        },
-        error: function (err) {
-            console.log("Error when checking if partner accepted: "+err);
-            err_response = JSON.parse(err.response);
-            $('body').html(err_response.html);
-        }
-    });
+            // If we haven't checked the guess before, update the variable.
+            } else {
+              last_guess_counter = 0;
+              waitToAccept();
+            };
+        };
+      };
+  };
 };
 
 //
@@ -1081,8 +1141,18 @@ checkIfPartnerAccepted = function() {
 //
 tryToFinalize = function() {
 
-    // If we have 2 ready signals or have been hanging on finalization, we're ready to move on.
-    if (current_ready_signals >= 2){
+    // Check if we've been hanging on finalization.
+    tried_to_finalize = tried_to_finalize + 1;
+    if (tried_to_finalize > finalize_cutoff){
+        current_ready_signals = 2;
+        hanging_signal = "Hanging";
+        socket.send(channel + ':' + JSON.stringify({hanging_signal}));
+    }
+
+    // If both of us have accepted, move on.
+    fetchPartnerData();
+    partner_accept_type = partner_guess_record['acceptType'];
+    if (partner_accept_type==1 && acceptType == 1){
 
       // Send the final guess to the server for bonuses.
       final_accuracy = (100 - Math.abs(int_list[trialIndex] - response))/100;
@@ -1091,11 +1161,10 @@ tryToFinalize = function() {
       // Move on to the next trial.
       proceedToNextTrial();
 
-    // If we don't have two ready signals, loop back.
+    // If we don't have exactly 2 ready signals, something went wrong.
     } else {
-      checkIfPartnerAccepted();
-    }
-
+      getPartnerGuess();
+    };
 }
 
 //
