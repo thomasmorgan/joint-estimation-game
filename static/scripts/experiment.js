@@ -108,6 +108,7 @@ socket.onmessage = function (msg) {
         } else if (next_signal == "Reset") {
 
             current_ready_signals = 0;
+            partner_ready_signal = 0;
             console.log("Ready signals reset.");
 
         // If one partner detects that they've been hanging, fix it.
@@ -119,10 +120,9 @@ socket.onmessage = function (msg) {
         // Otherwise, just sum it.
         } else {
 
-            // Track the partner's ready signal.
+            // Let us know if our partner sent it.
             if (next_sender == partner_node_id){
-                partner_ready_signal = next_signal;
-                console.log("Partner's ready signal: "+ current_ready_signals);
+               partner_ready_signal = next_signal;
             };
 
             // Sum all ready signals.
@@ -230,6 +230,7 @@ proceedToNextTrial = function () {
     // Increment the trial and guess counter.
     trialIndex = trialIndex + 1;
     guessCounter = -1;
+    response_counter = -1;
     last_guess_counter = -1;
     acceptType = 0;
     partner_accept_type = 0;
@@ -381,6 +382,7 @@ sendDataToServer = function(){
         trialData = JSON.stringify({"trialType": trialType,
                                     "trialNumber": trialIndex,
                                     "guessCounter": guessCounter,
+                                    "responseCounter": response_counter,
                                     "length": int_list[trialIndex],
                                     "guess": response,
                                     "acceptType": acceptType,
@@ -727,27 +729,20 @@ getPartnerGuess = function() {
 
       // Derive guess information from data.
       partner_guess_trial = partner_guess_record["trialNumber"];
-      console.log("Partner's current trial: "+partner_guess_trial)
+      partner_response_counter = partner_guess_record['responseCounter'];
+      partner_accept_type = partner_guess_record['acceptType'];
+      console.log("Partner's current trial: "+partner_guess_trial);
 
-      // Loop back if the partner hasn't guessed on this trial.
-      if (partner_guess_trial < trialIndex){
-        waitForGuess();
-
-      // If the partner has guessed, find their last guess on this trial.
-      } else {
-        info_counter = 0;
-        while (partner_guess_trial != trialIndex){
-          info_counter = info_counter + 1;
-          partner_guess_record = resp.infos[info_counter].contents;
-          partner_guess_trial = partner_guess_record["trialNumber"];
-        }
-
-        // Grab partner guess and move to display it.
+      // Show partner's guess if on same trial and response numbers.
+      if ((partner_guess_trial >= trialIndex) && (partner_response_counter == response_counter)){
         enter_lock = false;
         partner_x_guess = partner_guess_record["guess"];
         showPartner();
 
-      }
+      // If partner hasn't guessed, wait.
+      } else {
+          waitForGuess();
+      };
   };
 };
 
@@ -756,63 +751,65 @@ getPartnerGuess = function() {
 //
 showPartner = function() {
 
-  // When we show our partner's guess, send out a signal to prevent them from moving on.
-  reset_signal = "Reset";
-  socket.send(channel + ':' + JSON.stringify({reset_signal}));
+    // When we show our partner's guess, send out a signal to prevent them from moving on.
+    reset_signal = "Reset";
+    socket.send(channel + ':' + JSON.stringify({reset_signal}));
 
-  // Reset the ready signals when we display our partner.
-  current_ready_signals = 2;
-  ready_signal = 0;
-  partner_ready_signal = 0;
-  tried_to_finalize = 0;
+    // Reset the ready signals when we display our partner.
+    current_ready_signals = 2;
+    ready_signal = 0;
+    partner_ready_signal = 0;
+    tried_to_finalize = 0;
 
-  // Start the abandonment timer.
-  var abandoned_participant;
-  abandoned_participant = setTimeout(monitorForAbandoned,
-                                      abandonment_timer*1000);
+    // Start the abandonment timer.
+    var abandoned_participant;
+    abandoned_participant = setTimeout(monitorForAbandoned,
+                                        abandonment_timer*1000);
 
-  // Initialize change button.
-  change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+change_guess_x+"px;'>"
-  $("body").append(change_guess_button);
-  $(document).unbind('click');
-  $(document).off('click');
+    // Initialize change button.
+    change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+change_guess_x+"px;'>"
+    $("body").append(change_guess_button);
+    $(document).unbind('click');
+    $(document).off('click');
 
-  // If they change their guess, stop the abandonment timer and allow to change.
-  $("#changeGuess").click(function(){
-    $(document).click(function(e) { e.stopPropagation(); });
-    clearTimeout(abandoned_participant);
-    changeOwnGuess();
-  });
-
-  // Show both guesses.
-  showOwnGuess();
-  showPartnerGuess();
-
-  // If nobody guesses, ask them to go back and guess.
-  if (partner_x_guess < 0 && response < 0) {
-
-    $("#title").text("Neither you nor your partner submitted a guess.");
-    $(".instructions").text("Please submit your guess by clicking 'Change my guess'.");
-
-  // If they guessed, allow them to accept it.
-  } else {
-
-    // If someone submitted a guess, allow them to accept.
-    accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+accept_guess_x+'px;">'
-
-    // Show update instructions.
-    $("#title").text("Would you like to accept your guess or change it?");
-    $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
-
-    // If they submitted a guess, allow them to accept it and stop the abandonment timer.
-    $("body").append(accept_guess_button);
-    $("#acceptGuess").click(function() {
+    // If they change their guess, stop the abandonment timer and allow to change.
+    $("#changeGuess").click(function(){
       $(document).click(function(e) { e.stopPropagation(); });
       clearTimeout(abandoned_participant);
-      acceptOwnGuess();
+      response_counter = response_counter + 1;
+      changeOwnGuess();
     });
-  };
-}
+
+    // Show both guesses.
+    showOwnGuess();
+    showPartnerGuess();
+
+    // If nobody guesses, ask them to go back and guess.
+    if (partner_x_guess < 0 && response < 0) {
+
+      $("#title").text("Neither you nor your partner submitted a guess.");
+      $(".instructions").text("Please submit your guess by clicking 'Change my guess'.");
+
+    // If they guessed, allow them to accept it.
+    } else {
+
+      // If someone submitted a guess, allow them to accept.
+      accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+accept_guess_x+'px;">'
+
+      // Show update instructions.
+      $("#title").text("Would you like to accept your guess or change it?");
+      $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
+
+      // If they submitted a guess, allow them to accept it and stop the abandonment timer.
+      $("body").append(accept_guess_button);
+      $("#acceptGuess").click(function() {
+        $(document).click(function(e) { e.stopPropagation(); });
+        clearTimeout(abandoned_participant);
+        response_counter = response_counter + 1;
+        acceptOwnGuess();
+      });
+    };
+};
 
 //
 // Draw partner's guess.
@@ -906,6 +903,7 @@ acceptOwnGuess = function(){
   last_accept_type = acceptType;
   acceptType = 1;
   ready_signal = 1;
+  response_counter = response_counter + 1;
   sendReadySignal(ready_signal);
   sendDataToServer();
 
