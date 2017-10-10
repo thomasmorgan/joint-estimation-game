@@ -680,9 +680,8 @@ checkPartnerTraining = function() {
             } else {
 
               // Grab partner's guess.
-              partner_guess_record = resp.infos[0].contents;
-              partner_guess_json = JSON.parse(partner_guess_record)
-              partner_guess_trial = partner_guess_json["trialNumber"];
+              partner_guess_record = JSON.parse(resp.infos[0].contents);
+              partner_guess_trial = partner_guess_record["trialNumber"];
 
               // If the partner has finished training, move on.
               if (partner_guess_trial >= (trainN-1)){
@@ -727,8 +726,7 @@ getPartnerGuess = function() {
     } else {
 
       // Derive guess information from data.
-      partner_guess_json = JSON.parse(partner_guess_record)
-      partner_guess_trial = partner_guess_json["trialNumber"];
+      partner_guess_trial = partner_guess_record["trialNumber"];
       console.log("Partner's current trial: "+partner_guess_trial)
 
       // Loop back if the partner hasn't guessed on this trial.
@@ -741,12 +739,12 @@ getPartnerGuess = function() {
         while (partner_guess_trial != trialIndex){
           info_counter = info_counter + 1;
           partner_guess_record = resp.infos[info_counter].contents;
-          partner_guess_trial = partner_guess_json["trialNumber"];
+          partner_guess_trial = partner_guess_record["trialNumber"];
         }
 
         // Grab partner guess and move to display it.
         enter_lock = false;
-        partner_x_guess = partner_guess_json["guess"];
+        partner_x_guess = partner_guess_record["guess"];
         showPartner();
 
       }
@@ -1034,7 +1032,7 @@ fetchPartnerData = function(){
           })[0];
 
           // Strip out only the contents of that most recent guess.
-          partner_guess_record = most_recent_line.contents;
+          partner_guess_record = JSON.parse(most_recent_line.contents);
 
         } else {
 
@@ -1066,10 +1064,9 @@ checkIfPartnerAccepted = function() {
     } else {
 
       // Grab partner's guess data.
-      partner_guess_json = JSON.parse(partner_guess_record)
       last_partner_guess_time = partner_guess_time;
       partner_guess_time = most_recent_guess;
-      partner_guess_trial = partner_guess_json["trialNumber"];
+      partner_guess_trial = partner_guess_record["trialNumber"];
       console.log("Partner's last guess logged at "+partner_guess_time+", trial "+partner_guess_trial);
 
       // If the partner hasn't guessed on this trial:
@@ -1102,7 +1099,7 @@ checkIfPartnerAccepted = function() {
 
         // If we haven't both accepted yet...
         } else {
-            partner_guess_counter = partner_guess_json["guessCounter"];
+            partner_guess_counter = partner_guess_record["guessCounter"];
 
             // Check to see if we've already tried to log a guess.
             if (last_guess_counter > -1) {
@@ -1122,6 +1119,11 @@ checkIfPartnerAccepted = function() {
                     // Update text.
                     $("#title").text("Your partner chose to change their guess.");
                     $(".instructions").text("");
+
+                    // Send a warning to their partner that they're having to go back.
+                    sendReadySignal(-1);
+
+                    // Get the new guess.
                     setTimeout(getPartnerGuess,
                                partner_change_announcement * 1000
                               );
