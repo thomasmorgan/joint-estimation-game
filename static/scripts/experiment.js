@@ -1106,7 +1106,7 @@ checkIfPartnerAccepted = function() {
       } else {
 
         // If we've both accepted, move into the final checking phase.
-        if ((partner_accept_type == 1 && acceptType==1) | (tried_to_finalize > finalize_cutoff/3)){
+        if ((partner_accept_type == 1 && acceptType==1) || (tried_to_finalize > finalize_cutoff/3)){
 
                // Update text.
                $("#title").text("Processing your guess...");
