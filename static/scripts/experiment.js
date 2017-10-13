@@ -1172,10 +1172,12 @@ tryToFinalize = function() {
     // If both of us have accepted, move on.
     fetchPartnerData();
     partner_accept_type = partner_guess_record['acceptType'];
-    partner_guess_counter = partner_guess_record['guessCounter'];
+    partner_response_counter = partner_guess_record['responseCounter'];
+    console.log("\npartner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter)
     if (partner_accept_type==1 && acceptType == 1 && partner_response_counter == response_counter){
 
       // Send the final guess to the server for bonuses.
+      console.log("Successfully finalized.")
       final_accuracy = (100 - Math.abs(int_list[trialIndex] - response))/100;
       sendDataToServer();
 
@@ -1184,6 +1186,7 @@ tryToFinalize = function() {
 
     // If not, just keep checking.
     } else {
+      console.log("Failed to finalize.")
       getPartnerGuess();
     };
 }
