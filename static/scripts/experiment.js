@@ -1126,7 +1126,7 @@ checkIfPartnerAccepted = function() {
             partner_response_counter = partner_guess_record["responseCounter"];
 
             // If they haven't submitted a guess, wait again.
-            if (partner_response_counter===0) {
+            if (partner_response_counter<0) {
                 waitToAccept();
 
             // If they're not on the same response counter that we are, wait more.
