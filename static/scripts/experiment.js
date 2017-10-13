@@ -1,4 +1,5 @@
 // NB: Need to fix what happens when the partner changes their guess at the same time that the player does.
+// NB: Need to fix what happens when player moves onto the next trial without partner.
 
 // Settings
 PPU = 5; // Pixels per base unit.
