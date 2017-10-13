@@ -366,7 +366,7 @@ showCorrectLength = function(){
     $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
   } else if (response == -99){
     $("#title").text("You didn't respond in time");
-    $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.\nThe grey bar is the correct answer.");
+    $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.<br>The grey bar is the correct answer.");
   } else {
     $("#title").text("Your guess was incorrect");
     $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
@@ -810,8 +810,18 @@ showPartner = function() {
       // If someone submitted a guess, allow them to accept.
       accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+accept_guess_x+'px;">'
 
-      // Show update instructions.
-      $("#title").text("Would you like to accept your guess or change it?");
+      // Show updated instructions based on whether they or their partner changed their guess.
+      if (response_counter < 0){
+          $("#title").text("Would you like to accept your guess or change it?");
+      } else { // We've already identified partner_accept_type in the enclosing function.
+          if (partner_accept_type===0 && acceptType===1){
+              $("#title").html("Your partner chose to change their guess.<br>Would you like to accept your guess or change it?");
+          } else if (partner_accept_type===1 && acceptType===0){
+              $("#title").html("Your partner did not choose to change their guess.<br>Would you like to accept your guess or change it?");
+          } else if (partner_accept_type===0 && acceptType===0){
+              $("#title").html("Your partner also chose to change their guess.<br>Would you like to accept your guess or change it?");
+          };
+      };
       $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
 
       // If they submitted a guess, allow them to accept it and stop the abandonment timer.
