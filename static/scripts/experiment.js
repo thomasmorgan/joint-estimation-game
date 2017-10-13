@@ -1129,19 +1129,8 @@ checkIfPartnerAccepted = function() {
             } else if (partner_response_counter !== response_counter) {
                 waitToAccept();
 
-                    // Send a warning to their partner that they're having to go back.
-                    sendReadySignal(-1);
-
-                    // Get the new guess.
-                    setTimeout(getPartnerGuess,
-                               partner_change_announcement * 1000
-                              );
-                };
-
-            // If they've upped their guess counter, get their new guess.
+            // Otherwise, get their guess and send the appropriate ready signal.
             } else {
-
-                // Send a warning to their partner that they're having to go back.
                 sendReadySignal(-1);
                 getPartnerGuess();
             };
