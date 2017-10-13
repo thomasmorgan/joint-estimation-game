@@ -1121,13 +1121,13 @@ checkIfPartnerAccepted = function() {
         } else {
             partner_response_counter = partner_guess_record["responseCounter"];
 
-                // If they've upped their guess counter, get their new guess.
-                } else {
-                    last_guess_counter = partner_guess_counter;
+            // If they haven't submitted a guess, wait again.
+            if (partner_response_counter===0) {
+                waitToAccept();
 
-                    // Update text.
-                    $("#title").text("Your partner chose to change their guess.");
-                    $(".instructions").text("");
+            // If they're not on the same response counter that we are, wait more.
+            } else if (partner_response_counter !== response_counter) {
+                waitToAccept();
 
                     // Send a warning to their partner that they're having to go back.
                     sendReadySignal(-1);
