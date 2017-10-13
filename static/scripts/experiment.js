@@ -352,7 +352,7 @@ showCorrectLength = function(){
    correction_label.show();
    if (response == -99){
       response_bar.attr({x:response_x_start,
-                         width: 1
+                         width: 0
                         });
   } else {
       response_bar.attr({x:response_x_start,
