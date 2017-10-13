@@ -235,10 +235,8 @@ proceedToNextTrial = function () {
     guessCounter = -1;
     response_counter = -1;
     partner_response_counter = 0;
-    last_guess_counter = -1;
     acceptType = 0;
     partner_accept_type = 0;
-    partner_guess_time = 0;
     current_ready_signals = 0;
     wait_for_partner_guess = 0;
     final_accuracy = 0;
@@ -472,7 +470,6 @@ allowResponse = function() {
     response_bar.show().attr({width: 0});
 
     // Set the response variable to default and increment guess counter.
-    last_accept_type = acceptType;
     acceptType = 0;
     guessCounter = guessCounter + 1;
 
@@ -916,7 +913,6 @@ acceptOwnGuess = function(){
   $(".instructions").text("Checking to see if your partner has responded.");
 
   // Note whose guess we accepted and send data.
-  last_accept_type = acceptType;
   acceptType = 1;
   ready_signal = 1;
   response_counter = response_counter + 1;
@@ -951,7 +947,6 @@ changeOwnGuess = function(){
       $(".instructions").text("");
 
       // Set the response variable to default and increment guess counter.
-      last_accept_type = acceptType;
       acceptType = 0;
       guessCounter = guessCounter + 1;
       response_counter = response_counter + 1;
@@ -1079,11 +1074,9 @@ checkIfPartnerAccepted = function() {
     } else {
 
       // Grab partner's guess data.
-      last_partner_guess_time = partner_guess_time;
-      partner_guess_time = most_recent_guess;
       partner_guess_trial = partner_guess_record["trialNumber"];
       partner_accept_type = partner_guess_record["acceptType"];
-      // console.log("Partner's last guess logged at "+partner_guess_time+", trial "+partner_guess_trial);
+      // console.log("Partner's last guess logged in trial "+partner_guess_trial);
 
       // If the partner hasn't guessed on this trial:
       if (partner_guess_trial < trialIndex) {
@@ -1116,18 +1109,7 @@ checkIfPartnerAccepted = function() {
 
         // If we haven't both accepted yet...
         } else {
-            partner_guess_counter = partner_guess_record["guessCounter"];
-
-            // Check to see if we've already tried to log a guess.
-            if (last_guess_counter > -1) {
-
-                // If they haven't submitted a guess, wait again.
-                if (partner_guess_counter===0) {
-                    waitToAccept();
-
-                // If their guess counter hasn't changed since the last time we checked, wait again.
-                } else if (partner_guess_counter == last_guess_counter) {
-                    waitToAccept();
+            partner_response_counter = partner_guess_record["responseCounter"];
 
                 // If they've upped their guess counter, get their new guess.
                 } else {
@@ -1148,8 +1130,10 @@ checkIfPartnerAccepted = function() {
 
             // If we haven't checked the guess before, update the variable.
             } else {
-              last_guess_counter = 0;
-              waitToAccept();
+
+                // Send a warning to their partner that they're having to go back.
+                sendReadySignal(-1);
+                getPartnerGuess();
             };
         };
       };
