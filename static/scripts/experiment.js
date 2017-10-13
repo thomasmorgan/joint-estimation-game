@@ -758,7 +758,7 @@ showPartner = function() {
     socket.send(channel + ':' + JSON.stringify({reset_signal}));
 
     // Reset the ready signals when we display our partner.
-    current_ready_signals = 2;
+    current_ready_signals = 0;
     ready_signal = 0;
     partner_ready_signal = 0;
     tried_to_finalize = 0;
