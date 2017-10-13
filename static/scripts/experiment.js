@@ -754,6 +754,10 @@ getPartnerGuess = function() {
         wait_for_partner_guess = 0;
         showPartner();
 
+      // If the partner has somehow gone onto the next trial, move on, too.
+      } else if (partner_guess_trial > trialIndex) {
+        proceedToNextTrial();
+
       // If partner hasn't guessed, wait.
       } else {
           waitForGuess();
