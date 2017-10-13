@@ -1,3 +1,5 @@
+// NB: Need to fix what happens when the partner changes their guess at the same time that the player does.
+
 // Settings
 PPU = 5; // Pixels per base unit.
 xMax = 100; // Maximum size of a bar in base units.
@@ -1153,7 +1155,8 @@ tryToFinalize = function() {
     // If both of us have accepted, move on.
     fetchPartnerData();
     partner_accept_type = partner_guess_record['acceptType'];
-    if (partner_accept_type==1 && acceptType == 1){
+    partner_guess_counter = partner_guess_record['guessCounter'];
+    if (partner_accept_type==1 && acceptType == 1 && partner_guess_counter == guessCounter){
 
       // Send the final guess to the server for bonuses.
       final_accuracy = (100 - Math.abs(int_list[trialIndex] - response))/100;
