@@ -794,7 +794,6 @@ showPartner = function() {
     $("#changeGuess").click(function(){
       $(document).click(function(e) { e.stopPropagation(); });
       clearTimeout(abandoned_participant);
-      response_counter = response_counter + 1;
       changeOwnGuess();
     });
 
@@ -823,7 +822,6 @@ showPartner = function() {
       $("#acceptGuess").click(function() {
         $(document).click(function(e) { e.stopPropagation(); });
         clearTimeout(abandoned_participant);
-        response_counter = response_counter + 1;
         acceptOwnGuess();
       });
     };
@@ -956,6 +954,7 @@ changeOwnGuess = function(){
       last_accept_type = acceptType;
       acceptType = 0;
       guessCounter = guessCounter + 1;
+      response_counter = response_counter + 1;
 
       // Prep signal that we're not ready.
       response = -99;
