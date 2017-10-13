@@ -747,8 +747,8 @@ getPartnerGuess = function() {
         wait_for_partner_guess = 0;
         showPartner();
 
-      // If we've been waiting too long, try to grab the partner's guess anyway.
-      } else if ((partner_guess_trial === trialIndex) && (partner_response_counter > response_counter && wait_for_partner_guess > 20)){
+      // If we've been waiting too long AND we're behind on the response counter, try to grab the partner's guess anyway.
+      } else if ((partner_guess_trial === trialIndex) && (partner_response_counter > response_counter) && (wait_for_partner_guess > 20)){
         enter_lock = false;
         partner_x_guess = partner_guess_record["guess"];
         wait_for_partner_guess = 0;
@@ -1138,7 +1138,7 @@ checkIfPartnerAccepted = function() {
                               );
                 };
 
-            // If we haven't checked the guess before, update the variable.
+            // If they've upped their guess counter, get their new guess.
             } else {
 
                 // Send a warning to their partner that they're having to go back.
