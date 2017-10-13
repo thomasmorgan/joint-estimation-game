@@ -233,11 +233,13 @@ proceedToNextTrial = function () {
     trialIndex = trialIndex + 1;
     guessCounter = -1;
     response_counter = -1;
+    partner_response_counter = 0;
     last_guess_counter = -1;
     acceptType = 0;
     partner_accept_type = 0;
     partner_guess_time = 0;
     current_ready_signals = 0;
+    wait_for_partner_guess = 0;
     final_accuracy = 0;
 
     // Identify whether we're in training or testing.
@@ -711,6 +713,11 @@ checkPartnerTraining = function() {
 // Check to see if partner has guessed one time per second.
 //
 waitForGuess = function() {
+
+    // Increment wait timer.
+    wait_for_partner_guess = wait_for_partner_guess + 1;
+
+    // Then try again.
     setTimeout(getPartnerGuess, 1000);
 };
 
@@ -736,9 +743,17 @@ getPartnerGuess = function() {
       console.log("Partner's current trial: "+partner_guess_trial);
 
       // Show partner's guess if on same trial and response numbers.
-      if ((partner_guess_trial >= trialIndex) && (partner_response_counter == response_counter)){
+      if ((partner_guess_trial === trialIndex) && (partner_response_counter === response_counter)){
         enter_lock = false;
         partner_x_guess = partner_guess_record["guess"];
+        wait_for_partner_guess = 0;
+        showPartner();
+
+      // If we've been waiting too long, try to grab the partner's guess anyway.
+      } else if ((partner_guess_trial === trialIndex) && (partner_response_counter > response_counter && wait_for_partner_guess > 20)){
+        enter_lock = false;
+        partner_x_guess = partner_guess_record["guess"];
+        wait_for_partner_guess = 0;
         showPartner();
 
       // If partner hasn't guessed, wait.
@@ -1067,6 +1082,7 @@ checkIfPartnerAccepted = function() {
       last_partner_guess_time = partner_guess_time;
       partner_guess_time = most_recent_guess;
       partner_guess_trial = partner_guess_record["trialNumber"];
+      partner_accept_type = partner_guess_record["acceptType"];
       console.log("Partner's last guess logged at "+partner_guess_time+", trial "+partner_guess_trial);
 
       // If the partner hasn't guessed on this trial:
@@ -1089,7 +1105,7 @@ checkIfPartnerAccepted = function() {
       } else {
 
         // If we've both accepted, move into the final checking phase.
-        if ((partner_ready_signal == 1 && acceptType==1) | (tried_to_finalize > finalize_cutoff/3)){
+        if ((partner_accept_type == 1 && acceptType==1) | (tried_to_finalize > finalize_cutoff/3)){
 
                // Update text.
                $("#title").text("Processing your guess...");
@@ -1156,7 +1172,7 @@ tryToFinalize = function() {
     fetchPartnerData();
     partner_accept_type = partner_guess_record['acceptType'];
     partner_guess_counter = partner_guess_record['guessCounter'];
-    if (partner_accept_type==1 && acceptType == 1 && partner_guess_counter == guessCounter){
+    if (partner_accept_type==1 && acceptType == 1 && partner_response_counter == response_counter){
 
       // Send the final guess to the server for bonuses.
       final_accuracy = (100 - Math.abs(int_list[trialIndex] - response))/100;
@@ -1165,7 +1181,7 @@ tryToFinalize = function() {
       // Move on to the next trial.
       proceedToNextTrial();
 
-    // If we don't have exactly 2 ready signals, something went wrong.
+    // If not, just keep checking.
     } else {
       getPartnerGuess();
     };
