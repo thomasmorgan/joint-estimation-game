@@ -1084,7 +1084,7 @@ checkIfPartnerAccepted = function() {
       partner_guess_time = most_recent_guess;
       partner_guess_trial = partner_guess_record["trialNumber"];
       partner_accept_type = partner_guess_record["acceptType"];
-      console.log("Partner's last guess logged at "+partner_guess_time+", trial "+partner_guess_trial);
+      // console.log("Partner's last guess logged at "+partner_guess_time+", trial "+partner_guess_trial);
 
       // If the partner hasn't guessed on this trial:
       if (partner_guess_trial < trialIndex) {
@@ -1109,6 +1109,7 @@ checkIfPartnerAccepted = function() {
         if ((partner_accept_type == 1 && acceptType==1) || (tried_to_finalize > finalize_cutoff/3)){
 
                // Update text.
+               console.log("Attempting to finalize guess...")
                $("#title").text("Processing your guess...");
                $(".instructions").text("");
                setTimeout(tryToFinalize,
