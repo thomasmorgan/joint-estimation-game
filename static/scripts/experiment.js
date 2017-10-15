@@ -417,7 +417,8 @@ sendDataToServer = function(){
               method: 'post',
               data: {
                   contents: trialData,
-                  info_type: "Info"
+                  info_type: "Info",
+                  property3: final_accuracy
               }
           });
 
@@ -428,7 +429,8 @@ sendDataToServer = function(){
                 method: 'post',
                 data: {
                     contents: trialData,
-                    info_type: "Info"
+                    info_type: "Info",
+                    property3: final_accuracy
                 }, success: function(resp) {
                     create_agent();
                 }
@@ -441,7 +443,8 @@ sendDataToServer = function(){
                 method: 'post',
                 data: {
                     contents: trialData,
-                    info_type: "Info"
+                    info_type: "Info",
+                    property3: final_accuracy
                 }
             });
         };
