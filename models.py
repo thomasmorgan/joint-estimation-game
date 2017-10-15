@@ -70,6 +70,20 @@ class Indexed(Node):
 
         self.index = self.network.size(type=Indexed)
 
+    @hybrid_property
+    def accuracy(self):
+        """Convert property3 to accuracy."""
+        return int(self.property3)
+
+    @accuracy.setter
+    def accuracy(self, index):
+        """Make accuracy settable."""
+        self.property3 = repr(accuracy)
+
+    @accuracy.expression
+    def accuracy(self):
+        """Make index queryable."""
+        return cast(self.property3, Integer)
 
 class ListSource(Source):
     """A source that generates lists of numbers randomly sampled from a uniform distribution for
