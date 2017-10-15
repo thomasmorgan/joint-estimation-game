@@ -24,8 +24,8 @@ abandonment_announcement = 5; // Time to wait before moving forward after being 
 finalize_cutoff = 3; // Number of times to check for finalization.
 
 // Set training information.
-trainN = 1; // Define number of training trials.
-testN = 10; // Define number of test trails (over training trials).
+trainN = 5; // Define number of training trials.
+testN = 15; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
