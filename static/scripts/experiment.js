@@ -195,7 +195,7 @@ check_for_partner = function() {
 
                 // If they've been waiting a long time for a partner, give them an option to leave.
                 if (waiting_for_partner > waiting_for_partner_timeout){
-                    mercy_button = "<input type='button' class='btn btn-secondary btn-lg' id='mercyButton' value='Opt out (or broken)' style='position:absolute;top:"+partner_y+"px;left:"+partner_x+"px;'>"
+                    mercy_button = "<input type='button' class='btn btn-secondary btn-lg' id='mercyButton' value='Opt out (or broken)' style='position:absolute;top:"+partner_y_start+"px;left:"+partner_x_start+"px;'>"
                     $(document).unbind('click');
                     $(document).off('click');
                     $("body").append(mercy_button);
@@ -751,7 +751,7 @@ checkPartnerTraining = function() {
             } else {
 
               // Grab partner's guess.
-              partner_guess_record = JSON.parse(resp.infos[0].contents);
+              fetchPartnerData();
               partner_guess_trial = partner_guess_record["trialNumber"];
 
               // If the partner has finished training, move on.
