@@ -9,6 +9,7 @@ from dallinger.nodes import Source
 from random import randint
 import json
 
+
 class Paired(Network):
     """Node <-> Node; Node <-> Node; ...
     """
@@ -42,6 +43,7 @@ class Paired(Network):
             # let both nodes receive the list that've been sent
             node.receive()
             partner_node.receive()
+
 
 class Indexed(Node):
     """A node with an index"""
@@ -85,9 +87,11 @@ class Indexed(Node):
         """Make index queryable."""
         return cast(self.property3, Integer)
 
+
 class ListSource(Source):
-    """A source that generates lists of numbers randomly sampled from a uniform distribution for
-    each pair in a paired network. These lists are then sent to each pair."""
+    """A source that generates lists of numbers randomly sampled from a uniform
+    distribution for each pair in a paired network. These lists are then sent
+    to each pair."""
 
     __mapper_args__ = {"polymorphic_identity": "listsource"}
 
