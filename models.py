@@ -21,16 +21,16 @@ class Paired(Network):
         # get a list of all potential partners
         all_nodes = self.nodes(type=type(node))
         other_nodes = [n for n in all_nodes if n is not node]
-        available_nodes = [n for n in other_nodes if not any(n.vectors)]
+        available_nodes = [n for n in other_nodes if not any(n.vectors())]
 
         # if there are available nodes
         if available_nodes:
             import random
             # pick a partner at random
-            partner = random.choice(available_nodes)
+            partner_node = random.choice(available_nodes)
 
             # connect to them
-            node.connect(direction="both", whom=partner)
+            node.connect(direction="both", whom=partner_node)
 
             # grab the source created for the network
             source = self.nodes(type=ListSource)[0]
