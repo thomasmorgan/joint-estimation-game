@@ -18,15 +18,19 @@ class Paired(Network):
     def add_node(self, node):
         """Node <-> Node; Node <-> Node; etc. """
 
-        n_index = node.index
-        if n_index % 2 == 1:
-            partner_n_index = n_index + 1
-        else:
-            partner_n_index = n_index - 1
+        # get a list of all potential partners
+        all_nodes = self.nodes(type=type(node))
+        other_nodes = [n for n in all_nodes if n is not node]
+        available_nodes = [n for n in other_nodes if not any(n.vectors)]
 
-        try:
-            partner_node = Indexed.query.filter_by(network_id=node.network_id, index=partner_n_index).one()
-            node.connect(direction="both", whom=partner_node)
+        # if there are available nodes
+        if available_nodes:
+            import random
+            # pick a partner at random
+            partner = random.choice(available_nodes)
+
+            # connect to them
+            node.connect(direction="both", whom=partner)
 
             # grab the source created for the network
             source = self.nodes(type=ListSource)[0]
@@ -38,10 +42,6 @@ class Paired(Network):
             # let both nodes receive the list that've been sent
             node.receive()
             partner_node.receive()
-
-        except:
-            pass
-
 
 class Indexed(Node):
     """A node with an index"""

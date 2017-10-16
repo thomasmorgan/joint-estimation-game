@@ -10,6 +10,7 @@ reset_signal = "Reset";
 partner_ready_signal = 0;
 websocket_signal = 0;
 partner_accept_type = 0;
+waiting_for_partner = 0;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
@@ -22,6 +23,7 @@ inter_trial_time = 5; // Time to wait between trials.
 abandonment_timer = 60; // Time to wait before kicking someone out.
 abandonment_announcement = 5; // Time to wait before moving forward after being abandoned.
 finalize_cutoff = 3; // Number of times to check for finalization.
+waiting_for_partner_timeout =  5 * 60; // Time to wait before showing opt-out button.
 
 // Set training information.
 trainN = 5; // Define number of training trials.
@@ -142,12 +144,7 @@ create_agent = function() {
         type: 'json',
         success: function (resp) {
             my_node_id = resp.node.id;
-            if (my_node_id === 2){
-              partner_node_id = 3
-            } else {
-              partner_node_id = 2
-            }
-            get_info();
+            check_for_partner();
         },
         error: function (err) {
             console.log("Error when initializing participant: "+ err);
@@ -164,14 +161,61 @@ create_agent = function() {
 };
 
 //
-// Check for partner's connection one time each second.
+// Monitor for the participant to be joined with a partner.
 //
-get_info = function() {
-    setTimeout(get_received_info, 1000);
+check_for_partner = function() {
+
+    reqwest({
+        url: "/node/" + my_node_id + "/vectors",
+        method: 'get',
+        type: 'json',
+        success: function (resp) {
+            vectors = resp.vectors;
+
+            // Ask for all my vectors.
+            if (vectors.length > 0) {
+                // if there are vectors, go through their origin_ids
+                // whichever origin id is not the same as your node_id,
+                // that must be your partner's id.
+                partner_id = -1;
+                for (i = 0; i < vectors.length; i++) {
+                    if (vectors[i].origin_id != my_node_id) {
+                        partner_id = vectors[i].origin_id;
+                    }
+                }
+                // Now that you've identified your partner, move on.
+                get_received_info();
+            } else {
+
+                // If there are no vectors, wait 1 second and then ask again
+                setTimeout(function(){
+                    waiting_for_partner = waiting_for_partner + 1;
+                    check_for_partner();
+                }, 1000);
+
+                // If they've been waiting a long time for a partner, give them an option to leave.
+                if (waiting_for_partner > waiting_for_partner_timeout){
+                    mercy_button = "<input type='button' class='btn btn-secondary btn-lg' id='mercyButton' value='Opt out (or broken)' style='position:absolute;top:"+partner_y+"px;left:"+partner_x+"px;'>"
+                    $(document).unbind('click');
+                    $(document).off('click');
+                    $("body").append(mercy_button);
+                    $("#mercyButton").click(function(){
+                      allow_exit();
+                      go_to_page('debriefing');
+                    });
+                };
+            };
+        },
+        error: function (err) {
+            console.log("Error when attempting to identify partner: "+ err);
+            $("#title").text("An error has occurred.");
+            $(".instructions").text("Please close this window and return this HIT.");
+        }
+    });
 };
 
 //
-// Monitor the server to see if a partner connects or is already connected.
+// Connect them to their partner.
 //
 get_received_info = function() {
     reqwest({
@@ -179,16 +223,16 @@ get_received_info = function() {
         method: 'get',
         type: 'json',
         success: function (resp) {
-            if (resp.infos.length == 0) {
-                get_info();
-            } else {
+            r = resp.infos[0].contents;
+            int_list = JSON.parse(r);
+            $("#title").text("Partner found and connected");
+            $(".instructions").text("Press enter to begin");
+            enter_lock = false;
 
-                r = resp.infos[0].contents;
-                int_list = JSON.parse(r);
-                $("#title").text("Partner connected");
-                $(".instructions").text("Press enter to begin");
-                enter_lock = false;
-            }
+            // Remove the button, if it's there.
+            if (waiting_for_partner > waiting_for_partner_timeout){
+                $("#mercyButton").remove();
+            };
         },
         error: function (err) {
             console.log("Error when checking if partner is connected: "+err);
@@ -197,6 +241,7 @@ get_received_info = function() {
         }
     });
 };
+
 
 //
 // Draw the user interface.
