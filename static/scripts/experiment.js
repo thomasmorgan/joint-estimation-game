@@ -467,43 +467,18 @@ sendDataToServer = function(){
 
 
     // If someone abandoned, just send the data and let the abandonment function proceed.
-    if (websocket_signal == -99) {
-      reqwest({
-          url: "/info/" + my_node_id,
-          method: 'post',
-          data: {
-              contents: trialData,
-              info_type: "Info",
-              property3: final_accuracy
-          }
-      });
-
-    // If we're at the last trial, proceed to questionnaire.
-    } else if ((trialIndex+1) == totalN){
-        reqwest({
-            url: "/info/" + my_node_id,
-            method: 'post',
-            data: {
-                contents: trialData,
-                info_type: "Info",
-                property3: final_accuracy
-            }, success: function(resp) {
+    reqwest({
+        url: "/info/" + my_node_id,
+        method: 'post',
+        data: {
+            contents: trialData,
+            property3: final_accuracy
+        }, success: function(resp) {
+            if (websocket_signal != -99 && (trialIndex + 1) == totalN) {
                 create_agent();
             }
-        });
-
-    // Otherwise, keep going with the estimation setup.
-    } else {
-        reqwest({
-            url: "/info/" + my_node_id,
-            method: 'post',
-            data: {
-                contents: trialData,
-                info_type: "Info",
-                property3: final_accuracy
-            }
-        });
-    }
+        }
+    });
 };
 
 //
