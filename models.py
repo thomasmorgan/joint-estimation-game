@@ -75,13 +75,9 @@ class ListSource(Source):
     def new_list(self):
         """Generate a list of numbers randomly sampled from a uniform distribution."""
 
-        # create list container and specify number of trials
-        list_to_add = []
+        max_number = 100
         list_length = 100
-
-        # iterate over our desired number of trials to make a new list of the appropriate length
-        for new_item in range(list_length):
-            list_to_add.append(randint(1, 100))
+        number_list = [choice(range(max_number)) + 1 for _ in range(list_length)]
 
         # ship our list as a string (which we'll then reconstitute as a list upon reading)
-        return Info(origin=self, contents=json.dumps(list_to_add))
+        return Info(origin=self, contents=json.dumps(number_list))
