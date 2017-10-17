@@ -5,7 +5,7 @@ from sqlalchemy import Integer
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
 from dallinger.nodes import Source
-from random import randint
+from random import randint, choice
 import json
 
 
@@ -25,10 +25,9 @@ class Paired(Network):
 
         # if there are available nodes
         if available_nodes:
-            import random
 
             # pick a partner at random
-            partner_node = random.choice(available_nodes)
+            partner_node = choice(available_nodes)
 
             # connect to them
             node.connect(direction="both", whom=partner_node)
