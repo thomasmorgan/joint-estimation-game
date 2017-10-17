@@ -771,29 +771,28 @@ checkPartnerTraining = function() {
             checkFailedVectors();
 
             // Loop back if this is the first trial and the partner hasn't guessed.
-            if (resp.infos.length == 0) {
+            if (resp.infos.length === 0) {
               waitForTraining();
 
             // If we've been waiting forever, kick us to debrief.
             } else if (waiting_for_partner > waiting_for_partner_timeout) {
-              handleAbandonedPartner();
-
+                handleAbandonedPartner();
             } else {
 
-              // Grab partner's guess.
-              fetchPartnerData();
-              partner_guess_trial = partner_guess_record["trialNumber"];
+                // Grab partner's guess.
+                fetchPartnerData();
+                partner_guess_trial = partner_guess_record["trialNumber"];
 
-              // If the partner has finished training, move on.
-              if (partner_guess_trial >= (trainN-1)){
-                $("#title").text("");
-                $(".instructions").text("");
-                proceedToNextTrial();
+                // If the partner has finished training, move on.
+                if (partner_guess_trial >= (trainN-1)){
+                    $("#title").text("");
+                    $(".instructions").text("");
+                    proceedToNextTrial();
 
               // Loop back if the partner hasn't finished training.
-              } else {
-                waitForTraining();
-              }
+                } else {
+                    waitForTraining();
+                }
             }
         },
         error: function (err) {
