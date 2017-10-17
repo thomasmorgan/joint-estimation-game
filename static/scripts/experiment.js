@@ -892,7 +892,7 @@ showPartner = function() {
     // Start the abandonment timer.
     var abandoned_participant;
     abandoned_participant = setTimeout(monitorForAbandoned,
-                                        abandonment_timer*1000);
+                                       abandonment_timer*1000);
 
     // Initialize change button.
     change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+change_guess_x+"px;'>";
@@ -902,9 +902,9 @@ showPartner = function() {
 
     // If they change their guess, stop the abandonment timer and allow to change.
     $("#changeGuess").click(function(){
-      $(document).click(function(e) { e.stopPropagation(); });
-      clearTimeout(abandoned_participant);
-      changeOwnGuess();
+        $(document).click(function(e) { e.stopPropagation(); });
+        clearTimeout(abandoned_participant);
+        changeOwnGuess();
     });
 
     // Show both guesses.
@@ -914,36 +914,36 @@ showPartner = function() {
     // If nobody guesses, ask them to go back and guess.
     if (partner_x_guess < 0 && response < 0) {
 
-      $("#title").text("Neither you nor your partner submitted a guess.");
-      $(".instructions").text("Please submit your guess by clicking 'Change my guess'.");
+        $("#title").text("Neither you nor your partner submitted a guess.");
+        $(".instructions").text("Please submit your guess by clicking 'Change my guess'.");
 
     // If they guessed, allow them to accept it.
     } else {
 
-      // If someone submitted a guess, allow them to accept.
-      accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+accept_guess_x+'px;">';
+        // If someone submitted a guess, allow them to accept.
+        accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+accept_guess_x+'px;">';
 
-      // Show updated instructions based on whether they or their partner changed their guess.
-      if (response_counter===0){
+        // Show updated instructions based on whether they or their partner changed their guess.
+        if (response_counter===0){
           $("#title").text("Would you like to accept your guess or change it?");
-      } else { // We've already identified partner_accept_type in the enclosing function.
-          if (partner_accept_type===0 && acceptType===1){
+        } else { // We've already identified partner_accept_type in the enclosing function.
+            if (partner_accept_type===0 && acceptType===1){
               $("#title").html("Your partner chose to change their guess.<br>Would you like to accept your guess or change it?");
-          } else if (partner_accept_type===1 && acceptType===0){
+            } else if (partner_accept_type===1 && acceptType===0){
               $("#title").html("Your partner did not choose to change their guess.<br>Would you like to accept your guess or change it?");
-          } else if (partner_accept_type===0 && acceptType===0){
+            } else if (partner_accept_type===0 && acceptType===0){
               $("#title").html("Your partner also chose to change their guess.<br>Would you like to accept your guess or change it?");
-          }
-      }
-      $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
+            }
+        }
+        $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
 
-      // If they submitted a guess, allow them to accept it and stop the abandonment timer.
-      $("body").append(accept_guess_button);
-      $("#acceptGuess").click(function() {
-        $(document).click(function(e) { e.stopPropagation(); });
-        clearTimeout(abandoned_participant);
-        acceptOwnGuess();
-      });
+        // If they submitted a guess, allow them to accept it and stop the abandonment timer.
+        $("body").append(accept_guess_button);
+        $("#acceptGuess").click(function() {
+            $(document).click(function(e) { e.stopPropagation(); });
+            clearTimeout(abandoned_participant);
+            acceptOwnGuess();
+        });
     }
 };
 
