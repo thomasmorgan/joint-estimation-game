@@ -1191,67 +1191,67 @@ checkIfPartnerAccepted = function() {
 
     // Loop back if this is the first trial and the partner hasn't guessed.
     if (isNaN(partner_guess_record)) {
-      waitToAccept();
+        waitToAccept();
     } else {
 
-      // Grab partner's guess data.
-      partner_guess_trial = partner_guess_record["trialNumber"];
-      partner_accept_type = partner_guess_record["acceptType"];
-      // console.log("Partner's last guess logged in trial "+partner_guess_trial);
+        // Grab partner's guess data.
+        partner_guess_trial = partner_guess_record["trialNumber"];
+        partner_accept_type = partner_guess_record["acceptType"];
+        // console.log("Partner's last guess logged in trial "+partner_guess_trial);
 
-      // If the partner hasn't guessed on this trial:
-      if (partner_guess_trial < trialIndex) {
+        // If the partner hasn't guessed on this trial:
+        if (partner_guess_trial < trialIndex) {
 
-        // Try to finalize if we've been hanging, ...
-        if (tried_to_finalize > finalize_cutoff/3){
-          tryToFinalize();
+            // Try to finalize if we've been hanging, ...
+            if (tried_to_finalize > finalize_cutoff/3){
+                tryToFinalize();
 
-        // but just keep checking if we haven't been hanging.
-        } else {
-          waitToAccept();
-        }
-
-      // If the partner has already indicated that they're done, move on.
-      } else if (partner_guess_trial > trialIndex) {
-        proceedToNextTrial();
-
-      // If the partner has guessed and is still on this trial, see whether they've accepted before moving on.
-      } else {
-
-        // If we've both accepted, move into the final checking phase.
-        if ((partner_accept_type == 1 && acceptType==1) || (tried_to_finalize > finalize_cutoff/3)){
-
-               // Update text.
-               console.log("Attempting to finalize guess...");
-               $("#title").text("Processing your guess...");
-               $(".instructions").text("");
-               setTimeout(tryToFinalize,
-                          partner_change_announcement * 1000);
-
-        // If we haven't both accepted yet...
-        } else {
-            partner_response_counter = partner_guess_record["responseCounter"];
-
-            // If they haven't submitted a guess, wait again.
-            if (partner_response_counter<0) {
-                waitToAccept();
-
-            // If they're not on the same response counter that we are, wait more.
-            } else if (partner_response_counter !== response_counter) {
-                waitToAccept();
-
-              // If their last signal was a reset signal, wait.
-            } else if (response_signal==0){
-                waitToAccept();
-
-            // Otherwise, get their guess and send the appropriate ready signal.
+            // but just keep checking if we haven't been hanging.
             } else {
-                sendReadySignal(-1);
-                getPartnerGuess();
+                waitToAccept();
+            }
+
+        // If the partner has already indicated that they're done, move on.
+        } else if (partner_guess_trial > trialIndex) {
+            proceedToNextTrial();
+
+        // If the partner has guessed and is still on this trial, see whether they've accepted before moving on.
+        } else {
+
+            // If we've both accepted, move into the final checking phase.
+            if ((partner_accept_type == 1 && acceptType == 1) || (tried_to_finalize > finalize_cutoff/3)){
+
+                // Update text.
+                console.log("Attempting to finalize guess...");
+                $("#title").text("Processing your guess...");
+                $(".instructions").text("");
+                setTimeout(tryToFinalize,
+                           partner_change_announcement * 1000);
+
+            // If we haven't both accepted yet...
+            } else {
+                partner_response_counter = partner_guess_record["responseCounter"];
+
+                // If they haven't submitted a guess, wait again.
+                if (partner_response_counter < 0) {
+                    waitToAccept();
+
+                // If they're not on the same response counter that we are, wait more.
+                } else if (partner_response_counter !== response_counter) {
+                    waitToAccept();
+
+                  // If their last signal was a reset signal, wait.
+                } else if (response_signal === 0){
+                    waitToAccept();
+
+                // Otherwise, get their guess and send the appropriate ready signal.
+                } else {
+                    sendReadySignal(-1);
+                    getPartnerGuess();
+                }
             }
         }
-      }
-  }
+    }
 };
 
 //
