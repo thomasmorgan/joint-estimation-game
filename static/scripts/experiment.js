@@ -990,28 +990,26 @@ showPartnerGuess = function(){
 //
 showOwnGuess = function(){
 
-  // Turn off mousetracking.
-  $(document).off('mousemove',trackMouseMovement);
+    // Turn off mousetracking.
+    $(document).off('mousemove',trackMouseMovement);
 
-  // Fill in the response bar if they responded.
-  response_background.show();
-  if (response > 0) {
-    response_bar.show().attr({x: response_x_start,
-                              width: response*PPU
-                             });
-  } else {
-    response_bar.show().attr({x: response_x_start,
-                              width: 0
-                             });
-  }
+    // Fill in the response bar if they responded.
+    response_background.show();
+    if (response > 0) {
+        response_bar.show().attr({x: response_x_start,
+                                  width: response*PPU});
+    } else {
+        response_bar.show().attr({x: response_x_start,
+                                width: 0});
+    }
 
-  // Label the bar.
-  own_label = paper.text(response_x_start + 10,
-                         response_y_start - inset + 50,
-                         "Your guess");
-  own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
-                   'font-size': '14px',
-                   'text-anchor': 'start'});
+    // Label the bar.
+    own_label = paper.text(response_x_start + 10,
+                           response_y_start - inset + 50,
+                           "Your guess");
+    own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                    'font-size': '14px',
+                    'text-anchor': 'start'});
 };
 
 //
@@ -1019,30 +1017,30 @@ showOwnGuess = function(){
 //
 acceptOwnGuess = function(){
 
-  // Remove partners' guesses and buttons.
-  reset_signal = "Submitted";
-  partner_background.hide();
-  partner_bar.hide();
-  partner_label.hide();
-  response_background.hide();
-  response_bar.hide();
-  own_label.hide();
-  $("#acceptGuess").remove();
-  $("#changeGuess").remove();
+    // Remove partners' guesses and buttons.
+    reset_signal = "Submitted";
+    partner_background.hide();
+    partner_bar.hide();
+    partner_label.hide();
+    response_background.hide();
+    response_bar.hide();
+    own_label.hide();
+    $("#acceptGuess").remove();
+    $("#changeGuess").remove();
 
-  // Reset text.
-  $("#title").text("Please wait...");
-  $(".instructions").text("Checking to see if your partner has responded.");
+    // Reset text.
+    $("#title").text("Please wait...");
+    $(".instructions").text("Checking to see if your partner has responded.");
 
-  // Note whose guess we accepted and send data.
-  acceptType = 1;
-  ready_signal = 1;
-  response_counter = response_counter + 1;
-  sendReadySignal(ready_signal);
-  sendDataToServer();
+    // Note whose guess we accepted and send data.
+    acceptType = 1;
+    ready_signal = 1;
+    response_counter = response_counter + 1;
+    sendReadySignal(ready_signal);
+    sendDataToServer();
 
-  // Start next trial.
-  checkIfPartnerAccepted();
+    // Start next trial.
+    checkIfPartnerAccepted();
 };
 
 //
