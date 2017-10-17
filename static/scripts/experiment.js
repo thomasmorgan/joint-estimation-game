@@ -262,7 +262,7 @@ get_received_info = function() {
 //
 // Draw the user interface.
 //
-drawUserInterface = function () {
+drawUserInterface = function() {
 
     paper = Raphael(0, 50, 800, 600);
 
