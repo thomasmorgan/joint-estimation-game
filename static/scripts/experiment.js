@@ -695,66 +695,65 @@ disableResponseAfterDelay = function() {
 // Track mouse movement during response.
 //
 trackMouseMovement = function(e) {
-  currentXLocation = e.pageX-response_x_start;
-  response_bar_size = bounds(currentXLocation,
-                             1*PPU,
-                             xMax*PPU);
-  response_bar.attr({ x: response_x_start,
-                      width: response_bar_size });
+    currentXLocation = e.pageX-response_x_start;
+    response_bar_size = bounds(currentXLocation,
+                               1*PPU,
+                               xMax*PPU);
+    response_bar.attr({ x: response_x_start,
+                        width: response_bar_size });
 };
 
 //
 // Wait for partner to finish training.
 //
-waitForTraining = function(){
+waitForTraining = function() {
 
-  // Keep track of how long we've been waiting.
-  waiting_for_partner = waiting_for_partner + 1;
+    // Keep track of how long we've been waiting.
+    waiting_for_partner = waiting_for_partner + 1;
 
-  // Update text and check again.
-  $("#title").text("Please wait");
-  $(".instructions").text("Your partner is finishing training");
-  setTimeout(checkPartnerTraining,1000);
-
+    // Update text and check again.
+    $("#title").text("Please wait");
+    $(".instructions").text("Your partner is finishing training");
+    setTimeout(checkPartnerTraining,1000);
 };
 
 //
 // Wrap up if partner abandons.
 //
-handleAbandonedPartner = function(){
+handleAbandonedPartner = function() {
 
-  // Inform player about what happened.
-  $("#title").text("Your partner has abandoned the experiment.");
-  $(".instructions").text("You will receive base pay and any earned bonuses.");
+    // Inform player about what happened.
+    $("#title").text("Your partner has abandoned the experiment.");
+    $(".instructions").text("You will receive base pay and any earned bonuses.");
 
-  // Send a signal, in case partner is still listening.
-  sendReadySignal("You left!");
+    // Send a signal, in case partner is still listening.
+    sendReadySignal("You left!");
 
-  // Move on.
-  setTimeout( function () {
-      allow_exit();
-      go_to_page('debriefing');
-  }, abandonment_announcement*1000);
+    // Move on.
+    setTimeout( function () {
+        allow_exit();
+        go_to_page('debriefing');
+    }, abandonment_announcement*1000);
 };
 
 //
 // Check whether our vectors have failed (i.e., partner abandoned/returned HIT).
 //
 checkFailedVectors = function() {
-  reqwest({
-      url: "/node/" + my_node_id + "/vectors",
-      method: 'get',
-      type: 'json',
-      success: function (resp) {
-          vectors = resp.vectors;
-          if (vectors.length===0) { handleAbandonedPartner(); }
-      },
-      error: function (err) {
-          console.log("Error when attempting to check for failed node: "+ err);
-          $("#title").text("An error has occurred.");
-          $(".instructions").text("Please close this window and return this HIT.");
-      }
-  });
+    reqwest({
+        url: "/node/" + my_node_id + "/vectors",
+        method: 'get',
+        type: 'json',
+        success: function (resp) {
+            vectors = resp.vectors;
+            if (vectors.length===0) { handleAbandonedPartner(); }
+        },
+        error: function (err) {
+            console.log("Error when attempting to check for failed node: "+ err);
+            $("#title").text("An error has occurred.");
+            $(".instructions").text("Please close this window and return this HIT.");
+        }
+    });
 };
 
 //
