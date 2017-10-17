@@ -746,7 +746,7 @@ checkFailedVectors = function() {
         type: 'json',
         success: function (resp) {
             vectors = resp.vectors;
-            if (vectors.length===0) { handleAbandonedPartner(); }
+            if (vectors.length===1) { handleAbandonedPartner(); }
         },
         error: function (err) {
             console.log("Error when attempting to check for failed node: "+ err);
