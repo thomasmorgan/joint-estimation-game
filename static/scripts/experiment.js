@@ -728,10 +728,52 @@ trackMouseMovement = function(e) {
 // Wait for partner to finish training.
 //
 waitForTraining = function(){
+
+  // Keep track of how long we've been waiting.
+  waiting_for_partner = waiting_for_partner + 1;
+
+  // Update text and check again.
   $("#title").text("Please wait");
   $(".instructions").text("Your partner is finishing training");
   setTimeout(checkPartnerTraining,1000);
+
 }
+
+//
+// Wrap up if partner abandons.
+//
+handleAbandonedPartner = function(){
+
+  // Inform player about what happened.
+  $("#title").text("Your partner has abandoned the experiment.");
+  $(".instructions").text("You will receive base pay and any earned bonuses.");
+
+  // Move on.
+  setTimeout( function () {
+      allow_exit();
+      go_to_page('debriefing');
+  }, abandonment_announcement*1000);
+}
+
+//
+// Check whether our vectors have failed (i.e., partner abandoned/returned HIT).
+//
+checkFailedVectors = function() {
+  reqwest({
+      url: "/node/" + my_node_id + "/vectors",
+      method: 'get',
+      type: 'json',
+      success: function (resp) {
+          vectors = resp.vectors;
+          if (vectors.length===0) { handleAbandonedPartner(); };
+      },
+      error: function (err) {
+          console.log("Error when attempting to check for failed node: "+ err);
+          $("#title").text("An error has occurred.");
+          $(".instructions").text("Please close this window and return this HIT.");
+      }
+  });
+};
 
 //
 // Montior the server to see if their partner's finished training.
