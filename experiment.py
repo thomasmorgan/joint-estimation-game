@@ -1,13 +1,6 @@
 """Define an experiment to explore joint decision making."""
 
 from dallinger.experiments import Experiment
-from dallinger.models import Network, Node, Info
-from sqlalchemy import Integer
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.expression import cast
-from dallinger.nodes import Source
-from random import randint
-import json
 
 
 class JointEstimation(Experiment):
