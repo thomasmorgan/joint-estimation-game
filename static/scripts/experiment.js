@@ -436,76 +436,74 @@ showCorrectLength = function() {
 //
 sendDataToServer = function(){
 
-        // Handle reset signals to yoke participants to same trial.
-        if (reset_signal=="Reset"){
-          response_type = 0;
-          trialData = JSON.stringify({"trialType": trialType,
-                                      "trialNumber": trialIndex,
-                                      "guessCounter": guessCounter,
-                                      "responseCounter": response_counter,
-                                      "length": int_list[trialIndex],
-                                      "guess": response,
-                                      "acceptType": 0,
-                                      "finalAccuracy": final_accuracy,
-                                      "responseType": response_type
-                                    });
-        } else {
-          response_type = 1;
-          trialData = JSON.stringify({"trialType": trialType,
-                                      "trialNumber": trialIndex,
-                                      "guessCounter": guessCounter,
-                                      "responseCounter": response_counter,
-                                      "length": int_list[trialIndex],
-                                      "guess": response,
-                                      "acceptType": acceptType,
-                                      "finalAccuracy": final_accuracy,
-                                      "responseType": response_type
-                                    });
-        }
+    // Handle reset signals to yoke participants to same trial.
+    if (reset_signal=="Reset"){
+        response_type = 0;
+        trialData = JSON.stringify({"trialType": trialType,
+                                    "trialNumber": trialIndex,
+                                    "guessCounter": guessCounter,
+                                    "responseCounter": response_counter,
+                                    "length": int_list[trialIndex],
+                                    "guess": response,
+                                    "acceptType": 0,
+                                    "finalAccuracy": final_accuracy,
+                                    "responseType": response_type});
+    } else {
+        response_type = 1;
+        trialData = JSON.stringify({"trialType": trialType,
+                                    "trialNumber": trialIndex,
+                                    "guessCounter": guessCounter,
+                                    "responseCounter": response_counter,
+                                    "length": int_list[trialIndex],
+                                    "guess": response,
+                                    "acceptType": acceptType,
+                                    "finalAccuracy": final_accuracy,
+                                    "responseType": response_type});
+    }
 
-        // Prepare data to send to server.
-        console.log('Accept Type: '+acceptType);
-        console.log('Logged guess: '+response);
+    // Prepare data to send to server.
+    console.log('Accept Type: ' + acceptType);
+    console.log('Logged guess: ' + response);
 
 
-        // If someone abandoned, just send the data and let the abandonment function proceed.
-        if (websocket_signal == -99) {
-          reqwest({
-              url: "/info/" + my_node_id,
-              method: 'post',
-              data: {
-                  contents: trialData,
-                  info_type: "Info",
-                  property3: final_accuracy
-              }
-          });
+    // If someone abandoned, just send the data and let the abandonment function proceed.
+    if (websocket_signal == -99) {
+      reqwest({
+          url: "/info/" + my_node_id,
+          method: 'post',
+          data: {
+              contents: trialData,
+              info_type: "Info",
+              property3: final_accuracy
+          }
+      });
 
-        // If we're at the last trial, proceed to questionnaire.
-        } else if ((trialIndex+1) == totalN){
-            reqwest({
-                url: "/info/" + my_node_id,
-                method: 'post',
-                data: {
-                    contents: trialData,
-                    info_type: "Info",
-                    property3: final_accuracy
-                }, success: function(resp) {
-                    create_agent();
-                }
-            });
+    // If we're at the last trial, proceed to questionnaire.
+    } else if ((trialIndex+1) == totalN){
+        reqwest({
+            url: "/info/" + my_node_id,
+            method: 'post',
+            data: {
+                contents: trialData,
+                info_type: "Info",
+                property3: final_accuracy
+            }, success: function(resp) {
+                create_agent();
+            }
+        });
 
-        // Otherwise, keep going with the estimation setup.
-        } else {
-            reqwest({
-                url: "/info/" + my_node_id,
-                method: 'post',
-                data: {
-                    contents: trialData,
-                    info_type: "Info",
-                    property3: final_accuracy
-                }
-            });
-        }
+    // Otherwise, keep going with the estimation setup.
+    } else {
+        reqwest({
+            url: "/info/" + my_node_id,
+            method: 'post',
+            data: {
+                contents: trialData,
+                info_type: "Info",
+                property3: final_accuracy
+            }
+        });
+    }
 };
 
 //
