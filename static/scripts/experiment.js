@@ -106,6 +106,17 @@ socket.onmessage = function (msg) {
                     go_to_page('debriefing');
                 }, abandonment_announcement*1000);
             };
+        // If it's a reset signal, reset the current ready signals.
+        } else if (next_signal == "You left!") {
+
+            // If the partner abandoned it, go to debriefing.
+            $("#title").text("You have abandoned the experiment.");
+            $(".instructions").text("You will receive only your base pay.");
+            setTimeout( function () {
+                sendDataToServer();
+                allow_exit();
+                go_to_page('debriefing');
+            }, abandonment_announcement*1000);
 
         // If it's a reset signal, reset the current ready signals.
         } else if (next_signal == "Reset") {
@@ -747,6 +758,9 @@ handleAbandonedPartner = function(){
   // Inform player about what happened.
   $("#title").text("Your partner has abandoned the experiment.");
   $(".instructions").text("You will receive base pay and any earned bonuses.");
+
+  // Send a signal, in case partner is still listening.
+  sendReadySignal("You left!");
 
   // Move on.
   setTimeout( function () {
