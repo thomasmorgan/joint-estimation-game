@@ -27,7 +27,7 @@ class Paired(Network):
         # if there are available nodes
         if available_nodes:
             import random
-            
+
             # pick a partner at random
             partner_node = random.choice(available_nodes)
 
