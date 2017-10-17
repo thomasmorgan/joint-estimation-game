@@ -1060,34 +1060,34 @@ changeOwnGuess = function(){
   // Add a brief timeout between pressing button and allowing the change.
   setTimeout( function() {
 
-      // Remove buttons and update text.
-      $("#acceptGuess").remove();
-      $("#changeGuess").remove();
-      $("#title").text("Re-create the line length.");
-      $(".instructions").text("");
+        // Remove buttons and update text.
+        $("#acceptGuess").remove();
+        $("#changeGuess").remove();
+        $("#title").text("Re-create the line length.");
+        $(".instructions").text("");
 
-      // Set the response variable to default and increment guess counter.
-      acceptType = 0;
-      guessCounter = guessCounter + 1;
-      response_counter = response_counter + 1;
+        // Set the response variable to default and increment guess counter.
+        acceptType = 0;
+        guessCounter = guessCounter + 1;
+        response_counter = response_counter + 1;
 
-      // Prep signal that we're not ready.
-      response = -99;
-      ready_signal = -1;
-      reset_signal = "Changed";
-      sendReadySignal(ready_signal);
+        // Prep signal that we're not ready.
+        response = -99;
+        ready_signal = -1;
+        reset_signal = "Changed";
+        sendReadySignal(ready_signal);
 
-      // Track the mouse during response.
-      response = undefined;
-      response_bar_size = undefined;
-      $(document).mousemove(trackMouseMovement);
+        // Track the mouse during response.
+        response = undefined;
+        response_bar_size = undefined;
+        $(document).mousemove(trackMouseMovement);
 
-      // If they click to submit a response, clear the timeout and update the site text.
-      change_lock = false;
-      $(document).click(acknowledgeChangedGuess);
+        // If they click to submit a response, clear the timeout and update the site text.
+        change_lock = false;
+        $(document).click(acknowledgeChangedGuess);
 
-      // Get partner's guess.
-      setTimeout( function() {
+        // Get partner's guess.
+        setTimeout( function() {
 
             // Send data and ready signal.
             sendReadySignal(ready_signal);
@@ -1103,7 +1103,7 @@ changeOwnGuess = function(){
             getPartnerGuess();
 
           }, response_timeout*1000);
-  }, 1);
+    }, 1);
 };
 
 //
