@@ -5,7 +5,7 @@ from sqlalchemy import Integer
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
 from dallinger.nodes import Source
-from random import randint, choice
+from random import choice
 import json
 
 
