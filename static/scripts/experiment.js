@@ -491,7 +491,6 @@ waitToGuess = function(){
     stimulus_background.hide();
     $("#title").text("");
     $(".instructions").text("");
-
 };
 
 //
@@ -544,83 +543,76 @@ allowResponse = function() {
 //
 function acknowledgeGuess(){
 
-  // Only allow them to guess in certain settings.
-  if (acknowledge_lock === false){
+    // Only allow them to guess in certain settings.
+    if (acknowledge_lock === false){
 
-      // Register response and hide bars.
-      response = Math.round(response_bar_size/PPU);
-      sendDataToServer();
-      console.log('Mouse click: '+response);
-      response_bar.hide();
-      response_background.hide();
+        // Register response and hide bars.
+        response = Math.round(response_bar_size/PPU);
+        sendDataToServer();
+        console.log('Mouse click: '+response);
+        response_bar.hide();
+        response_background.hide();
 
-      // Stop the timer if we click.
-      $(document).click(function(e) { e.stopPropagation(); });
+        // Stop the timer if we click.
+        $(document).click(function(e) { e.stopPropagation(); });
 
-      // Reset for next trial.
-      Mousetrap.resume();
+        // Reset for next trial.
+        Mousetrap.resume();
 
-      // Stop the unresponsive timer and prevent multiple guesses.
-      clearTimeout(unresponsiveParticipant);
-      $(document).off("mousemove",trackMouseMovement);
-      $(document).off('click');
+        // Stop the unresponsive timer and prevent multiple guesses.
+        clearTimeout(unresponsiveParticipant);
+        $(document).off("mousemove",trackMouseMovement);
+        $(document).off('click');
 
-      // If a training trial, display correction; if test, update text.
-      if (trialType == 'train'){
+        // If a training trial, display correction; if test, update text.
+        if (trialType == 'train'){
 
-        // Display correct length.
-        showCorrectLength();
+            // Display correct length.
+            showCorrectLength();
 
-        // If this is the last training trial, prepare them for test trials.
-        if (trialIndex == (trainN-1)){
-          setTimeout(function(){
+            // If this is the last training trial, prepare them for test trials.
+            if (trialIndex == (trainN-1)) {
+                setTimeout(function() {
+                    // Get the bars to disappear after the correct time.
+                    response_bar.hide();
+                    response_background.hide();
+                    own_label.hide();
+                    correction_bar.hide();
+                    correction_background.hide();
+                    correction_label.hide();
 
-            // Get the bars to disappear after the correct time.
-            response_bar.hide();
-            response_background.hide();
-            own_label.hide();
-            correction_bar.hide();
-            correction_background.hide();
-            correction_label.hide();
+                    // Update the text.
+                    $("#title").text("Congrats! You've finished the training trials");
+                    $(".instructions").html("Your next trial will be a <b>test</b> trial.");
+                }, correction_timeout*1000);
 
-            // Update the text.
-            $("#title").text("Congrats! You've finished the training trials");
-            $(".instructions").html("Your next trial will be a <b>test</b> trial.");
+                // Move to next trial.
+                setTimeout(function(){
+                    $("#title").text("");
+                    $(".instructions").html("");
+                    checkPartnerTraining();
+                }, 5000 + (correction_timeout*1000));
 
-          }, correction_timeout*1000);
+            } else {
+                // If it's not the last training trial, clean up and advance to next turn.
+                setTimeout(function() {
+                    response_bar.hide();
+                    response_background.hide();
+                    own_label.hide();
+                    correction_bar.hide();
+                    correction_background.hide();
+                    correction_label.hide();
 
-          // Move to next trial.
-          setTimeout(function(){
-            $("#title").text("");
-            $(".instructions").html("");
-            checkPartnerTraining();
-          }, 5000 + (correction_timeout*1000));
-
-        } else {
-
-          // If it's not the last training trial, clean up and advance to next turn.
-          setTimeout(function() {
-            response_bar.hide();
-            response_background.hide();
-            own_label.hide();
-            correction_bar.hide();
-            correction_background.hide();
-            correction_label.hide();
-
-            // Move on to the next trial.
-            proceedToNextTrial();
-          }, correction_timeout*1000);
-        }
-
+                    // Move on to the next trial.
+                    proceedToNextTrial();
+                }, correction_timeout*1000);
+            }
       } else {
-
         // Wait for partner to guess.
         $("#title").text("Your response has been recorded.");
         $(".instructions").text("Please wait for your partner's guess.");
         setTimeout(getPartnerGuess, 1000);
-
       }
-
       // Only allow them to acknowledge once.
       acknowledge_lock = true;
     }
