@@ -150,12 +150,12 @@ create_agent = function() {
             console.log("Error when initializing participant: "+ err);
             $("#title").text("An error has occurred.");
             $(".instructions").text("Please close this window and return this HIT.");
-            // err_response = JSON.parse(err.response);
-            // if (err_response.hasOwnProperty('html')) {
-            //     $('body').html(err_response.html);
-            //      allow_exit();
-            //      go_to_page('debriefing');
-            // };
+            err_response = JSON.parse(err.response);
+            if (err_response.hasOwnProperty('html')) {
+                $('body').html(err_response.html);
+                 allow_exit();
+                 go_to_page('debriefing');
+            };
         }
     });
 };
