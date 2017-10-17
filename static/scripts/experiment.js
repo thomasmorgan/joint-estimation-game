@@ -27,7 +27,7 @@ finalize_cutoff = 3; // Number of times to check for finalization.
 waiting_for_partner_timeout =  5 * 60; // Time to wait before showing opt-out button.
 
 // Set training information.
-trainN = 5; // Define number of training trials.
+trainN = 10; // Define number of training trials.
 testN = 15; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
