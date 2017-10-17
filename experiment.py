@@ -33,17 +33,9 @@ class JointEstimation(Experiment):
     def setup(self):
         """Create networks. Add a source if the networks don't yet exist."""
         if not self.networks():
-            for _ in range(self.practice_repeats):
-                network = self.create_network()
-                network.role = "practice"
-                self.session.add(network)
-                self.models.ListSource(network=network)
-            for _ in range(self.experiment_repeats):
-                network = self.create_network()
-                network.role = "experiment"
-                self.session.add(network)
-                self.models.ListSource(network=network)
-            self.session.commit()
+            super(JointEstimation, self).setup()
+            for net in self.networks():
+                self.models.ListSource(network=net)
 
     def bonus(self, participant):
         """Calculate a participant's bonus."""
