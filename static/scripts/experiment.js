@@ -11,6 +11,7 @@ partner_ready_signal = 0;
 websocket_signal = 0;
 partner_accept_type = 0;
 waiting_for_partner = 0;
+partner_guess_record = NaN;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
@@ -312,7 +313,6 @@ proceedToNextTrial = function () {
       // Update announcements and current trial info.
       $("#title").text("Beginning next round");
       $(".instructions").text("");
-      $("#trial-number").html(trialIndex+1);
       console.log('BEGINNING TRIAL '+trialIndex)
 
       setTimeout( function() {
@@ -341,14 +341,16 @@ proceedToNextTrial = function () {
 
           // Update header for participant.
           $("#training-or-testing").html("Training");
-          $("#total-trials").html(totalN-1);
+          $("#total-trials").html(trainN);
+          $("#trial-number").html(trialIndex+1);
 
       // ... or if this is a test trial ...
       } else {
 
           // Update header for participant.
           $("#training-or-testing").html("Testing");
-          $("#total-trials").html(totalN-1);
+          $("#total-trials").html(testN);
+          $("#trial-number").html(trialIndex+1-trainN);
 
       };
 
