@@ -45,7 +45,7 @@ class Paired(Network):
 
 
 class Indexed(Node):
-    """A node with an index"""
+    """A node with an accuracy"""
 
     __mapper_args__ = {"polymorphic_identity": "indexed"}
 
