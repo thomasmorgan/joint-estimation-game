@@ -55,7 +55,7 @@ class Indexed(Node):
         return int(self.property3)
 
     @accuracy.setter
-    def accuracy(self, index):
+    def accuracy(self, accuracy):
         """Make accuracy settable."""
         self.property3 = repr(accuracy)
 
