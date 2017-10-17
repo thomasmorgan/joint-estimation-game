@@ -824,53 +824,53 @@ getPartnerGuess = function() {
     fetchPartnerData();
 
     // If partner hasn't responded, wait.
-    if (partner_guess_record == NaN) {
+    if (isNaN(partner_guess_record)) {
         waitForGuess();
 
     // Move forward if the partner has guessed.
     } else {
 
-      // Derive guess information from data.
-      partner_guess_trial = partner_guess_record["trialNumber"];
-      partner_response_counter = partner_guess_record['responseCounter'];
-      partner_accept_type = partner_guess_record['acceptType'];
-      console.log("Partner's current trial: "+partner_guess_trial);
+        // Derive guess information from data.
+        partner_guess_trial = partner_guess_record["trialNumber"];
+        partner_response_counter = partner_guess_record['responseCounter'];
+        partner_accept_type = partner_guess_record['acceptType'];
+        console.log("Partner's current trial: "+partner_guess_trial);
 
-      // If we're on same trial and response numbers...
-      if ((partner_guess_trial === trialIndex) && (partner_response_counter === response_counter)){
+        // If we're on same trial and response numbers...
+        if ((partner_guess_trial === trialIndex) && (partner_response_counter === response_counter)){
 
-        // ... see if we can move on if we've both accepted.
-        if (partner_accept_type===1 && acceptType===1){
-            checkIfPartnerAccepted();
+            // ... see if we can move on if we've both accepted.
+            if (partner_accept_type===1 && acceptType===1){
+                checkIfPartnerAccepted();
 
-        // .. go back if we haven't both accepted.
-        } else {
+            // .. go back if we haven't both accepted.
+            } else {
+                enter_lock = false;
+                partner_x_guess = partner_guess_record["guess"];
+                wait_for_partner_guess = 0;
+                showPartner();
+            }
+
+        // If we've been waiting too long AND we're behind on the response counter, try to grab the partner's guess anyway.
+        } else if ((partner_guess_trial === trialIndex) && (wait_for_partner_guess > 20)){
             enter_lock = false;
             partner_x_guess = partner_guess_record["guess"];
             wait_for_partner_guess = 0;
             showPartner();
+
+        // If the partner has somehow gone onto the next trial, move on, too.
+        } else if (partner_guess_trial > trialIndex) {
+            proceedToNextTrial();
+
+        // If the partner has somehow finished the experiment, move on, too.
+        } else if ((partner_guess_trial === testN) && (partner_accept_type==1) &&  (wait_for_partner_guess > 20)) {
+            proceedToNextTrial();
+
+        // If partner hasn't guessed, wait.
+        } else {
+            waitForGuess();
         }
-
-      // If we've been waiting too long AND we're behind on the response counter, try to grab the partner's guess anyway.
-      } else if ((partner_guess_trial === trialIndex) && (wait_for_partner_guess > 20)){
-        enter_lock = false;
-        partner_x_guess = partner_guess_record["guess"];
-        wait_for_partner_guess = 0;
-        showPartner();
-
-      // If the partner has somehow gone onto the next trial, move on, too.
-      } else if (partner_guess_trial > trialIndex) {
-        proceedToNextTrial();
-
-      // If the partner has somehow finished the experiment, move on, too.
-      } else if ((partner_guess_trial === testN) && (partner_accept_type==1) &&  (wait_for_partner_guess > 20)) {
-        proceedToNextTrial();
-
-      // If partner hasn't guessed, wait.
-      } else {
-        waitForGuess();
-      }
-  }
+    }
 };
 
 //
