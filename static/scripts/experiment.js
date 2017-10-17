@@ -78,7 +78,7 @@ socket.onmessage = function (msg) {
         // If we received a signal, let us know what it was.
         if (next_sender == partner_node_id){
             console.log("Partner's signal: "+next_signal);
-        };
+        }
 
         // If the websocket reads the abandonment signal, terminate the experiment.
         websocket_signal = next_signal;
@@ -106,7 +106,7 @@ socket.onmessage = function (msg) {
                     allow_exit();
                     go_to_page('debriefing');
                 }, abandonment_announcement*1000);
-            };
+            }
         // If it's a reset signal, reset the current ready signals.
         } else if (next_signal == "You left!") {
 
@@ -138,14 +138,14 @@ socket.onmessage = function (msg) {
             // Let us know if our partner sent it.
             if (next_sender == partner_node_id){
                partner_ready_signal = next_signal;
-            };
+            }
 
             // Sum all ready signals.
             current_ready_signals = current_ready_signals + next_signal;
             console.log("Current ready signals: "+ current_ready_signals);
 
-        };
-    };
+        }
+    }
 };
 
 // Create the agent.
@@ -167,7 +167,7 @@ create_agent = function() {
                 $('body').html(err_response.html);
                  allow_exit();
                  go_to_page('debriefing');
-            };
+            }
         }
     });
 };
@@ -216,8 +216,8 @@ check_for_partner = function() {
                       allow_exit();
                       go_to_page('debriefing');
                     });
-                };
-            };
+                }
+            }
         },
         error: function (err) {
             console.log("Error when attempting to identify partner: "+ err);
@@ -246,7 +246,7 @@ get_received_info = function() {
             if (waiting_for_partner > waiting_for_partner_timeout){
                 waiting_for_partner = 0;
                 $("#mercyButton").remove();
-            };
+            }
 
 
         },
@@ -306,7 +306,7 @@ proceedToNextTrial = function () {
         trialType = "train";
     } else {
         trialType = "test";
-    };
+    }
 
     // Move to next trial if we haven't hit our target n.
     if ((trialIndex+1) < totalN) {
@@ -314,7 +314,7 @@ proceedToNextTrial = function () {
       // Update announcements and current trial info.
       $("#title").text("Beginning next round");
       $(".instructions").text("");
-      console.log('BEGINNING TRIAL '+trialIndex)
+      console.log('BEGINNING TRIAL '+trialIndex);
 
       setTimeout( function() {
 
@@ -322,7 +322,7 @@ proceedToNextTrial = function () {
           Mousetrap.pause();
 
           // Reveal stimulus for set amount of time.
-          console.log('Stimulus width: '+int_list[trialIndex])
+          console.log('Stimulus width: '+int_list[trialIndex]);
           $("#title").text("Remember this line length.");
           $(".instructions").text("");
           stimulus_background.show();
@@ -353,7 +353,7 @@ proceedToNextTrial = function () {
           $("#total-trials").html(testN);
           $("#trial-number").html(trialIndex+1-trainN);
 
-      };
+      }
 
     // ... or if we're done, finish up.
     } else {
@@ -363,7 +363,7 @@ proceedToNextTrial = function () {
         allow_exit();
         go_to_page('postquestionnaire');
 
-    };
+    }
 };
 
 //
@@ -465,10 +465,10 @@ sendDataToServer = function(){
                                       "finalAccuracy": final_accuracy,
                                       "responseType": response_type
                                     });
-        };
+        }
 
         // Prepare data to send to server.
-        console.log('Accept Type: '+acceptType)
+        console.log('Accept Type: '+acceptType);
         console.log('Logged guess: '+response);
 
 
@@ -509,8 +509,8 @@ sendDataToServer = function(){
                     property3: final_accuracy
                 }
             });
-        };
-}
+        }
+};
 
 //
 // Wait between trials.
@@ -523,7 +523,7 @@ waitToGuess = function(){
     $("#title").text("");
     $(".instructions").text("");
 
-}
+};
 
 //
 // Allow user response only for a set number of seconds.
@@ -568,7 +568,7 @@ allowResponse = function() {
     // If they click to submit a response, clear the timeout and update the site text.
     acknowledge_lock = false;
     $(document).click(acknowledgeGuess);
-}
+};
 
 //
 // Acknowledge participant guess.
@@ -633,7 +633,7 @@ function acknowledgeGuess(){
           setTimeout(function() {
             response_bar.hide();
             response_background.hide();
-            own_label.hide()
+            own_label.hide();
             correction_bar.hide();
             correction_background.hide();
             correction_label.hide();
@@ -641,7 +641,7 @@ function acknowledgeGuess(){
             // Move on to the next trial.
             proceedToNextTrial();
           }, correction_timeout*1000);
-        };
+        }
 
       } else {
 
@@ -650,11 +650,11 @@ function acknowledgeGuess(){
         $(".instructions").text("Please wait for your partner's guess.");
         setTimeout(getPartnerGuess, 1000);
 
-      };
+      }
 
       // Only allow them to acknowledge once.
       acknowledge_lock = true;
-    };
+    }
 }
 
 //
@@ -720,15 +720,15 @@ disableResponseAfterDelay = function(){
         // Move on to the next trial.
         proceedToNextTrial();
       }, correction_timeout*1000);
-    };
+    }
 
   // Just update the text if we're in a test trial.
   } else {
     $("#title").text("Response period timed out.");
     $(".instructions").text("Please wait for your partner's guess.");
     getPartnerGuess();
-  };
-}
+  }
+};
 
 //
 // Track mouse movement during response.
@@ -755,7 +755,7 @@ waitForTraining = function(){
   $(".instructions").text("Your partner is finishing training");
   setTimeout(checkPartnerTraining,1000);
 
-}
+};
 
 //
 // Wrap up if partner abandons.
@@ -774,7 +774,7 @@ handleAbandonedPartner = function(){
       allow_exit();
       go_to_page('debriefing');
   }, abandonment_announcement*1000);
-}
+};
 
 //
 // Check whether our vectors have failed (i.e., partner abandoned/returned HIT).
@@ -786,7 +786,7 @@ checkFailedVectors = function() {
       type: 'json',
       success: function (resp) {
           vectors = resp.vectors;
-          if (vectors.length===0) { handleAbandonedPartner(); };
+          if (vectors.length===0) { handleAbandonedPartner(); }
       },
       error: function (err) {
           console.log("Error when attempting to check for failed node: "+ err);
@@ -890,7 +890,7 @@ getPartnerGuess = function() {
             partner_x_guess = partner_guess_record["guess"];
             wait_for_partner_guess = 0;
             showPartner();
-        };
+        }
 
       // If we've been waiting too long AND we're behind on the response counter, try to grab the partner's guess anyway.
       } else if ((partner_guess_trial === trialIndex) && (wait_for_partner_guess > 20)){
@@ -910,8 +910,8 @@ getPartnerGuess = function() {
       // If partner hasn't guessed, wait.
       } else {
         waitForGuess();
-      };
-  };
+      }
+  }
 };
 
 //
@@ -928,7 +928,7 @@ showPartner = function() {
     current_ready_signals = 0;
     ready_signal = 0;
     partner_ready_signal = 0;
-    tried_to_finalize = 0
+    tried_to_finalize = 0;
 
     // Start the abandonment timer.
     var abandoned_participant;
@@ -936,7 +936,7 @@ showPartner = function() {
                                         abandonment_timer*1000);
 
     // Initialize change button.
-    change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+change_guess_x+"px;'>"
+    change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+change_guess_x+"px;'>";
     $("body").append(change_guess_button);
     $(document).unbind('click');
     $(document).off('click');
@@ -962,7 +962,7 @@ showPartner = function() {
     } else {
 
       // If someone submitted a guess, allow them to accept.
-      accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+accept_guess_x+'px;">'
+      accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+accept_guess_x+'px;">';
 
       // Show updated instructions based on whether they or their partner changed their guess.
       if (response_counter===0){
@@ -974,8 +974,8 @@ showPartner = function() {
               $("#title").html("Your partner did not choose to change their guess.<br>Would you like to accept your guess or change it?");
           } else if (partner_accept_type===0 && acceptType===0){
               $("#title").html("Your partner also chose to change their guess.<br>Would you like to accept your guess or change it?");
-          };
-      };
+          }
+      }
       $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
 
       // If they submitted a guess, allow them to accept it and stop the abandonment timer.
@@ -985,7 +985,7 @@ showPartner = function() {
         clearTimeout(abandoned_participant);
         acceptOwnGuess();
       });
-    };
+    }
 };
 
 //
@@ -1017,7 +1017,7 @@ showPartnerGuess = function(){
     partner_bar.show().attr({x: partner_x_start,
                       width: 0
                       });
-  };
+  }
 
   // Label the bar.
   partner_label = paper.text(partner_x_start + 10,
@@ -1026,7 +1026,7 @@ showPartnerGuess = function(){
   partner_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
                       'font-size': '14px',
                       'text-anchor': 'start'});
-}
+};
 
 //
 // Show own guess.
@@ -1046,7 +1046,7 @@ showOwnGuess = function(){
     response_bar.show().attr({x: response_x_start,
                               width: 0
                              });
-  };
+  }
 
   // Label the bar.
   own_label = paper.text(response_x_start + 10,
@@ -1055,7 +1055,7 @@ showOwnGuess = function(){
   own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
                    'font-size': '14px',
                    'text-anchor': 'start'});
-}
+};
 
 //
 // Accept own guess.
@@ -1086,7 +1086,7 @@ acceptOwnGuess = function(){
 
   // Start next trial.
   checkIfPartnerAccepted();
-}
+};
 
 //
 // Send websocket ready signal.
@@ -1095,7 +1095,7 @@ sendReadySignal = function(signal_value){
     signal_data = {};
     signal_data[my_node_id] = ready_signal;
     socket.send(channel + ':' + JSON.stringify(signal_data));
-}
+};
 
 //
 // Change guess.
@@ -1119,7 +1119,7 @@ changeOwnGuess = function(){
       // Prep signal that we're not ready.
       response = -99;
       ready_signal = -1;
-      reset_signal = "Changed"
+      reset_signal = "Changed";
       sendReadySignal(ready_signal);
 
       // Track the mouse during response.
@@ -1149,7 +1149,7 @@ changeOwnGuess = function(){
 
           }, response_timeout*1000);
   }, 1);
-}
+};
 
 //
 // Acknowledge that they've submitted a new guess.
@@ -1174,15 +1174,15 @@ acknowledgeChangedGuess = function() {
 
         // Only allow them to acknowledge once.
         change_lock = true;
-    };
-}
+    }
+};
 
 //
 // Wait for partner acceptance.
 //
 waitToAccept = function(){
   setTimeout(checkIfPartnerAccepted, 1000);
-}
+};
 
 //
 // Grab partner's most recent data entry.
@@ -1199,7 +1199,7 @@ fetchPartnerData = function(){
         if (resp.infos.length > 0) {
 
           // Grab the IDs for all items.
-          entire_guess_history = $.map(resp.infos, function(el) { return el.id });
+          entire_guess_history = $.map(resp.infos, function(el) { return el.id; });
 
           // Grab only the most recent guess.
           most_recent_guess = Math.max.apply(Math,entire_guess_history);
@@ -1213,9 +1213,9 @@ fetchPartnerData = function(){
         } else {
 
           // If we don't have anything yet, return NaN.
-          partner_guess_record = NaN
+          partner_guess_record = NaN;
 
-        };
+        }
       },
       error: function (err) {
           console.log("Error when fetching partner's data: "+err);
@@ -1223,7 +1223,7 @@ fetchPartnerData = function(){
           $('body').html(err_response.html);
       }
   });
-}
+};
 
 //
 // Montior the server to see if their partner's accepted a guess.
@@ -1254,7 +1254,7 @@ checkIfPartnerAccepted = function() {
         // but just keep checking if we haven't been hanging.
         } else {
           waitToAccept();
-        };
+        }
 
       // If the partner has already indicated that they're done, move on.
       } else if (partner_guess_trial > trialIndex) {
@@ -1267,7 +1267,7 @@ checkIfPartnerAccepted = function() {
         if ((partner_accept_type == 1 && acceptType==1) || (tried_to_finalize > finalize_cutoff/3)){
 
                // Update text.
-               console.log("Attempting to finalize guess...")
+               console.log("Attempting to finalize guess...");
                $("#title").text("Processing your guess...");
                $(".instructions").text("");
                setTimeout(tryToFinalize,
@@ -1293,10 +1293,10 @@ checkIfPartnerAccepted = function() {
             } else {
                 sendReadySignal(-1);
                 getPartnerGuess();
-            };
-        };
-      };
-  };
+            }
+        }
+      }
+  }
 };
 
 //
@@ -1310,7 +1310,7 @@ tryToFinalize = function() {
         current_ready_signals = 2;
         hanging_signal = "Hanging";
         socket.send(channel + ':' + JSON.stringify({hanging_signal}));
-    }
+    };
 
     // If both of us have accepted, move on.
     fetchPartnerData();
@@ -1322,31 +1322,31 @@ tryToFinalize = function() {
     // Send data to server if their partner is on the same response counter, finished the last trial, or
     if (partner_accept_type==1 && acceptType == 1){
       if (partner_response_counter == response_counter) {
-          console.log("Successfully finalized: Partner on same response counter.")
+          console.log("Successfully finalized: Partner on same response counter.");
           calculateFinalAccuracy();
           sendDataToServer();
           proceedToNextTrial();
       } else if (partner_guess_trial == testN && partner_final_accuracy != 0) {
-        console.log("Successfully finalized: Partner finished all test trial.")
+        console.log("Successfully finalized: Partner finished all test trial.");
         calculateFinalAccuracy();
         sendDataToServer();
         proceedToNextTrial();
       } else if (partner_final_accuracy != 0){
-        console.log("Successfully finalized: Partner advanced to next trial.")
+        console.log("Successfully finalized: Partner advanced to next trial.");
         calculateFinalAccuracy();
         sendDataToServer();
         proceedToNextTrial();
       } else {
-        console.log("Failed to finalize.")
-        console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter)
+        console.log("Failed to finalize.");
+        console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter);
         getPartnerGuess();
-      };
+      }
     // If not, just keep checking.
     } else {
-      console.log("Failed to finalize.")
-      console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter)
+      console.log("Failed to finalize.");
+      console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter);
       getPartnerGuess();
-    };
+    }
 }
 
 //
@@ -1357,8 +1357,8 @@ calculateFinalAccuracy = function(){
       final_accuracy = response;
     } else {
       final_accuracy = (100 - Math.abs(int_list[trialIndex] - response))/100;
-    };
-}
+    }
+};
 
 //
 // Monitor for unresponsive participants.
@@ -1383,7 +1383,7 @@ monitorForAbandoned = function(){
   abandonment_signal = -99;
   final_accuracy = -9999999999999999999999999999;
   socket.send(channel + ':' + JSON.stringify({abandonment_signal}));
-}
+};
 
 //
 $(document).keydown(function(e) {
