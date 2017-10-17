@@ -952,39 +952,37 @@ showPartner = function() {
 //
 showPartnerGuess = function(){
 
-  // Draw partner's background.
-  paper = Raphael(0, 50, 800, 600);
-  partner_background = paper.rect(partner_x_start,
-                                  partner_y_start,
-                                  response_bg_width,
-                                  response_bg_height - 2 * inset);
-  partner_background.attr("stroke", "#CCCCCC");
-  partner_background.attr("stroke-dasharray", "--");
+    // Draw partner's background.
+    paper = Raphael(0, 50, 800, 600);
+    partner_background = paper.rect(partner_x_start,
+                                    partner_y_start,
+                                    response_bg_width,
+                                    response_bg_height - 2 * inset);
+    partner_background.attr("stroke", "#CCCCCC");
+    partner_background.attr("stroke-dasharray", "--");
 
-  // Draw partner's guess.
-  partner_bar = paper.rect(partner_x_start,
-                           partner_y_start - inset,
-                           response_bg_width,
-                           response_bg_height);
-  partner_bar.attr("fill", partner_guess_color);
-  partner_bar.attr("stroke", "none");
-  if (partner_x_guess > 0){
-      partner_bar.show().attr({x: partner_x_start,
-                        width: partner_x_guess*PPU
-                        });
-  } else {
-    partner_bar.show().attr({x: partner_x_start,
-                      width: 0
-                      });
-  }
+    // Draw partner's guess.
+    partner_bar = paper.rect(partner_x_start,
+                             partner_y_start - inset,
+                             response_bg_width,
+                             response_bg_height);
+    partner_bar.attr("fill", partner_guess_color);
+    partner_bar.attr("stroke", "none");
+    if (partner_x_guess > 0){
+        partner_bar.show().attr({x: partner_x_start,
+                                 width: partner_x_guess*PPU});
+    } else {
+        partner_bar.show().attr({x: partner_x_start,
+                                 width: 0});
+    }
 
-  // Label the bar.
-  partner_label = paper.text(partner_x_start + 10,
-                             partner_y_start - inset + 50,
-                             "Your partner's guess");
-  partner_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
-                      'font-size': '14px',
-                      'text-anchor': 'start'});
+    // Label the bar.
+    partner_label = paper.text(partner_x_start + 10,
+                               partner_y_start - inset + 50,
+                               "Your partner's guess");
+    partner_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                        'font-size': '14px',
+                        'text-anchor': 'start'});
 };
 
 //
