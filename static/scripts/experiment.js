@@ -1320,24 +1320,24 @@ calculateFinalAccuracy = function(){
 //
 monitorForAbandoned = function(){
 
-  // Turn off click ability and event listeners.
-  $(document).off('click');
-  $(document).off('mousemove',trackMouseMovement);
+    // Turn off click ability and event listeners.
+    $(document).off('click');
+    $(document).off('mousemove',trackMouseMovement);
 
-  // Remove partners' guesses and buttons.
-  partner_background.hide();
-  partner_bar.hide();
-  partner_label.hide();
-  response_background.hide();
-  response_bar.hide();
-  own_label.hide();
-  $("#acceptGuess").remove();
-  $("#changeGuess").remove();
+    // Remove partners' guesses and buttons.
+    partner_background.hide();
+    partner_bar.hide();
+    partner_label.hide();
+    response_background.hide();
+    response_bar.hide();
+    own_label.hide();
+    $("#acceptGuess").remove();
+    $("#changeGuess").remove();
 
-  // Log response as being abandoned.
-  abandonment_signal = -99;
-  final_accuracy = -9999999999999999999999999999;
-  socket.send(channel + ':' + JSON.stringify({abandonment_signal}));
+    // Log response as being abandoned.
+    abandonment_signal = -99;
+    final_accuracy = -9999999999999999999999999999;
+    socket.send(channel + ':' + JSON.stringify(abandonment_signal));
 };
 
 //
