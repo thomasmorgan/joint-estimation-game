@@ -287,10 +287,10 @@ drawUserInterface = function() {
 //
 // Move to next trial: Increment trial number, display stimulus, and allow response.
 //
-proceedToNextTrial = function () {
+proceedToNextTrial = function() {
 
     // Increment the trial and guess counter.
-    trialIndex = trialIndex + 1;
+    trialIndex += 1;
     guessCounter = -1;
     response_counter = -1;
     partner_response_counter = 0;
@@ -302,58 +302,58 @@ proceedToNextTrial = function () {
     reset_signal = "Reset";
 
     // Identify whether we're in training or testing.
-    if (trialIndex < trainN){
+    if (trialIndex < trainN) {
         trialType = "train";
     } else {
         trialType = "test";
     }
 
     // Move to next trial if we haven't hit our target n.
-    if ((trialIndex+1) < totalN) {
+    if ((trialIndex + 1) < totalN) {
 
-      // Update announcements and current trial info.
-      $("#title").text("Beginning next round");
-      $(".instructions").text("");
-      console.log('BEGINNING TRIAL '+trialIndex);
+        // Update announcements and current trial info.
+        $("#title").text("Beginning next round");
+        $(".instructions").text("");
+        console.log('BEGINNING TRIAL '+trialIndex);
 
-      setTimeout( function() {
+        setTimeout( function() {
 
-          // Prevent repeat keypresses.
-          Mousetrap.pause();
+            // Prevent repeat keypresses.
+            Mousetrap.pause();
 
-          // Reveal stimulus for set amount of time.
-          console.log('Stimulus width: '+int_list[trialIndex]);
-          $("#title").text("Remember this line length.");
-          $(".instructions").text("");
-          stimulus_background.show();
-          stimulus_bar.show().attr({ width: int_list[trialIndex]*PPU });
+            // Reveal stimulus for set amount of time.
+            console.log('Stimulus width: '+int_list[trialIndex]);
+            $("#title").text("Remember this line length.");
+            $(".instructions").text("");
+            stimulus_background.show();
+            stimulus_bar.show().attr({ width: int_list[trialIndex]*PPU });
 
-          // Allow response only for a limited amount of time.
-          var unresponsiveParticipant;
-          setTimeout(waitToGuess,
+            // Allow response only for a limited amount of time.
+            var unresponsiveParticipant;
+            setTimeout(waitToGuess,
                      stimulus_timeout*1000);
-          setTimeout(allowResponse,
+            setTimeout(allowResponse,
                      (stimulus_timeout+wait_time)*1000);
 
-      }, inter_trial_time * 1000);
+        }, inter_trial_time * 1000);
 
-      // If this is a training trial...
-      if (trialType == 'train') {
+        // If this is a training trial...
+        if (trialType == 'train') {
 
           // Update header for participant.
           $("#training-or-testing").html("Training");
           $("#total-trials").html(trainN);
           $("#trial-number").html(trialIndex+1);
 
-      // ... or if this is a test trial ...
-      } else {
+        // ... or if this is a test trial ...
+        } else {
 
           // Update header for participant.
           $("#training-or-testing").html("Testing");
           $("#total-trials").html(testN);
           $("#trial-number").html(trialIndex+1-trainN);
 
-      }
+        }
 
     // ... or if we're done, finish up.
     } else {
