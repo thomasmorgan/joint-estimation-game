@@ -22,11 +22,12 @@ class Paired(Network):
         # get a list of all potential partners
         all_nodes = self.nodes(type=type(node))
         other_nodes = [n for n in all_nodes if n is not node]
-        available_nodes = [n for n in other_nodes if not any(n.vectors())]
+        available_nodes = [n for n in other_nodes if not any(n.vectors(failed="all"))]
 
         # if there are available nodes
         if available_nodes:
             import random
+            
             # pick a partner at random
             partner_node = random.choice(available_nodes)
 
