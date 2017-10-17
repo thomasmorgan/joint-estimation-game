@@ -50,28 +50,6 @@ class Indexed(Node):
     __mapper_args__ = {"polymorphic_identity": "indexed"}
 
     @hybrid_property
-    def index(self):
-        """Convert property1 to index."""
-        return int(self.property1)
-
-    @index.setter
-    def index(self, index):
-        """Make index settable."""
-        self.property1 = repr(index)
-
-    @index.expression
-    def index(self):
-        """Make index queryable."""
-        return cast(self.property1, Integer)
-
-    def __init__(self, network, participant=None):
-        """Give the node its index."""
-
-        super(Indexed, self).__init__(network, participant)
-
-        self.index = self.network.size(type=Indexed)
-
-    @hybrid_property
     def accuracy(self):
         """Convert property3 to accuracy."""
         return int(self.property3)
