@@ -1264,7 +1264,7 @@ tryToFinalize = function() {
     if (tried_to_finalize > finalize_cutoff){
         current_ready_signals = 2;
         hanging_signal = "Hanging";
-        socket.send(channel + ':' + JSON.stringify({hanging_signal}));
+        socket.send(channel + ':' + JSON.stringify(hanging_signal));
     };
 
     // If both of us have accepted, move on.
