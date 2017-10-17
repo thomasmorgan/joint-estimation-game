@@ -88,7 +88,7 @@ socket.onmessage = function (msg) {
 
                 // If their partner abandoned it, go to the postquestionnaire.
                 $("#title").text("Your partner has abandoned the experiment.");
-                $(".instructions").text("You will receive your bonuses and base pay.");
+                $(".instructions").text("You will receive base pay and any earned bonuses.");
                 setTimeout( function () {
                     sendDataToServer();
                     allow_exit();
@@ -99,7 +99,7 @@ socket.onmessage = function (msg) {
 
                 // If the participant abandoned it, go to debriefing.
                 $("#title").text("You have abandoned the experiment.");
-                $(".instructions").text("You will only your base pay.");
+                $(".instructions").text("You will receive only your base pay.");
                 setTimeout( function () {
                     sendDataToServer();
                     allow_exit();
