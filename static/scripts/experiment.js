@@ -188,6 +188,7 @@ check_for_partner = function() {
             if (vectors.length > 0) {
                 // if there are vectors, go through their origin_ids
                 // whichever origin id is not the same as your node_id,
+                // or the origin id of the source (1),
                 // that must be your partner's id.
                 partner_node_id = -1;
                 for (i = 0; i < vectors.length; i++) {
