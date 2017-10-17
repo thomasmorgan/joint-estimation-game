@@ -1135,48 +1135,48 @@ acknowledgeChangedGuess = function() {
 //
 // Wait for partner acceptance.
 //
-waitToAccept = function(){
-  setTimeout(checkIfPartnerAccepted, 1000);
+waitToAccept = function() {
+    setTimeout(checkIfPartnerAccepted, 1000);
 };
 
 //
 // Grab partner's most recent data entry.
 //
-fetchPartnerData = function(){
+fetchPartnerData = function() {
 
-  reqwest({
-      url: "/node/" + partner_node_id + "/infos",
-      method: 'get',
-      type: 'json',
-      success: function (resp) {
+    reqwest({
+        url: "/node/" + partner_node_id + "/infos",
+        method: 'get',
+        type: 'json',
+        success: function (resp) {
 
-        // If the partner does have something to fetch...
-        if (resp.infos.length > 0) {
+            // If the partner does have something to fetch...
+            if (resp.infos.length > 0) {
 
-          // Grab the IDs for all items.
-          entire_guess_history = $.map(resp.infos, function(el) { return el.id; });
+                // Grab the IDs for all items.
+                entire_guess_history = $.map(resp.infos, function(el) { return el.id; });
 
-          // Grab only the most recent guess.
-          most_recent_guess = Math.max.apply(Math,entire_guess_history);
-          most_recent_line = $.grep(resp.infos, function(v) {
-            return v.id==most_recent_guess;
-          })[0];
+                // Grab only the most recent guess.
+                most_recent_guess = Math.max.apply(Math,entire_guess_history);
+                most_recent_line = $.grep(resp.infos, function(v) {
+                    return v.id==most_recent_guess;
+                })[0];
 
-          // Strip out only the contents of that most recent guess.
-          partner_guess_record = JSON.parse(most_recent_line.contents);
+                // Strip out only the contents of that most recent guess.
+                partner_guess_record = JSON.parse(most_recent_line.contents);
 
-        } else {
+            } else {
 
-          // If we don't have anything yet, return NaN.
-          partner_guess_record = NaN;
+                // If we don't have anything yet, return NaN.
+                partner_guess_record = NaN;
 
+            }
+        },
+        error: function (err) {
+            console.log("Error when fetching partner's data: "+err);
+            err_response = JSON.parse(err.response);
+            $('body').html(err_response.html);
         }
-      },
-      error: function (err) {
-          console.log("Error when fetching partner's data: "+err);
-          err_response = JSON.parse(err.response);
-          $('body').html(err_response.html);
-      }
   });
 };
 
