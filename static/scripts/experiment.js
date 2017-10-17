@@ -1265,7 +1265,7 @@ tryToFinalize = function() {
         current_ready_signals = 2;
         hanging_signal = "Hanging";
         socket.send(channel + ':' + JSON.stringify(hanging_signal));
-    };
+    }
 
     // If both of us have accepted, move on.
     fetchPartnerData();
@@ -1276,33 +1276,33 @@ tryToFinalize = function() {
 
     // Send data to server if their partner is on the same response counter, finished the last trial, or
     if (partner_accept_type==1 && acceptType == 1){
-      if (partner_response_counter == response_counter) {
-          console.log("Successfully finalized: Partner on same response counter.");
-          calculateFinalAccuracy();
-          sendDataToServer();
-          proceedToNextTrial();
-      } else if (partner_guess_trial == testN && partner_final_accuracy != 0) {
-        console.log("Successfully finalized: Partner finished all test trial.");
-        calculateFinalAccuracy();
-        sendDataToServer();
-        proceedToNextTrial();
-      } else if (partner_final_accuracy != 0){
-        console.log("Successfully finalized: Partner advanced to next trial.");
-        calculateFinalAccuracy();
-        sendDataToServer();
-        proceedToNextTrial();
-      } else {
+        if (partner_response_counter == response_counter) {
+            console.log("Successfully finalized: Partner on same response counter.");
+            calculateFinalAccuracy();
+            sendDataToServer();
+            proceedToNextTrial();
+        } else if (partner_guess_trial == testN && partner_final_accuracy !== 0) {
+            console.log("Successfully finalized: Partner finished all test trial.");
+            calculateFinalAccuracy();
+            sendDataToServer();
+            proceedToNextTrial();
+        } else if (partner_final_accuracy !== 0){
+            console.log("Successfully finalized: Partner advanced to next trial.");
+            calculateFinalAccuracy();
+            sendDataToServer();
+            proceedToNextTrial();
+        } else {
+            console.log("Failed to finalize.");
+            console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter);
+            getPartnerGuess();
+        }
+    // If not, just keep checking.
+    } else {
         console.log("Failed to finalize.");
         console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter);
         getPartnerGuess();
-      }
-    // If not, just keep checking.
-    } else {
-      console.log("Failed to finalize.");
-      console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter);
-      getPartnerGuess();
     }
-}
+};
 
 //
 // Calculate final accuracy.
