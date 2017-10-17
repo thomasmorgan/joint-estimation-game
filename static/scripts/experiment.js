@@ -369,70 +369,66 @@ proceedToNextTrial = function() {
 //
 // For training trials, show the correct length.
 //
-showCorrectLength = function(){
+showCorrectLength = function() {
 
-  // Draw correction background.
-  correction_background = paper.rect(correction_x_start,
-                                    correction_y_start,
-                                    response_bg_width,
-                                    response_bg_height - 2 * inset);
-  correction_background.attr("stroke", "#CCCCCC");
-  correction_background.attr("stroke-dasharray", "--");
+    // Draw correction background.
+    correction_background = paper.rect(correction_x_start,
+                                       correction_y_start,
+                                       response_bg_width,
+                                       response_bg_height - 2 * inset);
+    correction_background.attr("stroke", "#CCCCCC");
+    correction_background.attr("stroke-dasharray", "--");
 
-  // Draw correction bar.
-  correction_bar = paper.rect(correction_x_start,
-                              correction_y_start - inset,
-                              response_bg_width,
-                              response_bg_height);
-  correction_bar.attr("fill", correction_color);
-  correction_bar.attr("stroke", "none");
-  correction_bar.attr({x: correction_x_start,
-                       width: int_list[trialIndex]*PPU
-                       });
+    // Draw correction bar.
+    correction_bar = paper.rect(correction_x_start,
+                                correction_y_start - inset,
+                                response_bg_width,
+                                response_bg_height);
+    correction_bar.attr("fill", correction_color);
+    correction_bar.attr("stroke", "none");
+    correction_bar.attr({x: correction_x_start,
+                         width: int_list[trialIndex]*PPU});
 
-   // Show labels.
-   correction_label = paper.text(correction_x_start + 10,
-                                 correction_y_start - inset + 50,
-                                 "Correct length");
-   correction_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
-                          'font-size': '14px',
-                          'text-anchor': 'start'});
+    // Show labels.
+    correction_label = paper.text(correction_x_start + 10,
+                                  correction_y_start - inset + 50,
+                                  "Correct length");
+    correction_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                           'font-size': '14px',
+                           'text-anchor': 'start'});
     own_label = paper.text(response_x_start + 10,
                            response_y_start - inset + 50,
                            "Your guess");
     own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
-                     'font-size': '14px',
-                     'text-anchor': 'start'});
+                    'font-size': '14px',
+                    'text-anchor': 'start'});
 
-   // Show the participant's guess.
-   response_background.show();
-   response_bar.show();
-   own_label.show();
-   correction_bar.show();
-   correction_bar.show();
-   correction_label.show();
-   if (response == -99){
-      response_bar.attr({x:response_x_start,
-                         width: 0
-                        });
-  } else {
-      response_bar.attr({x:response_x_start,
-                         width: response*PPU
-                         });
-  }
+    // Show the participant's guess.
+    response_background.show();
+    response_bar.show();
+    own_label.show();
+    correction_bar.show();
+    correction_bar.show();
+    correction_label.show();
+    if (response == -99){
+        response_bar.attr({x:response_x_start,
+                           width: 0});
+    } else {
+        response_bar.attr({x:response_x_start,
+                           width: response*PPU});
+    }
 
-  // Update text to reflect accuracy.
-  if (Math.abs(response - int_list[trialIndex]) < trial_correct_error) {
-    $("#title").text("Your guess was correct!");
-    $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
-  } else if (response == -99){
-    $("#title").text("You didn't respond in time");
-    $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.<br>The grey bar is the correct answer.");
-  } else {
-    $("#title").text("Your guess was incorrect");
-    $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
-  }
-
+    // Update text to reflect accuracy.
+    if (Math.abs(response - int_list[trialIndex]) < trial_correct_error) {
+        $("#title").text("Your guess was correct!");
+        $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
+    } else if (response == -99){
+        $("#title").text("You didn't respond in time");
+        $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.<br>The grey bar is the correct answer.");
+    } else {
+        $("#title").text("Your guess was incorrect");
+        $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
+    }
 };
 
 //
