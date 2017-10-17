@@ -621,74 +621,74 @@ function acknowledgeGuess(){
 //
 // Disable participant responses if they take too long.
 //
-disableResponseAfterDelay = function(){
+disableResponseAfterDelay = function() {
 
-  // Turn off click ability and event listeners.
-  $(document).off('click');
-  $(document).off('mousemove',trackMouseMovement);
+    // Turn off click ability and event listeners.
+    $(document).off('click');
+    $(document).off('mousemove',trackMouseMovement);
 
-  // Hide response bars.
-  response_bar.hide();
-  response_background.hide();
+    // Hide response bars.
+    response_bar.hide();
+    response_background.hide();
 
-  // Log response as not having been given.
-  response = -99;
-  sendDataToServer();
+    // Log response as not having been given.
+    response = -99;
+    sendDataToServer();
 
-  // Show the correct length if we're in training.
-  if (trialType == 'train'){
+    // Show the correct length if we're in training.
+    if (trialType == 'train') {
 
-    // Display correct length.
-    showCorrectLength();
+        // Display correct length.
+        showCorrectLength();
 
-    // If this is the last training trial, prepare them for test trials.
-    if (trialIndex == (trainN-1)){
-      setTimeout(function(){
+        // If this is the last training trial, prepare them for test trials.
+        if (trialIndex == (trainN-1)) {
+            setTimeout(function() {
 
-        // Get the bars to disappear after the correct time.
-        response_bar.hide();
-        response_background.hide();
-        own_label.hide();
-        correction_bar.hide();
-        correction_background.hide();
-        correction_label.hide();
+                // Get the bars to disappear after the correct time.
+                response_bar.hide();
+                response_background.hide();
+                own_label.hide();
+                correction_bar.hide();
+                correction_background.hide();
+                correction_label.hide();
 
-        // Update the text.
-        $("#title").text("Congrats! You've finished the training trials");
-        $(".instructions").html("Your next trial will be a <b>test</b> trial.");
+                // Update the text.
+                $("#title").text("Congrats! You've finished the training trials");
+                $(".instructions").html("Your next trial will be a <b>test</b> trial.");
 
-      }, correction_timeout*1000);
+            }, correction_timeout*1000);
 
-      // Move to next trial.
-      setTimeout(function(){
-        $("#title").text("");
-        $(".instructions").html("");
-        checkPartnerTraining();
-        waiting_for_partner = 0;
-      }, 5000 + (correction_timeout*1000));
+            // Move to next trial.
+            setTimeout(function(){
+                $("#title").text("");
+                $(".instructions").html("");
+                checkPartnerTraining();
+                waiting_for_partner = 0;
+            }, 5000 + (correction_timeout*1000));
 
+        } else {
+
+            // If it's not the last training trial, clean up and advance to next turn.
+            setTimeout(function() {
+                response_bar.hide();
+                response_background.hide();
+                own_label.hide();
+                correction_bar.hide();
+                correction_background.hide();
+                correction_label.hide();
+
+                // Move on to the next trial.
+                proceedToNextTrial();
+            }, correction_timeout*1000);
+        }
+
+    // Just update the text if we're in a test trial.
     } else {
-
-      // If it's not the last training trial, clean up and advance to next turn.
-      setTimeout(function() {
-        response_bar.hide();
-        response_background.hide();
-        own_label.hide();
-        correction_bar.hide();
-        correction_background.hide();
-        correction_label.hide();
-
-        // Move on to the next trial.
-        proceedToNextTrial();
-      }, correction_timeout*1000);
+        $("#title").text("Response period timed out.");
+        $(".instructions").text("Please wait for your partner's guess.");
+        getPartnerGuess();
     }
-
-  // Just update the text if we're in a test trial.
-  } else {
-    $("#title").text("Response period timed out.");
-    $(".instructions").text("Please wait for your partner's guess.");
-    getPartnerGuess();
-  }
 };
 
 //
