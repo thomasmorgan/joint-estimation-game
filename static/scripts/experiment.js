@@ -242,8 +242,11 @@ get_received_info = function() {
 
             // Remove the button, if it's there.
             if (waiting_for_partner > waiting_for_partner_timeout){
+                waiting_for_partner = 0;
                 $("#mercyButton").remove();
             };
+
+
         },
         error: function (err) {
             console.log("Error when checking if partner is connected: "+err);
@@ -697,6 +700,7 @@ disableResponseAfterDelay = function(){
         $("#title").text("");
         $(".instructions").html("");
         checkPartnerTraining();
+        waiting_for_partner = 0;
       }, 5000 + (correction_timeout*1000));
 
     } else {
@@ -800,9 +804,16 @@ checkPartnerTraining = function() {
         type: 'json',
         success: function (resp) {
 
+            // Make sure our partner is still connected.
+            checkFailedVectors();
+
             // Loop back if this is the first trial and the partner hasn't guessed.
             if (resp.infos.length == 0) {
               waitForTraining();
+
+            // If we've been waiting forever, kick us to debrief.
+            } else if (waiting_for_partner > waiting_for_partner_timeout) {
+              handleAbandonedPartner();
 
             } else {
 
