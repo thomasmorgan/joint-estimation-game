@@ -880,7 +880,7 @@ showPartner = function() {
 
     // When we show our partner's guess, send out a signal to prevent them from moving on.
     reset_signal = "Reset";
-    socket.send(channel + ':' + JSON.stringify({reset_signal}));
+    socket.send(channel + ':' + JSON.stringify(reset_signal));
     sendDataToServer();
 
     // Reset the ready signals when we display our partner.
