@@ -1,6 +1,5 @@
 """Define additional classes required for the Joint Estimation Experiment."""
 
-from dallinger.experiments import Experiment
 from dallinger.models import Network, Node, Info
 from sqlalchemy import Integer
 from sqlalchemy.ext.hybrid import hybrid_property
