@@ -1,9 +1,6 @@
 """Define additional classes required for the Joint Estimation Experiment."""
 
 from dallinger.models import Network, Node, Info
-from sqlalchemy import Integer
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.expression import cast
 from dallinger.nodes import Source
 from random import choice
 import json
@@ -48,21 +45,6 @@ class Indexed(Node):
     """A node with an accuracy"""
 
     __mapper_args__ = {"polymorphic_identity": "indexed"}
-
-    @hybrid_property
-    def accuracy(self):
-        """Convert property3 to accuracy."""
-        return int(self.property3)
-
-    @accuracy.setter
-    def accuracy(self, accuracy):
-        """Make accuracy settable."""
-        self.property3 = repr(accuracy)
-
-    @accuracy.expression
-    def accuracy(self):
-        """Make index queryable."""
-        return cast(self.property3, Integer)
 
 
 class ListSource(Source):
