@@ -243,7 +243,7 @@ get_received_info = function() {
             enter_lock = false;
 
             // Remove the button, if it's there.
-            if (waiting_for_partner > waiting_for_partner_timeout){
+            if (waiting_for_partner > waiting_for_partner_timeout) {
                 waiting_for_partner = 0;
                 $("#mercyButton").remove();
             }
