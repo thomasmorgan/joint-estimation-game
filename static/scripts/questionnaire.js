@@ -7,7 +7,7 @@ Dallinger.submitQuestionnaire = function (name) {
       deferred = $.Deferred();
 
   formSerialized.forEach(function (field) {
-      formDict[field.name] = field.value;
+    formDict[field.name] = field.value;
   });
 
   reqwest({
@@ -34,8 +34,7 @@ Dallinger.submitQuestionnaire = function (name) {
 
 // Cribbed from Dallinger Griduniverse repo:
 // https://github.com/Dallinger/Griduniverse/blob/master/dlgr/griduniverse/static/scripts/questionnaire.js
-$(document).ready( function() {
-
+$(document).ready(function () {
   // Submit the questionnaire.
   $("#submit-questionnaire").click(function() {
     var $elements = [$("form :input"), $(this)],
