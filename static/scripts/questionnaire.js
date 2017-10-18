@@ -36,13 +36,12 @@ Dallinger.submitQuestionnaire = function (name) {
 // https://github.com/Dallinger/Griduniverse/blob/master/dlgr/griduniverse/static/scripts/questionnaire.js
 $(document).ready(function () {
   // Submit the questionnaire.
-  $("#submit-questionnaire").click(function() {
-    var $elements = [$("form :input"), $(this)],
-        questionSubmission = Dallinger.submitQuestionnaire("questionnaire");
-        console.log("Submitting questionnaire.");
-    questionSubmission.done(function()
-        {
-          go_to_page('debriefing');
-        });
+  $('#submit-questionnaire').click(function () {
+    var $elements;
+    var questionSubmission;
+    $elements = [$('form :input'), $(this)];
+    questionSubmission = Dallinger.submitQuestionnaire('questionnaire');
+    console.log('Submitting questionnaire.');
+    questionSubmission.done(function () { go_to_page('debriefing'); });
   });
 });
