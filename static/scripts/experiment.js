@@ -189,7 +189,7 @@ check_for_partner = function() {
                 // that must be your partner's id.
                 var  partner_node_id = -1;
                 for (i = 0; i < vectors.length; i++) {
-                    if ((vectors[i].origin_id != my_node_id) && vectors[i].origin_id != 1) {
+                    if ((vectors[i].origin_id !== my_node_id) && vectors[i].origin_id !== 1) {
                         partner_node_id = vectors[i].origin_id;
                     }
                 }
