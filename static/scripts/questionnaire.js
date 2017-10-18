@@ -2,9 +2,9 @@ lock = false;
 
 // Add new (not yet released) code from Dallinger.
 Dallinger.submitQuestionnaire = function (name) {
-  var formSerialized = $("form").serializeArray(),
-      formDict = {},
-      deferred = $.Deferred();
+  var formSerialized = $('form').serializeArray();
+  var formDict = {};
+  var deferred = $.Deferred();
 
   formSerialized.forEach(function (field) {
     formDict[field.name] = field.value;
