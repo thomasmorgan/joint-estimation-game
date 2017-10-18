@@ -11,21 +11,21 @@ Dallinger.submitQuestionnaire = function (name) {
   });
 
   reqwest({
-    method: "post",
-    url: "/question/" + participantId,
+    method: 'post',
+    url: '/question/' + participantId,
     data: {
-      question: name || "questionnaire",
+      question: name || 'questionnaire',
       number: 1,
       response: JSON.stringify(formDict),
     },
-    type: "json",
+    type: 'json',
     success: function (resp) {
       deferred.resolve();
     },
     error: function (err) {
       deferred.reject();
       var errorResponse = JSON.parse(err.response);
-      $("body").html(errorResponse.html);
+      $('body').html(errorResponse.html);
     }
   });
 
