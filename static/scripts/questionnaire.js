@@ -37,10 +37,8 @@ Dallinger.submitQuestionnaire = function (name) {
 $(document).ready(function () {
   // Submit the questionnaire.
   $('#submit-questionnaire').click(function () {
-    var $elements;
-    var questionSubmission;
-    $elements = [$('form :input'), $(this)];
-    questionSubmission = Dallinger.submitQuestionnaire('questionnaire');
+    var $elements = [$('form :input'), $(this)];
+    var questionSubmission = Dallinger.submitQuestionnaire('questionnaire');
     console.log('Submitting questionnaire.');
     questionSubmission.done(function () { go_to_page('debriefing'); });
   });
