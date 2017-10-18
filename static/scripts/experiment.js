@@ -69,8 +69,8 @@ socket.onmessage = function (msg) {
         var ready_signal_data = JSON.parse(msg.data.substring(channel.length + 1));
 
         // Identify the ready signal and the sender.
-        next_signal = Object.values(ready_signal_data)[0];
-        next_sender = Object.keys(ready_signal_data)[0];
+        var next_signal = Object.values(ready_signal_data)[0];
+        var next_sender = Object.keys(ready_signal_data)[0];
 
         // If we received a signal, let us know what it was.
         if (next_sender == partner_node_id){
@@ -187,7 +187,7 @@ check_for_partner = function() {
                 // whichever origin id is not the same as your node_id,
                 // or the origin id of the source (1),
                 // that must be your partner's id.
-                partner_node_id = -1;
+                var  partner_node_id = -1;
                 for (i = 0; i < vectors.length; i++) {
                     if ((vectors[i].origin_id != my_node_id) && vectors[i].origin_id != 1) {
                         partner_node_id = vectors[i].origin_id;
