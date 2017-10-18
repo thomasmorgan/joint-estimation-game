@@ -1,55 +1,52 @@
 // Settings
-PPU = 5; // Pixels per base unit.
-xMax = 100; // Maximum size of a bar in base units.
-trialIndex = -1;
-stimulusYSize = 0;
-enter_lock = true;
-abandonment_signal = 0;
-ready_signal = 0;
-reset_signal = "Reset";
-partner_ready_signal = 0;
-websocket_signal = 0;
-partner_accept_type = 0;
-waiting_for_partner = 0;
-partner_guess_record = NaN;
+var PPU = 5; // Pixels per base unit.
+var xMax = 100; // Maximum size of a bar in base units.
+var trialIndex = -1;
+var enter_lock = true;
+var abandonment_signal = 0;
+var ready_signal = 0;
+var reset_signal = 'Reset';
+var websocket_signal = 0;
+var partner_accept_type = 0;
+var waiting_for_partner = 0;
+var partner_guess_record = NaN;
 
 // Set a series of timeouts (in seconds).
-stimulus_timeout = 1; // Time for which a stimulus is displayed.
-wait_time = 2; // Time between stimulus viewing and response.
-correction_timeout = 2; // Time for which the correction is displayed.
-response_timeout = 2; // Time for which a response is allowed.
-partner_timeout = 3; // Time for which partner's guess is displayed.
-partner_change_announcement = 2; // Time for which the partner's change announcement is displayed.
-inter_trial_time = 5; // Time to wait between trials.
-abandonment_timer = 60; // Time to wait before kicking someone out.
-abandonment_announcement = 5; // Time to wait before moving forward after being abandoned.
-finalize_cutoff = 3; // Number of times to check for finalization.
-waiting_for_partner_timeout =  5 * 60; // Time to wait before showing opt-out button.
+var stimulus_timeout = 1; // Time for which a stimulus is displayed.
+var wait_time = 2; // Time between stimulus viewing and response.
+var correction_timeout = 2; // Time for which the correction is displayed.
+var response_timeout = 2; // Time for which a response is allowed.
+var partner_change_announcement = 2; // Time for which the partner's change announcement is displayed.
+var inter_trial_time = 5; // Time to wait between trials.
+var abandonment_timer = 60; // Time to wait before kicking someone out.
+var abandonment_announcement = 5; // Time to wait before moving forward after being abandoned.
+var finalize_cutoff = 3; // Number of times to check for finalization.
+var waiting_for_partner_timeout = 5 * 60; // Time to wait before showing opt-out button.
 
 // Set training information.
-trainN = 10; // Define number of training trials.
-testN = 15; // Define number of test trails (over training trials).
-totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
-trial_correct_error = 4; // Acceptable difference for correct answer in training.
+var trainN = 10; // Define number of training trials.
+var testN = 15; // Define number of test trails (over training trials).
+var totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
+var trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
 // Specify location information for stimuli, responses, and buttons.
-inset = 1;
-stimulus_x_start = 50;
-stimulus_y_start = 150;
-stimulus_bg_width = 500;
-stimulus_bg_height = 25;
-response_x_start = 100;
-response_y_start = 350;
-response_bg_width = 500;
-response_bg_height = 25;
-partner_y_start = response_y_start + 100; // 450
-partner_x_start = response_x_start;
-correction_y_start = response_y_start - 100; // 250
-correction_x_start = response_x_start;
-change_guess_y = partner_y_start + 200;
-change_guess_x = response_x_start;
-accept_guess_y = partner_y_start + 200;
-accept_guess_x = response_x_start * 3;
+var inset = 1;
+var stimulus_x_start = 50;
+var stimulus_y_start = 150;
+var stimulus_bg_width = 500;
+var stimulus_bg_height = 25;
+var response_x_start = 100;
+var response_y_start = 350;
+var response_bg_width = 500;
+var response_bg_height = 25;
+var partner_y_start = response_y_start + 100; // 450
+var partner_x_start = response_x_start;
+var correction_y_start = response_y_start - 100; // 250
+var correction_x_start = response_x_start;
+var change_guess_y = partner_y_start + 200;
+var change_guess_x = response_x_start;
+var accept_guess_y = partner_y_start + 200;
+var accept_guess_x = response_x_start * 3;
 
 // Specify colors for own, partner, and stimulus boxes.
 partner_guess_color = "#0b6b13";
