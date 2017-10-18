@@ -16,7 +16,7 @@ Dallinger.submitQuestionnaire = function (name) {
     data: {
       question: name || 'questionnaire',
       number: 1,
-      response: JSON.stringify(formDict),
+      response: JSON.stringify(formDict)
     },
     type: 'json',
     success: function (resp) {
