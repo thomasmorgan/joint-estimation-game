@@ -49,15 +49,15 @@ var accept_guess_y = partner_y_start + 200;
 var accept_guess_x = response_x_start * 3;
 
 // Specify colors for own, partner, and stimulus boxes.
-partner_guess_color = "#0b6b13";
-own_guess_color = "#0B486B";
-stimulus_color = "#b32113";
-correction_color = "#8e8e8e";
+var partner_guess_color = '#0b6b13';
+var own_guess_color = '#0B486B';
+var stimulus_color = '#b32113';
+var correction_color = '#8e8e8e';
 
 // Create the websocket channel to serve as an inter-trial waiting room.
 var channel = 'experiment';
-var ws_scheme = (window.location.protocol === "https:") ? 'wss://' : 'ws://';
-var socket = new ReconnectingWebSocket(ws_scheme + location.host + "/chat?channel=" + channel);
+var ws_scheme = (window.location.protocol === 'https:') ? 'wss://' : 'ws://';
+var socket = new ReconnectingWebSocket(ws_scheme + location.host + '/chat?channel=' + channel);
 
 // Check for incoming messages.
 socket.onmessage = function (msg) {
@@ -85,8 +85,8 @@ socket.onmessage = function (msg) {
             if (next_sender == partner_node_id){
 
                 // If their partner abandoned it, go to the postquestionnaire.
-                $("#title").text("Your partner has abandoned the experiment.");
-                $(".instructions").text("You will receive base pay and any earned bonuses.");
+                $('#title').text('Your partner has abandoned the experiment.');
+                $('.instructions').text('You will receive base pay and any earned bonuses.');
                 setTimeout( function () {
                     sendDataToServer();
                     allow_exit();
@@ -96,8 +96,8 @@ socket.onmessage = function (msg) {
             } else {
 
                 // If the participant abandoned it, go to debriefing.
-                $("#title").text("You have abandoned the experiment.");
-                $(".instructions").text("You will receive only your base pay.");
+                $('#title').text('You have abandoned the experiment.');
+                $('.instructions').text('You will receive only your base pay.');
                 setTimeout( function () {
                     sendDataToServer();
                     allow_exit();
@@ -105,11 +105,11 @@ socket.onmessage = function (msg) {
                 }, abandonment_announcement*1000);
             }
         // If it's a reset signal, reset the current ready signals.
-        } else if (next_signal == "You left!") {
+        } else if (next_signal == 'You left!') {
 
             // If the partner abandoned it, go to debriefing.
-            $("#title").text("You have abandoned the experiment.");
-            $(".instructions").text("You will receive only your base pay.");
+            $('#title').text('You have abandoned the experiment.');
+            $('.instructions').text('You will receive only your base pay.');
             setTimeout( function () {
                 sendDataToServer();
                 allow_exit();
@@ -117,17 +117,17 @@ socket.onmessage = function (msg) {
             }, abandonment_announcement*1000);
 
         // If it's a reset signal, reset the current ready signals.
-        } else if (next_signal == "Reset") {
+        } else if (next_signal == 'Reset') {
 
             current_ready_signals = 0;
             partner_ready_signal = 0;
-            console.log("Ready signals reset.");
+            console.log('Ready signals reset.');
 
         // If one partner detects that they've been hanging, fix it.
-        } else if (next_signal == "Hanging") {
+        } else if (next_signal == 'Hanging') {
 
           current_ready_signals = 2;
-          console.log("Correcting a hanging trial.");
+          console.log('Correcting a hanging trial.');
 
         // Otherwise, just sum it.
         } else {
@@ -139,7 +139,7 @@ socket.onmessage = function (msg) {
 
             // Sum all ready signals.
             current_ready_signals = current_ready_signals + next_signal;
-            console.log("Current ready signals: "+ current_ready_signals);
+            console.log('Current ready signals: '+ current_ready_signals);
 
         }
     }
@@ -148,7 +148,7 @@ socket.onmessage = function (msg) {
 // Create the agent.
 create_agent = function() {
     reqwest({
-        url: "/node/" + participant_id,
+        url: '/node/' + participant_id,
         method: 'post',
         type: 'json',
         success: function (resp) {
@@ -156,9 +156,9 @@ create_agent = function() {
             check_for_partner();
         },
         error: function (err) {
-            console.log("Error when initializing participant: "+ err);
-            $("#title").text("An error has occurred.");
-            $(".instructions").text("Please close this window and return this HIT.");
+            console.log('Error when initializing participant: '+ err);
+            $('#title').text('An error has occurred.');
+            $('.instructions').text('Please close this window and return this HIT.');
             err_response = JSON.parse(err.response);
             if (err_response.hasOwnProperty('html')) {
                 $('body').html(err_response.html);
@@ -175,7 +175,7 @@ create_agent = function() {
 check_for_partner = function() {
 
     reqwest({
-        url: "/node/" + my_node_id + "/vectors",
+        url: '/node/' + my_node_id + '/vectors',
         method: 'get',
         type: 'json',
         success: function (resp) {
@@ -208,8 +208,8 @@ check_for_partner = function() {
                     mercy_button = "<input type='button' class='btn btn-secondary btn-lg' id='mercyButton' value='Opt out (or broken)' style='position:absolute;top:"+partner_y_start+"px;left:"+partner_x_start+"px;'>";
                     $(document).unbind('click');
                     $(document).off('click');
-                    $("body").append(mercy_button);
-                    $("#mercyButton").click(function(){
+                    $('body').append(mercy_button);
+                    $('#mercyButton').click(function(){
                       allow_exit();
                       go_to_page('debriefing');
                     });
@@ -217,9 +217,9 @@ check_for_partner = function() {
             }
         },
         error: function (err) {
-            console.log("Error when attempting to identify partner: "+ err);
-            $("#title").text("An error has occurred.");
-            $(".instructions").text("Please close this window and return this HIT.");
+            console.log('Error when attempting to identify partner: '+ err);
+            $('#title').text('An error has occurred.');
+            $('.instructions').text('Please close this window and return this HIT.');
         }
     });
 };
@@ -229,26 +229,26 @@ check_for_partner = function() {
 //
 get_received_info = function() {
     reqwest({
-        url: "/node/" + my_node_id + "/received_infos",
+        url: '/node/' + my_node_id + '/received_infos',
         method: 'get',
         type: 'json',
         success: function (resp) {
             r = resp.infos[0].contents;
             int_list = JSON.parse(r);
-            $("#title").text("Partner found and connected");
-            $(".instructions").text("Press enter to begin");
+            $('#title').text('Partner found and connected');
+            $('.instructions').text('Press enter to begin');
             enter_lock = false;
 
             // Remove the button, if it's there.
             if (waiting_for_partner > waiting_for_partner_timeout) {
                 waiting_for_partner = 0;
-                $("#mercyButton").remove();
+                $('#mercyButton').remove();
             }
 
 
         },
         error: function (err) {
-            console.log("Error when checking if partner is connected: "+err);
+            console.log('Error when checking if partner is connected: ' + err);
             err_response = JSON.parse(err.response);
             $('body').html(err_response.html);
         }
@@ -268,8 +268,8 @@ drawUserInterface = function() {
                                      stimulus_y_start,
                                      stimulus_bg_width,
                                      stimulus_bg_height-2*inset);
-    stimulus_background.attr("stroke", "#CCCCCC");
-    stimulus_background.attr("stroke-dasharray", "--");
+    stimulus_background.attr('stroke', '#CCCCCC');
+    stimulus_background.attr('stroke-dasharray', '--');
     stimulus_background.hide();
 
     // Draw the stimulus bar with the next line length in the list.
@@ -277,8 +277,8 @@ drawUserInterface = function() {
                               stimulus_y_start-inset,
                               0,
                               25);
-    stimulus_bar.attr("fill", stimulus_color);
-    stimulus_bar.attr("stroke", "none");
+    stimulus_bar.attr('fill', stimulus_color);
+    stimulus_bar.attr('stroke', 'none');
 };
 
 //
@@ -296,22 +296,22 @@ proceedToNextTrial = function() {
     current_ready_signals = 0;
     wait_for_partner_guess = 0;
     final_accuracy = 0;
-    reset_signal = "Reset";
+    reset_signal = 'Reset';
 
     // Identify whether we're in training or testing.
     if (trialIndex < trainN) {
-        trialType = "train";
+        trialType = 'train';
     } else {
-        trialType = "test";
+        trialType = 'test';
     }
 
     // Move to next trial if we haven't hit our target n.
     if ((trialIndex + 1) < totalN) {
 
         // Update announcements and current trial info.
-        $("#title").text("Beginning next round");
-        $(".instructions").text("");
-        console.log('BEGINNING TRIAL '+trialIndex);
+        $('#title').text('Beginning next round');
+        $('.instructions').text('');
+        console.log('BEGINNING TRIAL ' + trialIndex);
 
         setTimeout( function() {
 
@@ -320,8 +320,8 @@ proceedToNextTrial = function() {
 
             // Reveal stimulus for set amount of time.
             console.log('Stimulus width: '+int_list[trialIndex]);
-            $("#title").text("Remember this line length.");
-            $(".instructions").text("");
+            $('#title').text('Remember this line length.');
+            $('.instructions').text('');
             stimulus_background.show();
             stimulus_bar.show().attr({ width: int_list[trialIndex]*PPU });
 
@@ -338,17 +338,17 @@ proceedToNextTrial = function() {
         if (trialType == 'train') {
 
           // Update header for participant.
-          $("#training-or-testing").html("Training");
-          $("#total-trials").html(trainN);
-          $("#trial-number").html(trialIndex+1);
+          $('#training-or-testing').html('Training');
+          $('#total-trials').html(trainN);
+          $('#trial-number').html(trialIndex + 1);
 
         // ... or if this is a test trial ...
         } else {
 
           // Update header for participant.
-          $("#training-or-testing").html("Testing");
-          $("#total-trials").html(testN);
-          $("#trial-number").html(trialIndex+1-trainN);
+          $('#training-or-testing').html('Testing');
+          $('#total-trials').html(testN);
+          $('#trial-number').html(trialIndex + 1-trainN);
 
         }
 
@@ -373,30 +373,30 @@ showCorrectLength = function() {
                                        correction_y_start,
                                        response_bg_width,
                                        response_bg_height - 2 * inset);
-    correction_background.attr("stroke", "#CCCCCC");
-    correction_background.attr("stroke-dasharray", "--");
+    correction_background.attr('stroke', '#CCCCCC');
+    correction_background.attr('stroke-dasharray', '--');
 
     // Draw correction bar.
     correction_bar = paper.rect(correction_x_start,
                                 correction_y_start - inset,
                                 response_bg_width,
                                 response_bg_height);
-    correction_bar.attr("fill", correction_color);
-    correction_bar.attr("stroke", "none");
+    correction_bar.attr('fill', correction_color);
+    correction_bar.attr('stroke', 'none');
     correction_bar.attr({x: correction_x_start,
                          width: int_list[trialIndex]*PPU});
 
     // Show labels.
     correction_label = paper.text(correction_x_start + 10,
                                   correction_y_start - inset + 50,
-                                  "Correct length");
-    correction_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                                  'Correct length');
+    correction_label.attr({'font-family':  'Helvetica Neue,Helvetica,Arial,sans-serif',
                            'font-size': '14px',
                            'text-anchor': 'start'});
     own_label = paper.text(response_x_start + 10,
                            response_y_start - inset + 50,
-                           "Your guess");
-    own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                           'Your guess');
+    own_label.attr({'font-family':  'Helvetica Neue,Helvetica,Arial,sans-serif',
                     'font-size': '14px',
                     'text-anchor': 'start'});
 
@@ -417,14 +417,14 @@ showCorrectLength = function() {
 
     // Update text to reflect accuracy.
     if (Math.abs(response - int_list[trialIndex]) < trial_correct_error) {
-        $("#title").text("Your guess was correct!");
-        $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
+        $('#title').text('Your guess was correct!');
+        $('.instructions').text('The blue bar is your guess; the grey bar is the correct answer.');
     } else if (response == -99){
-        $("#title").text("You didn't respond in time");
-        $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.<br>The grey bar is the correct answer.");
+        $('#title').text("You didn't respond in time");
+        $('.instructions').html('Make sure to respond within ' + response_timeout + ' seconds.<br>The grey bar is the correct answer.');
     } else {
-        $("#title").text("Your guess was incorrect");
-        $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
+        $('#title').text('Your guess was incorrect');
+        $('.instructions').text('The blue bar is your guess; the grey bar is the correct answer.');
     }
 };
 
@@ -434,28 +434,28 @@ showCorrectLength = function() {
 sendDataToServer = function(){
 
     // Handle reset signals to yoke participants to same trial.
-    if (reset_signal=="Reset"){
+    if (reset_signal=='Reset'){
         response_type = 0;
-        trialData = JSON.stringify({"trialType": trialType,
-                                    "trialNumber": trialIndex,
-                                    "guessCounter": guessCounter,
-                                    "responseCounter": response_counter,
-                                    "length": int_list[trialIndex],
-                                    "guess": response,
-                                    "acceptType": 0,
-                                    "finalAccuracy": final_accuracy,
-                                    "responseType": response_type});
+        trialData = JSON.stringify({'trialType': trialType,
+                                    'trialNumber': trialIndex,
+                                    'guessCounter': guessCounter,
+                                    'responseCounter': response_counter,
+                                    'length': int_list[trialIndex],
+                                    'guess': response,
+                                    'acceptType': 0,
+                                    'finalAccuracy': final_accuracy,
+                                    'responseType': response_type});
     } else {
         response_type = 1;
-        trialData = JSON.stringify({"trialType": trialType,
-                                    "trialNumber": trialIndex,
-                                    "guessCounter": guessCounter,
-                                    "responseCounter": response_counter,
-                                    "length": int_list[trialIndex],
-                                    "guess": response,
-                                    "acceptType": acceptType,
-                                    "finalAccuracy": final_accuracy,
-                                    "responseType": response_type});
+        trialData = JSON.stringify({'trialType': trialType,
+                                    'trialNumber': trialIndex,
+                                    'guessCounter': guessCounter,
+                                    'responseCounter': response_counter,
+                                    'length': int_list[trialIndex],
+                                    'guess': response,
+                                    'acceptType': acceptType,
+                                    'finalAccuracy': final_accuracy,
+                                    'responseType': response_type});
     }
 
     // Prepare data to send to server.
@@ -465,7 +465,7 @@ sendDataToServer = function(){
 
     // If someone abandoned, just send the data and let the abandonment function proceed.
     reqwest({
-        url: "/info/" + my_node_id,
+        url: '/info/' + my_node_id,
         method: 'post',
         data: {
             contents: trialData,
@@ -486,8 +486,8 @@ waitToGuess = function(){
     // Hide stimulus bar and text.
     stimulus_bar.hide();
     stimulus_background.hide();
-    $("#title").text("");
-    $(".instructions").text("");
+    $('#title').text('');
+    $('.instructions').text('');
 };
 
 //
@@ -500,8 +500,8 @@ allowResponse = function() {
                                      response_y_start,
                                      response_bg_width,
                                      response_bg_height-2*inset);
-    response_background.attr("stroke", "#CCCCCC");
-    response_background.attr("stroke-dasharray", "--");
+    response_background.attr('stroke', '#CCCCCC');
+    response_background.attr('stroke-dasharray', '--');
     response_background.show();
 
     // Draw response bar.
@@ -509,12 +509,12 @@ allowResponse = function() {
                               response_y_start-inset,
                               response_bg_width,
                               response_bg_height);
-    response_bar.attr("fill", own_guess_color);
-    response_bar.attr("stroke", "none");
+    response_bar.attr('fill', own_guess_color);
+    response_bar.attr('stroke', 'none');
 
     // Display response bar and reset instructions.
-    $("#title").text("Re-create the line length.");
-    $(".instructions").text("");
+    $('#title').text('Re-create the line length.');
+    $('.instructions').text('');
     response_bar.show().attr({width: 0});
 
     // Set the response variable to default and increment guess counter.
@@ -558,7 +558,7 @@ function acknowledgeGuess(){
 
         // Stop the unresponsive timer and prevent multiple guesses.
         clearTimeout(unresponsiveParticipant);
-        $(document).off("mousemove",trackMouseMovement);
+        $(document).off('mousemove',trackMouseMovement);
         $(document).off('click');
 
         // If a training trial, display correction; if test, update text.
@@ -579,14 +579,14 @@ function acknowledgeGuess(){
                     correction_label.hide();
 
                     // Update the text.
-                    $("#title").text("Congrats! You've finished the training trials");
-                    $(".instructions").html("Your next trial will be a <b>test</b> trial.");
+                    $('#title').text("Congrats! You've finished the training trials");
+                    $('.instructions').html('Your next trial will be a <b>test</b> trial.');
                 }, correction_timeout*1000);
 
                 // Move to next trial.
                 setTimeout(function(){
-                    $("#title").text("");
-                    $(".instructions").html("");
+                    $('#title').text('');
+                    $('.instructions').html('');
                     checkPartnerTraining();
                 }, 5000 + (correction_timeout*1000));
 
@@ -606,8 +606,8 @@ function acknowledgeGuess(){
             }
       } else {
         // Wait for partner to guess.
-        $("#title").text("Your response has been recorded.");
-        $(".instructions").text("Please wait for your partner's guess.");
+        $('#title').text('Your response has been recorded.');
+        $('.instructions').text("Please wait for your partner's guess.");
         setTimeout(getPartnerGuess, 1000);
       }
       // Only allow them to acknowledge once.
@@ -651,15 +651,15 @@ disableResponseAfterDelay = function() {
                 correction_label.hide();
 
                 // Update the text.
-                $("#title").text("Congrats! You've finished the training trials");
-                $(".instructions").html("Your next trial will be a <b>test</b> trial.");
+                $('#title').text("Congrats! You've finished the training trials");
+                $('.instructions').html('Your next trial will be a <b>test</b> trial.');
 
             }, correction_timeout*1000);
 
             // Move to next trial.
             setTimeout(function(){
-                $("#title").text("");
-                $(".instructions").html("");
+                $('#title').text('');
+                $('.instructions').html('');
                 checkPartnerTraining();
                 waiting_for_partner = 0;
             }, 5000 + (correction_timeout*1000));
@@ -682,8 +682,8 @@ disableResponseAfterDelay = function() {
 
     // Just update the text if we're in a test trial.
     } else {
-        $("#title").text("Response period timed out.");
-        $(".instructions").text("Please wait for your partner's guess.");
+        $('#title').text('Response period timed out.');
+        $('.instructions').text("Please wait for your partner's guess.");
         getPartnerGuess();
     }
 };
@@ -709,8 +709,8 @@ waitForTraining = function() {
     waiting_for_partner = waiting_for_partner + 1;
 
     // Update text and check again.
-    $("#title").text("Please wait");
-    $(".instructions").text("Your partner is finishing training");
+    $('#title').text('Please wait');
+    $('.instructions').text('Your partner is finishing training');
     setTimeout(checkPartnerTraining,1000);
 };
 
@@ -720,11 +720,11 @@ waitForTraining = function() {
 handleAbandonedPartner = function() {
 
     // Inform player about what happened.
-    $("#title").text("Your partner has abandoned the experiment.");
-    $(".instructions").text("You will receive base pay and any earned bonuses.");
+    $('#title').text('Your partner has abandoned the experiment.');
+    $('.instructions').text('You will receive base pay and any earned bonuses.');
 
     // Send a signal, in case partner is still listening.
-    sendReadySignal("You left!");
+    sendReadySignal('You left!');
 
     // Move on.
     setTimeout( function () {
@@ -738,7 +738,7 @@ handleAbandonedPartner = function() {
 //
 checkFailedVectors = function() {
     reqwest({
-        url: "/node/" + my_node_id + "/vectors",
+        url: '/node/' + my_node_id + '/vectors',
         method: 'get',
         type: 'json',
         success: function (resp) {
@@ -746,9 +746,9 @@ checkFailedVectors = function() {
             if (vectors.length===1) { handleAbandonedPartner(); }
         },
         error: function (err) {
-            console.log("Error when attempting to check for failed node: "+ err);
-            $("#title").text("An error has occurred.");
-            $(".instructions").text("Please close this window and return this HIT.");
+            console.log('Error when attempting to check for failed node: '+ err);
+            $('#title').text('An error has occurred.');
+            $('.instructions').text('Please close this window and return this HIT.');
         }
     });
 };
@@ -759,7 +759,7 @@ checkFailedVectors = function() {
 checkPartnerTraining = function() {
 
     reqwest({
-        url: "/node/" + partner_node_id + "/infos",
+        url: '/node/' + partner_node_id + '/infos',
         method: 'get',
         type: 'json',
         success: function (resp) {
@@ -778,12 +778,12 @@ checkPartnerTraining = function() {
 
                 // Grab partner's guess.
                 fetchPartnerData();
-                partner_guess_trial = partner_guess_record["trialNumber"];
+                partner_guess_trial = partner_guess_record['trialNumber'];
 
                 // If the partner has finished training, move on.
                 if (partner_guess_trial >= (trainN-1)){
-                    $("#title").text("");
-                    $(".instructions").text("");
+                    $('#title').text('');
+                    $('.instructions').text('');
                     proceedToNextTrial();
 
               // Loop back if the partner hasn't finished training.
@@ -793,7 +793,7 @@ checkPartnerTraining = function() {
             }
         },
         error: function (err) {
-            console.log("Error when trying to see if partner finished training: "+err);
+            console.log('Error when trying to see if partner finished training: ' + err);
             err_response = JSON.parse(err.response);
             $('body').html(err_response.html);
         }
@@ -828,7 +828,7 @@ getPartnerGuess = function() {
     } else {
 
         // Derive guess information from data.
-        partner_guess_trial = partner_guess_record["trialNumber"];
+        partner_guess_trial = partner_guess_record['trialNumber'];
         partner_response_counter = partner_guess_record['responseCounter'];
         partner_accept_type = partner_guess_record['acceptType'];
         console.log("Partner's current trial: "+partner_guess_trial);
@@ -843,7 +843,7 @@ getPartnerGuess = function() {
             // .. go back if we haven't both accepted.
             } else {
                 enter_lock = false;
-                partner_x_guess = partner_guess_record["guess"];
+                partner_x_guess = partner_guess_record['guess'];
                 wait_for_partner_guess = 0;
                 showPartner();
             }
@@ -851,7 +851,7 @@ getPartnerGuess = function() {
         // If we've been waiting too long AND we're behind on the response counter, try to grab the partner's guess anyway.
         } else if ((partner_guess_trial === trialIndex) && (wait_for_partner_guess > 20)){
             enter_lock = false;
-            partner_x_guess = partner_guess_record["guess"];
+            partner_x_guess = partner_guess_record['guess'];
             wait_for_partner_guess = 0;
             showPartner();
 
@@ -876,7 +876,7 @@ getPartnerGuess = function() {
 showPartner = function() {
 
     // When we show our partner's guess, send out a signal to prevent them from moving on.
-    reset_signal = "Reset";
+    reset_signal = 'Reset';
     socket.send(channel + ':' + JSON.stringify(reset_signal));
     sendDataToServer();
 
@@ -893,12 +893,12 @@ showPartner = function() {
 
     // Initialize change button.
     change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+change_guess_x+"px;'>";
-    $("body").append(change_guess_button);
+    $('body').append(change_guess_button);
     $(document).unbind('click');
     $(document).off('click');
 
     // If they change their guess, stop the abandonment timer and allow to change.
-    $("#changeGuess").click(function(){
+    $('#changeGuess').click(function(){
         $(document).click(function(e) { e.stopPropagation(); });
         clearTimeout(abandoned_participant);
         changeOwnGuess();
@@ -911,8 +911,8 @@ showPartner = function() {
     // If nobody guesses, ask them to go back and guess.
     if (partner_x_guess < 0 && response < 0) {
 
-        $("#title").text("Neither you nor your partner submitted a guess.");
-        $(".instructions").text("Please submit your guess by clicking 'Change my guess'.");
+        $('#title').text('Neither you nor your partner submitted a guess.');
+        $('.instructions').text("Please submit your guess by clicking 'Change my guess'.");
 
     // If they guessed, allow them to accept it.
     } else {
@@ -922,21 +922,21 @@ showPartner = function() {
 
         // Show updated instructions based on whether they or their partner changed their guess.
         if (response_counter===0){
-          $("#title").text("Would you like to accept your guess or change it?");
+          $('#title').text('Would you like to accept your guess or change it?');
         } else { // We've already identified partner_accept_type in the enclosing function.
             if (partner_accept_type===0 && acceptType===1){
-              $("#title").html("Your partner chose to change their guess.<br>Would you like to accept your guess or change it?");
+              $('#title').html('Your partner chose to change their guess.<br>Would you like to accept your guess or change it?');
             } else if (partner_accept_type===1 && acceptType===0){
-              $("#title").html("Your partner did not choose to change their guess.<br>Would you like to accept your guess or change it?");
+              $('#title').html('Your partner did not choose to change their guess.<br>Would you like to accept your guess or change it?');
             } else if (partner_accept_type===0 && acceptType===0){
-              $("#title").html("Your partner also chose to change their guess.<br>Would you like to accept your guess or change it?");
+              $('#title').html('Your partner also chose to change their guess.<br>Would you like to accept your guess or change it?');
             }
         }
-        $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
+        $('.instructions').text("Your guess is shown in blue, and your partner's guess is shown in green.");
 
         // If they submitted a guess, allow them to accept it and stop the abandonment timer.
-        $("body").append(accept_guess_button);
-        $("#acceptGuess").click(function() {
+        $('body').append(accept_guess_button);
+        $('#acceptGuess').click(function() {
             $(document).click(function(e) { e.stopPropagation(); });
             clearTimeout(abandoned_participant);
             acceptOwnGuess();
@@ -955,16 +955,16 @@ showPartnerGuess = function(){
                                     partner_y_start,
                                     response_bg_width,
                                     response_bg_height - 2 * inset);
-    partner_background.attr("stroke", "#CCCCCC");
-    partner_background.attr("stroke-dasharray", "--");
+    partner_background.attr('stroke', '#CCCCCC');
+    partner_background.attr('stroke-dasharray', '--');
 
     // Draw partner's guess.
     partner_bar = paper.rect(partner_x_start,
                              partner_y_start - inset,
                              response_bg_width,
                              response_bg_height);
-    partner_bar.attr("fill", partner_guess_color);
-    partner_bar.attr("stroke", "none");
+    partner_bar.attr('fill', partner_guess_color);
+    partner_bar.attr('stroke', 'none');
     if (partner_x_guess > 0){
         partner_bar.show().attr({x: partner_x_start,
                                  width: partner_x_guess*PPU});
@@ -977,7 +977,7 @@ showPartnerGuess = function(){
     partner_label = paper.text(partner_x_start + 10,
                                partner_y_start - inset + 50,
                                "Your partner's guess");
-    partner_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+    partner_label.attr({'font-family':  'Helvetica Neue,Helvetica,Arial,sans-serif',
                         'font-size': '14px',
                         'text-anchor': 'start'});
 };
@@ -1003,8 +1003,8 @@ showOwnGuess = function(){
     // Label the bar.
     own_label = paper.text(response_x_start + 10,
                            response_y_start - inset + 50,
-                           "Your guess");
-    own_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                           'Your guess');
+    own_label.attr({'font-family':  'Helvetica Neue,Helvetica,Arial,sans-serif',
                     'font-size': '14px',
                     'text-anchor': 'start'});
 };
@@ -1015,19 +1015,19 @@ showOwnGuess = function(){
 acceptOwnGuess = function(){
 
     // Remove partners' guesses and buttons.
-    reset_signal = "Submitted";
+    reset_signal = 'Submitted';
     partner_background.hide();
     partner_bar.hide();
     partner_label.hide();
     response_background.hide();
     response_bar.hide();
     own_label.hide();
-    $("#acceptGuess").remove();
-    $("#changeGuess").remove();
+    $('#acceptGuess').remove();
+    $('#changeGuess').remove();
 
     // Reset text.
-    $("#title").text("Please wait...");
-    $(".instructions").text("Checking to see if your partner has responded.");
+    $('#title').text('Please wait...');
+    $('.instructions').text('Checking to see if your partner has responded.');
 
     // Note whose guess we accepted and send data.
     acceptType = 1;
@@ -1058,10 +1058,10 @@ changeOwnGuess = function(){
   setTimeout( function() {
 
         // Remove buttons and update text.
-        $("#acceptGuess").remove();
-        $("#changeGuess").remove();
-        $("#title").text("Re-create the line length.");
-        $(".instructions").text("");
+        $('#acceptGuess').remove();
+        $('#changeGuess').remove();
+        $('#title').text('Re-create the line length.');
+        $('.instructions').text('');
 
         // Set the response variable to default and increment guess counter.
         acceptType = 0;
@@ -1071,7 +1071,7 @@ changeOwnGuess = function(){
         // Prep signal that we're not ready.
         response = -99;
         ready_signal = -1;
-        reset_signal = "Changed";
+        reset_signal = 'Changed';
         sendReadySignal(ready_signal);
 
         // Track the mouse during response.
@@ -1118,11 +1118,11 @@ acknowledgeChangedGuess = function() {
 
         // Reset for next trial.
         Mousetrap.resume();
-        $(document).off("mousemove",trackMouseMovement);
+        $(document).off('mousemove',trackMouseMovement);
 
         // Update text.
-        $("#title").text("Your updated response has been recorded.");
-        $(".instructions").text("Please wait for your partner's guess.");
+        $('#title').text('Your updated response has been recorded.');
+        $('.instructions').text("Please wait for your partner's guess.");
 
         // Only allow them to acknowledge once.
         change_lock = true;
@@ -1142,7 +1142,7 @@ waitToAccept = function() {
 fetchPartnerData = function() {
 
     reqwest({
-        url: "/node/" + partner_node_id + "/infos",
+        url: '/node/' + partner_node_id + '/infos',
         method: 'get',
         type: 'json',
         success: function (resp) {
@@ -1192,9 +1192,9 @@ checkIfPartnerAccepted = function() {
     } else {
 
         // Grab partner's guess data.
-        partner_guess_trial = partner_guess_record["trialNumber"];
-        partner_accept_type = partner_guess_record["acceptType"];
         // console.log("Partner's last guess logged in trial "+partner_guess_trial);
+        partner_guess_trial = partner_guess_record['trialNumber'];
+        partner_accept_type = partner_guess_record['acceptType'];
 
         // If the partner hasn't guessed on this trial:
         if (partner_guess_trial < trialIndex) {
@@ -1219,15 +1219,15 @@ checkIfPartnerAccepted = function() {
             if ((partner_accept_type == 1 && acceptType == 1) || (tried_to_finalize > finalize_cutoff/3)){
 
                 // Update text.
-                console.log("Attempting to finalize guess...");
-                $("#title").text("Processing your guess...");
-                $(".instructions").text("");
+                console.log('Attempting to finalize guess...');
+                $('#title').text('Processing your guess...');
+                $('.instructions').text('');
                 setTimeout(tryToFinalize,
                            partner_change_announcement * 1000);
 
             // If we haven't both accepted yet...
             } else {
-                partner_response_counter = partner_guess_record["responseCounter"];
+                partner_response_counter = partner_guess_record['responseCounter'];
 
                 // If they haven't submitted a guess, wait again.
                 if (partner_response_counter < 0) {
@@ -1260,7 +1260,7 @@ tryToFinalize = function() {
     tried_to_finalize = tried_to_finalize + 1;
     if (tried_to_finalize > finalize_cutoff){
         current_ready_signals = 2;
-        hanging_signal = "Hanging";
+        hanging_signal = 'Hanging';
         socket.send(channel + ':' + JSON.stringify(hanging_signal));
     }
 
@@ -1274,29 +1274,30 @@ tryToFinalize = function() {
     // Send data to server if their partner is on the same response counter, finished the last trial, or
     if (partner_accept_type==1 && acceptType == 1){
         if (partner_response_counter == response_counter) {
-            console.log("Successfully finalized: Partner on same response counter.");
+            console.log('Successfully finalized: Partner on same response counter.');
             calculateFinalAccuracy();
             sendDataToServer();
             proceedToNextTrial();
         } else if (partner_guess_trial == testN && partner_final_accuracy !== 0) {
-            console.log("Successfully finalized: Partner finished all test trial.");
+            console.log('Successfully finalized: Partner finished all test trials.');
             calculateFinalAccuracy();
             sendDataToServer();
             proceedToNextTrial();
         } else if (partner_final_accuracy !== 0){
-            console.log("Successfully finalized: Partner advanced to next trial.");
+            console.log('Successfully finalized: Partner advanced to next trial.');
             calculateFinalAccuracy();
             sendDataToServer();
             proceedToNextTrial();
         } else {
             console.log("Failed to finalize.");
-            console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter);
+            console.log('Failed to finalize.');
+            console.log('partner_accept_type = '+ partner_accept_type + ',\nacceptType = ' + acceptType + ',\npartner_response_counter = ' + partner_response_counter + ',\nresponse_counter = '+ response_counter);
             getPartnerGuess();
         }
     // If not, just keep checking.
     } else {
-        console.log("Failed to finalize.");
-        console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter);
+        console.log('Failed to finalize.');
+        console.log('partner_accept_type = '+ partner_accept_type + ',\nacceptType = ' + acceptType + ',\npartner_response_counter = ' + partner_response_counter + ',\nresponse_counter = '+ response_counter);
         getPartnerGuess();
     }
 };
@@ -1328,8 +1329,8 @@ monitorForAbandoned = function(){
     response_background.hide();
     response_bar.hide();
     own_label.hide();
-    $("#acceptGuess").remove();
-    $("#changeGuess").remove();
+    $('#acceptGuess').remove();
+    $('#changeGuess').remove();
 
     // Log response as being abandoned.
     abandonment_signal = -99;
