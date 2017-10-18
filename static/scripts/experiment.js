@@ -821,7 +821,7 @@ getPartnerGuess = function() {
     fetchPartnerData();
 
     // If partner hasn't responded, wait.
-    if (isNaN(partner_guess_record)) {
+    if (partner_guess_record==NaN) {
         waitForGuess();
 
     // Move forward if the partner has guessed.
@@ -1187,7 +1187,7 @@ checkIfPartnerAccepted = function() {
     fetchPartnerData();
 
     // Loop back if this is the first trial and the partner hasn't guessed.
-    if (isNaN(partner_guess_record)) {
+    if (partner_guess_record == NaN) {
         waitToAccept();
     } else {
 
