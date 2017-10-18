@@ -9,6 +9,7 @@ var reset_signal = 'Reset';
 var websocket_signal = 0;
 var partner_accept_type = 0;
 var waiting_for_partner = 0;
+var partner_node_id = -1;
 var partner_guess_record = NaN;
 
 // Set a series of timeouts (in seconds).
@@ -66,11 +67,11 @@ socket.onmessage = function (msg) {
     if (Object.keys(msg.data.substring(channel.length + 1)).length > 0){
 
         // The message is prefixed with the channel name and a colon.
-        var ready_signal_data = JSON.parse(msg.data.substring(channel.length + 1));
+        ready_signal_data = JSON.parse(msg.data.substring(channel.length + 1));
 
         // Identify the ready signal and the sender.
-        var next_signal = Object.values(ready_signal_data)[0];
-        var next_sender = Object.keys(ready_signal_data)[0];
+        next_signal = Object.values(ready_signal_data)[0];
+        next_sender = Object.keys(ready_signal_data)[0];
 
         // If we received a signal, let us know what it was.
         if (next_sender == partner_node_id){
@@ -146,7 +147,7 @@ socket.onmessage = function (msg) {
 };
 
 // Create the agent.
-create_agent = function() {
+function create_agent () {
     reqwest({
         url: '/node/' + participant_id,
         method: 'post',
@@ -172,7 +173,7 @@ create_agent = function() {
 //
 // Monitor for the participant to be joined with a partner.
 //
-check_for_partner = function() {
+function check_for_partner () {
 
     reqwest({
         url: '/node/' + my_node_id + '/vectors',
@@ -187,18 +188,19 @@ check_for_partner = function() {
                 // whichever origin id is not the same as your node_id,
                 // or the origin id of the source (1),
                 // that must be your partner's id.
-                var  partner_node_id = -1;
+                console.log('Partner node ID: ' + partner_node_id);
                 for (i = 0; i < vectors.length; i++) {
                     if ((vectors[i].origin_id !== my_node_id) && vectors[i].origin_id !== 1) {
                         partner_node_id = vectors[i].origin_id;
+                        console.log('Partner node ID: ' + partner_node_id);
                     }
-                }
+                };
                 // Now that you've identified your partner, move on.
                 get_received_info();
             } else {
 
                 // If there are no vectors, wait 1 second and then ask again
-                setTimeout(function(){
+                setTimeout(function () {
                     waiting_for_partner = waiting_for_partner + 1;
                     check_for_partner();
                 }, 1000);
@@ -209,7 +211,8 @@ check_for_partner = function() {
                     $(document).unbind('click');
                     $(document).off('click');
                     $('body').append(mercy_button);
-                    $('#mercyButton').click(function(){
+                    $('#mercyButton').click(function () {
+                      console.log('Leaving without being paired.')
                       allow_exit();
                       go_to_page('debriefing');
                     });
@@ -227,7 +230,7 @@ check_for_partner = function() {
 //
 // Connect them to their partner.
 //
-get_received_info = function() {
+function get_received_info () {
     reqwest({
         url: '/node/' + my_node_id + '/received_infos',
         method: 'get',
@@ -244,8 +247,6 @@ get_received_info = function() {
                 waiting_for_partner = 0;
                 $('#mercyButton').remove();
             }
-
-
         },
         error: function (err) {
             console.log('Error when checking if partner is connected: ' + err);
@@ -259,7 +260,7 @@ get_received_info = function() {
 //
 // Draw the user interface.
 //
-drawUserInterface = function() {
+function drawUserInterface () {
 
     paper = Raphael(0, 50, 800, 600);
 
@@ -284,7 +285,7 @@ drawUserInterface = function() {
 //
 // Move to next trial: Increment trial number, display stimulus, and allow response.
 //
-proceedToNextTrial = function() {
+function proceedToNextTrial () {
 
     // Increment the trial and guess counter.
     trialIndex += 1;
@@ -313,8 +314,7 @@ proceedToNextTrial = function() {
         $('.instructions').text('');
         console.log('BEGINNING TRIAL ' + trialIndex);
 
-        setTimeout( function() {
-
+        setTimeout(function () {
             // Prevent repeat keypresses.
             Mousetrap.pause();
 
@@ -366,7 +366,7 @@ proceedToNextTrial = function() {
 //
 // For training trials, show the correct length.
 //
-showCorrectLength = function() {
+function showCorrectLength () {
 
     // Draw correction background.
     correction_background = paper.rect(correction_x_start,
@@ -431,7 +431,7 @@ showCorrectLength = function() {
 //
 // Send the data back to the server.
 //
-sendDataToServer = function(){
+function sendDataToServer () {
 
     // Handle reset signals to yoke participants to same trial.
     if (reset_signal=='Reset'){
@@ -459,9 +459,8 @@ sendDataToServer = function(){
     }
 
     // Prepare data to send to server.
-    console.log('Accept Type: ' + acceptType);
+    console.log('Accept type: ' + acceptType);
     console.log('Logged guess: ' + response);
-
 
     // If someone abandoned, just send the data and let the abandonment function proceed.
     reqwest({
@@ -471,7 +470,7 @@ sendDataToServer = function(){
             contents: trialData,
             property3: final_accuracy
         }, success: function(resp) {
-            if (websocket_signal != -99 && (trialIndex + 1) == totalN) {
+            if ((websocket_signal != -99) && ((trialIndex + 1) == totalN)) {
                 create_agent();
             }
         }
@@ -481,7 +480,7 @@ sendDataToServer = function(){
 //
 // Wait between trials.
 //
-waitToGuess = function(){
+function waitToGuess () {
 
     // Hide stimulus bar and text.
     stimulus_bar.hide();
@@ -493,7 +492,7 @@ waitToGuess = function(){
 //
 // Allow user response only for a set number of seconds.
 //
-allowResponse = function() {
+function allowResponse () {
 
     // Create response background.
     response_background = paper.rect(response_x_start,
@@ -584,7 +583,7 @@ function acknowledgeGuess(){
                 }, correction_timeout*1000);
 
                 // Move to next trial.
-                setTimeout(function(){
+                setTimeout(function () {
                     $('#title').text('');
                     $('.instructions').html('');
                     checkPartnerTraining();
@@ -618,7 +617,7 @@ function acknowledgeGuess(){
 //
 // Disable participant responses if they take too long.
 //
-disableResponseAfterDelay = function() {
+function disableResponseAfterDelay () {
 
     // Turn off click ability and event listeners.
     $(document).off('click');
@@ -657,7 +656,7 @@ disableResponseAfterDelay = function() {
             }, correction_timeout*1000);
 
             // Move to next trial.
-            setTimeout(function(){
+            setTimeout(function () {
                 $('#title').text('');
                 $('.instructions').html('');
                 checkPartnerTraining();
@@ -691,7 +690,7 @@ disableResponseAfterDelay = function() {
 //
 // Track mouse movement during response.
 //
-trackMouseMovement = function(e) {
+ function trackMouseMovement (e) {
     currentXLocation = e.pageX-response_x_start;
     response_bar_size = bounds(currentXLocation,
                                1*PPU,
@@ -703,7 +702,7 @@ trackMouseMovement = function(e) {
 //
 // Wait for partner to finish training.
 //
-waitForTraining = function() {
+function waitForTraining () {
 
     // Keep track of how long we've been waiting.
     waiting_for_partner = waiting_for_partner + 1;
@@ -717,7 +716,7 @@ waitForTraining = function() {
 //
 // Wrap up if partner abandons.
 //
-handleAbandonedPartner = function() {
+function handleAbandonedPartner () {
 
     // Inform player about what happened.
     $('#title').text('Your partner has abandoned the experiment.');
@@ -736,7 +735,7 @@ handleAbandonedPartner = function() {
 //
 // Check whether our vectors have failed (i.e., partner abandoned/returned HIT).
 //
-checkFailedVectors = function() {
+function checkFailedVectors () {
     reqwest({
         url: '/node/' + my_node_id + '/vectors',
         method: 'get',
@@ -756,7 +755,7 @@ checkFailedVectors = function() {
 //
 // Montior the server to see if their partner's finished training.
 //
-checkPartnerTraining = function() {
+function checkPartnerTraining () {
 
     reqwest({
         url: '/node/' + partner_node_id + '/infos',
@@ -803,7 +802,7 @@ checkPartnerTraining = function() {
 //
 // Check to see if partner has guessed one time per second.
 //
-waitForGuess = function() {
+function waitForGuess () {
 
     // Increment wait timer.
     wait_for_partner_guess = wait_for_partner_guess + 1;
@@ -815,7 +814,7 @@ waitForGuess = function() {
 //
 // Monitor the server to see if partner has guessed.
 //
-getPartnerGuess = function() {
+function getPartnerGuess () {
 
     // Get partner's data.
     fetchPartnerData();
@@ -873,7 +872,7 @@ getPartnerGuess = function() {
 //
 // Display partner's guess.
 //
-showPartner = function() {
+function showPartner () {
 
     // When we show our partner's guess, send out a signal to prevent them from moving on.
     reset_signal = 'Reset';
@@ -898,7 +897,7 @@ showPartner = function() {
     $(document).off('click');
 
     // If they change their guess, stop the abandonment timer and allow to change.
-    $('#changeGuess').click(function(){
+    $('#changeGuess').click(function () {
         $(document).click(function(e) { e.stopPropagation(); });
         clearTimeout(abandoned_participant);
         changeOwnGuess();
@@ -947,7 +946,7 @@ showPartner = function() {
 //
 // Draw partner's guess.
 //
-showPartnerGuess = function(){
+function showPartnerGuess () {
 
     // Draw partner's background.
     paper = Raphael(0, 50, 800, 600);
@@ -985,7 +984,7 @@ showPartnerGuess = function(){
 //
 // Show own guess.
 //
-showOwnGuess = function(){
+function showOwnGuess () {
 
     // Turn off mousetracking.
     $(document).off('mousemove',trackMouseMovement);
@@ -1012,7 +1011,7 @@ showOwnGuess = function(){
 //
 // Accept own guess.
 //
-acceptOwnGuess = function(){
+function acceptOwnGuess () {
 
     // Remove partners' guesses and buttons.
     reset_signal = 'Submitted';
@@ -1043,7 +1042,7 @@ acceptOwnGuess = function(){
 //
 // Send websocket ready signal.
 //
-sendReadySignal = function(signal_value){
+function sendReadySignal (signal_value) {
     signal_data = {};
     signal_data[my_node_id] = ready_signal;
     socket.send(channel + ':' + JSON.stringify(signal_data));
@@ -1052,10 +1051,10 @@ sendReadySignal = function(signal_value){
 //
 // Change guess.
 //
-changeOwnGuess = function(){
+function changeOwnGuess () {
 
   // Add a brief timeout between pressing button and allowing the change.
-  setTimeout( function() {
+  setTimeout(function () {
 
         // Remove buttons and update text.
         $('#acceptGuess').remove();
@@ -1106,7 +1105,7 @@ changeOwnGuess = function(){
 //
 // Acknowledge that they've submitted a new guess.
 //
-acknowledgeChangedGuess = function() {
+function acknowledgeChangedGuess () {
 
     // Only allow them to guess in certain settings.
     if (change_lock === false){
@@ -1132,14 +1131,14 @@ acknowledgeChangedGuess = function() {
 //
 // Wait for partner acceptance.
 //
-waitToAccept = function() {
+function waitToAccept () {
     setTimeout(checkIfPartnerAccepted, 1000);
 };
 
 //
 // Grab partner's most recent data entry.
 //
-fetchPartnerData = function() {
+function fetchPartnerData () {
 
     reqwest({
         url: '/node/' + partner_node_id + '/infos',
@@ -1180,7 +1179,7 @@ fetchPartnerData = function() {
 //
 // Montior the server to see if their partner's accepted a guess.
 //
-checkIfPartnerAccepted = function() {
+function checkIfPartnerAccepted () {
 
     // Get partner's data and increment finalization counter.
     tried_to_finalize = tried_to_finalize + 1;
@@ -1254,7 +1253,7 @@ checkIfPartnerAccepted = function() {
 //
 // Figure out if we're ready to move on to the next trial.
 //
-tryToFinalize = function() {
+function tryToFinalize () {
 
     // Check if we've been hanging on finalization.
     tried_to_finalize = tried_to_finalize + 1;
@@ -1304,7 +1303,7 @@ tryToFinalize = function() {
 //
 // Calculate final accuracy.
 //
-calculateFinalAccuracy = function(){
+function calculateFinalAccuracy () {
     if (response == -99){
       final_accuracy = response;
     } else {
@@ -1315,7 +1314,7 @@ calculateFinalAccuracy = function(){
 //
 // Monitor for unresponsive participants.
 //
-monitorForAbandoned = function(){
+function monitorForAbandoned () {
 
     // Turn off click ability and event listeners.
     $(document).off('click');
