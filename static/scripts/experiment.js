@@ -74,7 +74,7 @@ socket.onmessage = function (msg) {
 
         // If we received a signal, let us know what it was.
         if (next_sender == partner_node_id){
-            console.log("Partner's signal: "+next_signal);
+            console.log("Partner's signal: " + next_signal);
         }
 
         // If the websocket reads the abandonment signal, terminate the experiment.
@@ -205,7 +205,7 @@ check_for_partner = function() {
 
                 // If they've been waiting a long time for a partner, give them an option to leave.
                 if (waiting_for_partner > waiting_for_partner_timeout){
-                    mercy_button = "<input type='button' class='btn btn-secondary btn-lg' id='mercyButton' value='Opt out (or broken)' style='position:absolute;top:"+partner_y_start+"px;left:"+partner_x_start+"px;'>";
+                    mercy_button = "<input type='button' class='btn btn-secondary btn-lg' id='mercyButton' value='Opt out (or broken)' style='position:absolute;top:" + partner_y_start + "px;left:" + partner_x_start + "px;'>";
                     $(document).unbind('click');
                     $(document).off('click');
                     $('body').append(mercy_button);
@@ -319,7 +319,7 @@ proceedToNextTrial = function() {
             Mousetrap.pause();
 
             // Reveal stimulus for set amount of time.
-            console.log('Stimulus width: '+int_list[trialIndex]);
+            console.log('Stimulus width: ' + int_list[trialIndex]);
             $('#title').text('Remember this line length.');
             $('.instructions').text('');
             stimulus_background.show();
@@ -330,7 +330,7 @@ proceedToNextTrial = function() {
             setTimeout(waitToGuess,
                      stimulus_timeout*1000);
             setTimeout(allowResponse,
-                     (stimulus_timeout+wait_time)*1000);
+                     (stimulus_timeout + wait_time)*1000);
 
         }, inter_trial_time * 1000);
 
@@ -546,7 +546,7 @@ function acknowledgeGuess(){
         // Register response and hide bars.
         response = Math.round(response_bar_size/PPU);
         sendDataToServer();
-        console.log('Mouse click: '+response);
+        console.log('Mouse click: ' + response);
         response_bar.hide();
         response_background.hide();
 
@@ -831,7 +831,7 @@ getPartnerGuess = function() {
         partner_guess_trial = partner_guess_record['trialNumber'];
         partner_response_counter = partner_guess_record['responseCounter'];
         partner_accept_type = partner_guess_record['acceptType'];
-        console.log("Partner's current trial: "+partner_guess_trial);
+        console.log("Partner's current trial: " + partner_guess_trial);
 
         // If we're on same trial and response numbers...
         if ((partner_guess_trial === trialIndex) && (partner_response_counter === response_counter)){
@@ -892,7 +892,7 @@ showPartner = function() {
                                        abandonment_timer*1000);
 
     // Initialize change button.
-    change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:"+change_guess_y+"px;left:"+change_guess_x+"px;'>";
+    change_guess_button = "<input type='button' class='btn btn-secondary btn-lg' id='changeGuess' value='Change my guess' style='position:absolute;top:" + change_guess_y + "px;left:" + change_guess_x + "px;'>";
     $('body').append(change_guess_button);
     $(document).unbind('click');
     $(document).off('click');
@@ -918,7 +918,7 @@ showPartner = function() {
     } else {
 
         // If someone submitted a guess, allow them to accept.
-        accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:'+accept_guess_y+'px;left:'+accept_guess_x+'px;">';
+        accept_guess_button = '<input type="button" class="btn btn-secondary btn-lg" id="acceptGuess" value="I\'m done" style="position:absolute;top:' + accept_guess_y + 'px;left:' + accept_guess_x + 'px;">';
 
         // Show updated instructions based on whether they or their partner changed their guess.
         if (response_counter===0){
@@ -1114,7 +1114,7 @@ acknowledgeChangedGuess = function() {
         // Register response and hide bars.
         response = Math.round(response_bar_size/PPU);
         ready_signal = 1;
-        console.log('Mouse click: '+response);
+        console.log('Mouse click: ' + response);
 
         // Reset for next trial.
         Mousetrap.resume();
@@ -1170,7 +1170,7 @@ fetchPartnerData = function() {
             }
         },
         error: function (err) {
-            console.log("Error when fetching partner's data: "+err);
+            console.log("Error when fetching partner's data: " + err);
             err_response = JSON.parse(err.response);
             $('body').html(err_response.html);
         }
@@ -1192,9 +1192,9 @@ checkIfPartnerAccepted = function() {
     } else {
 
         // Grab partner's guess data.
-        // console.log("Partner's last guess logged in trial "+partner_guess_trial);
         partner_guess_trial = partner_guess_record['trialNumber'];
         partner_accept_type = partner_guess_record['acceptType'];
+        // console.log("Partner's last guess logged in trial " + partner_guess_trial);
 
         // If the partner hasn't guessed on this trial:
         if (partner_guess_trial < trialIndex) {
@@ -1289,7 +1289,6 @@ tryToFinalize = function() {
             sendDataToServer();
             proceedToNextTrial();
         } else {
-            console.log("Failed to finalize.");
             console.log('Failed to finalize.');
             console.log('partner_accept_type = '+ partner_accept_type + ',\nacceptType = ' + acceptType + ',\npartner_response_counter = ' + partner_response_counter + ',\nresponse_counter = '+ response_counter);
             getPartnerGuess();
