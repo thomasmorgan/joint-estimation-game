@@ -3,10 +3,17 @@ var PPU = 5; // Pixels per base unit.
 var xMax = 100; // Maximum size of a bar in base units.
 var trialIndex = -1;
 var enter_lock = true;
+
+// Set the websocket signal information.
 var abandonment_signal = 0;
 var ready_signal = 0;
+var next_signal = NaN;
+var next_sender = NaN;
 var reset_signal = 'Reset';
+var ready_signal_data = NaN;
 var websocket_signal = 0;
+
+// Create empty variables that we'll need for later.
 var partner_accept_type = 0;
 var waiting_for_partner = 0;
 var partner_node_id = -1;
@@ -88,7 +95,7 @@ socket.onmessage = function (msg) {
                 // If their partner abandoned it, go to the postquestionnaire.
                 $('#title').text('Your partner has abandoned the experiment.');
                 $('.instructions').text('You will receive base pay and any earned bonuses.');
-                setTimeout( function () {
+                setTimeout(function () {
                     sendDataToServer();
                     allow_exit();
                     go_to_page('postquestionnaire');
@@ -111,7 +118,7 @@ socket.onmessage = function (msg) {
             // If the partner abandoned it, go to debriefing.
             $('#title').text('You have abandoned the experiment.');
             $('.instructions').text('You will receive only your base pay.');
-            setTimeout( function () {
+            setTimeout(function () {
                 sendDataToServer();
                 allow_exit();
                 go_to_page('debriefing');
@@ -119,14 +126,12 @@ socket.onmessage = function (msg) {
 
         // If it's a reset signal, reset the current ready signals.
         } else if (next_signal == 'Reset') {
-
             current_ready_signals = 0;
             partner_ready_signal = 0;
             console.log('Ready signals reset.');
 
         // If one partner detects that they've been hanging, fix it.
         } else if (next_signal == 'Hanging') {
-
           current_ready_signals = 2;
           console.log('Correcting a hanging trial.');
 
@@ -201,7 +206,7 @@ function check_for_partner () {
 
                 // If there are no vectors, wait 1 second and then ask again
                 setTimeout(function () {
-                    waiting_for_partner = waiting_for_partner + 1;
+                    waiting_for_partner += 1;
                     check_for_partner();
                 }, 1000);
 
@@ -518,8 +523,8 @@ function allowResponse () {
 
     // Set the response variable to default and increment guess counter.
     acceptType = 0;
-    guessCounter = guessCounter + 1;
-    response_counter = response_counter + 1;
+    guessCounter += 1;
+    response_counter += 1;
 
     // Track the mouse during response.
     Mousetrap.pause();
@@ -705,7 +710,7 @@ function disableResponseAfterDelay () {
 function waitForTraining () {
 
     // Keep track of how long we've been waiting.
-    waiting_for_partner = waiting_for_partner + 1;
+    waiting_for_partner += 1;
 
     // Update text and check again.
     $('#title').text('Please wait');
@@ -805,7 +810,7 @@ function checkPartnerTraining () {
 function waitForGuess () {
 
     // Increment wait timer.
-    wait_for_partner_guess = wait_for_partner_guess + 1;
+    wait_for_partner_guess += 1;
 
     // Then try again.
     setTimeout(getPartnerGuess, 1000);
@@ -1031,7 +1036,7 @@ function acceptOwnGuess () {
     // Note whose guess we accepted and send data.
     acceptType = 1;
     ready_signal = 1;
-    response_counter = response_counter + 1;
+    response_counter += 1;
     sendReadySignal(ready_signal);
     sendDataToServer();
 
@@ -1064,8 +1069,8 @@ function changeOwnGuess () {
 
         // Set the response variable to default and increment guess counter.
         acceptType = 0;
-        guessCounter = guessCounter + 1;
-        response_counter = response_counter + 1;
+        guessCounter += 1;
+        response_counter += 1;
 
         // Prep signal that we're not ready.
         response = -99;
@@ -1182,7 +1187,7 @@ function fetchPartnerData () {
 function checkIfPartnerAccepted () {
 
     // Get partner's data and increment finalization counter.
-    tried_to_finalize = tried_to_finalize + 1;
+    tried_to_finalize += 1;
     fetchPartnerData();
 
     // Loop back if this is the first trial and the partner hasn't guessed.
@@ -1256,7 +1261,7 @@ function checkIfPartnerAccepted () {
 function tryToFinalize () {
 
     // Check if we've been hanging on finalization.
-    tried_to_finalize = tried_to_finalize + 1;
+    tried_to_finalize += 1;
     if (tried_to_finalize > finalize_cutoff){
         current_ready_signals = 2;
         hanging_signal = 'Hanging';
