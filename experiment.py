@@ -1,6 +1,13 @@
 """Define an experiment to explore joint decision making."""
 
 from dallinger.experiments import Experiment
+from dallinger.models import Network, Node, Info
+from sqlalchemy import Integer
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.sql.expression import cast
+from dallinger.nodes import Source
+from random import randint
+import json
 
 
 class JointEstimation(Experiment):
@@ -16,7 +23,8 @@ class JointEstimation(Experiment):
         self.models = models
         self.experiment_repeats = 1
         self.setup()
-        self.initial_recruitment_size = 4
+        self.num_participants = 24  # Remember: These are dyads.
+        self.initial_recruitment_size = 40
         self.completion_bonus_payment = .33
         self.accuracy_bonus_payment = 2
         self.total_test_trials = 15
@@ -32,9 +40,17 @@ class JointEstimation(Experiment):
     def setup(self):
         """Create networks. Add a source if the networks don't yet exist."""
         if not self.networks():
-            super(JointEstimation, self).setup()
-            for net in self.networks():
-                self.models.ListSource(network=net)
+            for _ in range(self.practice_repeats):
+                network = self.create_network()
+                network.role = "practice"
+                self.session.add(network)
+                self.models.ListSource(network=network)
+            for _ in range(self.experiment_repeats):
+                network = self.create_network()
+                network.role = "experiment"
+                self.session.add(network)
+                self.models.ListSource(network=network)
+            self.session.commit()
 
     def bonus(self, participant):
         """Calculate a participant's bonus."""
@@ -57,5 +73,5 @@ class JointEstimation(Experiment):
             score = filter(lambda a: a > 0, score)
             score = score + [0] * (self.total_test_trials - len(score))
             mean_accuracy = float(sum(score))/float(self.total_test_trials)
-            bonus = round(min((self.accuracy_bonus_payment+self.completion_bonus_payment), max(0.0, ((mean_accuracy * self.accuracy_bonus_payment) + self.completion_bonus_payment))), 2)
+            bonus = round(min((self.accuracy_bonus_payment+self.completion_bonus_payment), max(0.0, ((mean_accuracy * self.accuracy_bonus_payment) + self.completion_bonus_payment))),2)
         return bonus
