@@ -369,12 +369,15 @@ proceedToNextTrial = function () {
           console.log('Stimulus width: '+int_list[trialIndex])
           $("#title").text("Remember this line length.");
           $(".instructions").text("");
+          stimulus1_width = int_list[(trialIndex+1)*3 - 3];
           stimulus1_background.show();
-          stimulus1_bar.show().attr({ width: int_list[trialIndex]*PPU });
+          stimulus1_bar.show().attr({ width: stimulus1_width*PPU });
+          stimulus2_width = int_list[(trialIndex+1)*3 - 2];
           stimulus2_background.show();
-          stimulus2_bar.show().attr({ width: int_list[trialIndex]*PPU });
+          stimulus2_bar.show().attr({ width: stimulus2_width*PPU });
+          stimulus3_width = int_list[(trialIndex+1)*3 - 1];
           stimulus3_background.show();
-          stimulus3_bar.show().attr({ width: int_list[trialIndex]*PPU });
+          stimulus3_bar.show().attr({ width: stimulus3_width*PPU });
 
           // Allow response only for a limited amount of time.
           var unresponsiveParticipant;

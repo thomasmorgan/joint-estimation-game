@@ -58,7 +58,7 @@ class ListSource(Source):
         """Generate a list of numbers randomly sampled from a uniform distribution."""
 
         max_number = 100
-        list_length = 100
+        list_length = 300
         number_list = [choice(range(max_number)) + 1 for _ in range(list_length)]
 
         # ship our list as a string (which we'll then reconstitute as a list upon reading)
