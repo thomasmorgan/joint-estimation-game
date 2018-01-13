@@ -34,18 +34,26 @@ trial_correct_error = 4; // Acceptable difference for correct answer in training
 
 // Specify location information for stimuli, responses, and buttons.
 inset = 1;
-stimulus_x_start = 50;
-stimulus_y_start = 150;
 stimulus_bg_width = 500;
 stimulus_bg_height = 25;
+stimulus_x_start = 50;
+stimulus1_y_start = 150;
+stimulus2_y_start = stimulus1_y_start + stimulus_bg_height + 50;
+stimulus3_y_start = stimulus2_y_start + stimulus_bg_height + 50;
+
+// Specify location information for responses.
 response_x_start = 100;
-response_y_start = 350;
+response_y_start = stimulus3_y_start + stimulus_bg_height + 50;
 response_bg_width = 500;
 response_bg_height = 25;
+
+// Specify location information for partner's guess (test only) and correction (training only).
 partner_y_start = response_y_start + 100; // 450
 partner_x_start = response_x_start;
 correction_y_start = response_y_start - 100; // 250
 correction_x_start = response_x_start;
+
+// Specify location information for buttons.
 change_guess_y = partner_y_start + 200;
 change_guess_x = response_x_start;
 accept_guess_y = partner_y_start + 200;
@@ -265,22 +273,59 @@ drawUserInterface = function () {
 
     paper = Raphael(0, 50, 800, 600);
 
-    // Create the stimulus background.
-    stimulus_background = paper.rect(stimulus_x_start,
-                                     stimulus_y_start,
+    // Draw stimulus1
+    // Create the stimulus1 background.
+    stimulus1_background = paper.rect(stimulus_x_start,
+                                     stimulus1_y_start,
                                      stimulus_bg_width,
                                      stimulus_bg_height-2*inset);
-    stimulus_background.attr("stroke", "#CCCCCC");
-    stimulus_background.attr("stroke-dasharray", "--");
-    stimulus_background.hide();
+    stimulus1_background.attr("stroke", "#CCCCCC");
+    stimulus1_background.attr("stroke-dasharray", "--");
+    stimulus1_background.hide();
 
-    // Draw the stimulus bar with the next line length in the list.
-    stimulus_bar = paper.rect(stimulus_x_start,
-                              stimulus_y_start-inset,
+    // Draw the stimulus1 bar with the next line length in the list.
+    stimulus1_bar = paper.rect(stimulus_x_start,
+                              stimulus1_y_start-inset,
                               0,
                               25);
-    stimulus_bar.attr("fill", stimulus_color);
-    stimulus_bar.attr("stroke", "none");
+    stimulus1_bar.attr("fill", stimulus_color);
+    stimulus1_bar.attr("stroke", "none");
+
+    // Draw stimulus2
+    // Create the stimulus2 background.
+    stimulus2_background = paper.rect(stimulus_x_start,
+                                     stimulus2_y_start,
+                                     stimulus_bg_width,
+                                     stimulus_bg_height-2*inset);
+    stimulus2_background.attr("stroke", "#CCCCCC");
+    stimulus2_background.attr("stroke-dasharray", "--");
+    stimulus2_background.hide();
+
+    // Draw the stimulus2 bar with the next line length in the list.
+    stimulus2_bar = paper.rect(stimulus_x_start,
+                              stimulus2_y_start-inset,
+                              0,
+                              25);
+    stimulus2_bar.attr("fill", stimulus_color);
+    stimulus2_bar.attr("stroke", "none");
+
+    // Draw stimulus3
+    // Create the stimulus3 background.
+    stimulus3_background = paper.rect(stimulus_x_start,
+                                     stimulus3_y_start,
+                                     stimulus_bg_width,
+                                     stimulus_bg_height-2*inset);
+    stimulus3_background.attr("stroke", "#CCCCCC");
+    stimulus3_background.attr("stroke-dasharray", "--");
+    stimulus3_background.hide();
+
+    // Draw the stimulus3 bar with the next line length in the list.
+    stimulus3_bar = paper.rect(stimulus_x_start,
+                              stimulus3_y_start-inset,
+                              0,
+                              25);
+    stimulus3_bar.attr("fill", stimulus_color);
+    stimulus3_bar.attr("stroke", "none");
 };
 
 //
@@ -324,8 +369,12 @@ proceedToNextTrial = function () {
           console.log('Stimulus width: '+int_list[trialIndex])
           $("#title").text("Remember this line length.");
           $(".instructions").text("");
-          stimulus_background.show();
-          stimulus_bar.show().attr({ width: int_list[trialIndex]*PPU });
+          stimulus1_background.show();
+          stimulus1_bar.show().attr({ width: int_list[trialIndex]*PPU });
+          stimulus2_background.show();
+          stimulus2_bar.show().attr({ width: int_list[trialIndex]*PPU });
+          stimulus3_background.show();
+          stimulus3_bar.show().attr({ width: int_list[trialIndex]*PPU });
 
           // Allow response only for a limited amount of time.
           var unresponsiveParticipant;
@@ -517,8 +566,12 @@ sendDataToServer = function(){
 waitToGuess = function(){
 
     // Hide stimulus bar and text.
-    stimulus_bar.hide();
-    stimulus_background.hide();
+    stimulus1_bar.hide();
+    stimulus1_background.hide();
+    stimulus2_bar.hide();
+    stimulus2_background.hide();
+    stimulus3_bar.hide();
+    stimulus3_background.hide();
     $("#title").text("");
     $(".instructions").text("");
 
