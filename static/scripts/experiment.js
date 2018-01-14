@@ -24,20 +24,20 @@ chosen_stimulus_list = NaN;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
-wait_time = 2; // Time between stimulus viewing and response.
-correction_timeout = 2; // Time for which the correction is displayed.
-response_timeout = 2; // Time for which a response is allowed.
+wait_time = 1; //2; // Time between stimulus viewing and response.
+correction_timeout = 1;//2; // Time for which the correction is displayed.
+response_timeout = 1;//2; // Time for which a response is allowed.
 partner_timeout = 3; // Time for which partner's guess is displayed.
 partner_change_announcement = 2; // Time for which the partner's change announcement is displayed.
-inter_trial_time = 5; // Time to wait between trials.
+inter_trial_time = 1;//5; // Time to wait between trials.
 abandonment_timer = 60; // Time to wait before kicking someone out.
 abandonment_announcement = 5; // Time to wait before moving forward after being abandoned.
 finalize_cutoff = 3; // Number of times to check for finalization.
-waiting_for_partner_timeout =  5 * 60; // Time to wait before showing opt-out button.
+waiting_for_partner_timeout = 5 * 60; // Time to wait before showing opt-out button.
 
 // Set training information.
-trainN = 10; // Define number of training trials.
-testN = 15; // Define number of test trails (over training trials).
+trainN = 1//10; // Define number of training trials.
+testN = 2//15; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
@@ -1075,7 +1075,7 @@ showPartner = function() {
     // If nobody guesses, ask them to go back and guess.
     if (partner_x_guess < 0 && response < 0) {
 
-      $("#title").text("Neither you nor your partner submitted a guess.");
+      $("#title").text("Neither you nor your partner submitted a guess.<br><br>(Remember: You were asked to recreate line #"+display_stimulus_number+".)");
       $(".instructions").text("Please submit your guess by clicking 'Change my guess'.");
 
     // If they guessed, allow them to accept it.
@@ -1086,14 +1086,14 @@ showPartner = function() {
 
       // Show updated instructions based on whether they or their partner changed their guess.
       if (response_counter===0){
-          $("#title").text("Would you like to accept your guess or change it?");
+          $("#title").html("You were asked to recreate line #"+display_stimulus_number+".<br>Would you like to accept your guess or change it?");
       } else { // We've already identified partner_accept_type in the enclosing function.
           if (partner_accept_type===0 && acceptType===1){
-              $("#title").html("Your partner chose to change their guess.<br>Would you like to accept your guess or change it?");
+              $("#title").html("Your partner chose to change their guess.<br>Would you like to accept your guess or change it?<br><br>(Remember: You were asked to recreate line #"+display_stimulus_number+".)");
           } else if (partner_accept_type===1 && acceptType===0){
-              $("#title").html("Your partner did not choose to change their guess.<br>Would you like to accept your guess or change it?");
+              $("#title").html("Your partner did not choose to change their guess.<br>Would you like to accept your guess or change it?<br><br>(Remember: You were asked to recreate line #"+display_stimulus_number+".)");
           } else if (partner_accept_type===0 && acceptType===0){
-              $("#title").html("Your partner also chose to change their guess.<br>Would you like to accept your guess or change it?");
+              $("#title").html("Your partner also chose to change their guess.<br>Would you like to accept your guess or change it?<br><br>(Remember: You were asked to recreate line #"+display_stimulus_number+".)");
           };
       };
       $(".instructions").text("Your guess is shown in blue, and your partner's guess is shown in green.");
