@@ -258,11 +258,7 @@ get_received_info = function() {
             stimulus0_list = stimulus_info[0][0];
             stimulus1_list = stimulus_info[0][1];
             stimulus2_list = stimulus_info[0][2];
-            chosen_stimulus_list = stimulus_info[1];
-            console.log(stimulus0_list)
-            console.log(stimulus1_list)
-            console.log(stimulus2_list)
-            console.log(chosen_stimulus_list)
+            chosen_stimulus_list = stimulus_info[1]
             $("#title").text("Partner found and connected");
             $(".instructions").text("Press enter to begin");
             enter_lock = false;
@@ -428,16 +424,16 @@ proceedToNextTrial = function () {
           stimulus2_background.show();
           stimulus2_label.show();
           stimulus2_bar.show().attr({ width: stimulus2_width*PPU });
-          console.log('Stimulus 0 width: '+stimulus0_width)
-          console.log('Stimulus 1 width: '+stimulus1_width)
-          console.log('Stimulus 2 width: '+stimulus2_width)
+          // console.log('Stimulus 0 width: '+stimulus0_width)
+          // console.log('Stimulus 1 width: '+stimulus1_width)
+          // console.log('Stimulus 2 width: '+stimulus2_width)
 
           // Identify which will be the to-be-recalled stimulus.
           chosen_stimulus_number = chosen_stimulus_list[trialIndex];
           display_stimulus_number = chosen_stimulus_number+1;
           chosen_stimulus = stimulus_info[0][chosen_stimulus_number][trialIndex];
-          console.log('Chosen stimulus number: '+chosen_stimulus_number)
-          console.log('Chosen stimulus value: '+chosen_stimulus)
+          // console.log('Chosen stimulus number: '+chosen_stimulus_number)
+          // console.log('Chosen stimulus value: '+chosen_stimulus)
 
           // Allow response only for a limited amount of time.
           var unresponsiveParticipant;
@@ -585,8 +581,8 @@ sendDataToServer = function(){
         };
 
         // Prepare data to send to server.
-        console.log('Accept Type: '+acceptType)
-        console.log('Logged guess: '+response);
+        console.log('Accept Type: '+acceptType);
+        // console.log('Logged guess: '+response);
 
 
         // If someone abandoned, just send the data and let the abandonment function proceed.
@@ -705,7 +701,7 @@ function acknowledgeGuess(){
       // Register response and hide bars.
       response = Math.round(response_bar_size/PPU);
       sendDataToServer();
-      console.log('Mouse click: '+response);
+      // console.log('Mouse click: '+response);
       response_bar.hide();
       response_background.hide();
 
@@ -1286,7 +1282,7 @@ acknowledgeChangedGuess = function() {
         // Register response and hide bars.
         response = Math.round(response_bar_size/PPU);
         ready_signal = 1;
-        console.log('Mouse click: '+response);
+        // console.log('Mouse click: '+response);
 
         // Reset for next trial.
         Mousetrap.resume();
@@ -1462,13 +1458,13 @@ tryToFinalize = function() {
         proceedToNextTrial();
       } else {
         console.log("Failed to finalize.")
-        console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter)
+        // console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter)
         getPartnerGuess();
       };
     // If not, just keep checking.
     } else {
       console.log("Failed to finalize.")
-      console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter)
+      // console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter)
       getPartnerGuess();
     };
 }
