@@ -3,6 +3,7 @@
 *.log
 .coverage
 data/*
+data_collection/*
 snapshots/*
 *.rdb
 -
