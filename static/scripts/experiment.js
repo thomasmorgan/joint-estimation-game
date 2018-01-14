@@ -35,11 +35,12 @@ testN = 15; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
-// Specify location information for stimuli, responses, and buttons.
+// Specify location information for stimuli.
 inset = 1;
 stimulus_bg_width = 500;
 stimulus_bg_height = 25;
 stimulus_x_start = 50;
+stimulus_label_start = stimulus_x_start - 30;
 stimulus0_y_start = 150;
 stimulus1_y_start = stimulus0_y_start + stimulus_bg_height + 50;
 stimulus2_y_start = stimulus1_y_start + stimulus_bg_height + 50;
@@ -51,9 +52,9 @@ response_bg_width = 500;
 response_bg_height = 25;
 
 // Specify location information for partner's guess (test only) and correction (training only).
-partner_y_start = response_y_start + 100; // 450
+partner_y_start = response_y_start + 100;
 partner_x_start = response_x_start;
-correction_y_start = response_y_start - 100; // 250
+correction_y_start = response_y_start - 100;
 correction_x_start = response_x_start;
 
 // Specify location information for buttons.
@@ -294,6 +295,16 @@ drawUserInterface = function () {
     stimulus0_bar.attr("fill", stimulus_color);
     stimulus0_bar.attr("stroke", "none");
 
+    // Draw the stimulus0 label.
+    stimulus0_label = paper.text(stimulus_label_start,
+                                  stimulus0_y_start+10,
+                                  "#1");
+    stimulus0_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                           'font-size': '14px',
+                           'font-weight': 'bold',
+                           'text-anchor': 'start'});
+    stimulus0_label.hide();
+
     // Draw stimulus1
     // Create the stimulus1 background.
     stimulus1_background = paper.rect(stimulus_x_start,
@@ -312,6 +323,16 @@ drawUserInterface = function () {
     stimulus1_bar.attr("fill", stimulus_color);
     stimulus1_bar.attr("stroke", "none");
 
+    // Draw the stimulus1 label.
+    stimulus1_label = paper.text(stimulus_label_start,
+                                  stimulus1_y_start+10,
+                                  "#2");
+    stimulus1_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                           'font-size': '14px',
+                           'font-weight': 'bold',
+                           'text-anchor': 'start'});
+    stimulus1_label.hide();
+
     // Draw stimulus2
     // Create the stimulus2 background.
     stimulus2_background = paper.rect(stimulus_x_start,
@@ -329,6 +350,16 @@ drawUserInterface = function () {
                               25);
     stimulus2_bar.attr("fill", stimulus_color);
     stimulus2_bar.attr("stroke", "none");
+
+    // Draw the stimulus2 label.
+    stimulus2_label = paper.text(stimulus_label_start,
+                                  stimulus2_y_start+10,
+                                  "#3");
+    stimulus2_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                           'font-size': '14px',
+                           'font-weight': 'bold',
+                           'text-anchor': 'start'});
+    stimulus2_label.hide();
 };
 
 //
@@ -373,12 +404,15 @@ proceedToNextTrial = function () {
           $(".instructions").text("");
           stimulus0_width = int_list[0][trialIndex];
           stimulus0_background.show();
+          stimulus0_label.show();
           stimulus0_bar.show().attr({ width: stimulus0_width*PPU });
           stimulus1_width = int_list[1][trialIndex];
           stimulus1_background.show();
+          stimulus1_label.show();
           stimulus1_bar.show().attr({ width: stimulus1_width*PPU });
           stimulus2_width = int_list[2][trialIndex];
           stimulus2_background.show();
+          stimulus2_label.show();
           stimulus2_bar.show().attr({ width: stimulus2_width*PPU });
           console.log('Stimulus 0 width: '+stimulus0_width)
           console.log('Stimulus 1 width: '+stimulus1_width)
@@ -587,10 +621,13 @@ waitToGuess = function(){
     // Hide stimulus bar and text.
     stimulus0_bar.hide();
     stimulus0_background.hide();
+    stimulus0_label.hide()
     stimulus1_bar.hide();
     stimulus1_background.hide();
+    stimulus1_label.hide();
     stimulus2_bar.hide();
     stimulus2_background.hide();
+    stimulus2_label.hide();
     $("#title").text("");
     $(".instructions").text("");
 
