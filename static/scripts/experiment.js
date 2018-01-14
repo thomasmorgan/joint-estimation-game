@@ -14,7 +14,13 @@ waiting_for_partner = 0;
 partner_guess_record = NaN;
 chosen_stimulus = NaN;
 chosen_stimulus_number = NaN;
+display_stimulus_number = NaN;
 stimulus_competitors = 3;
+stimulus_info = NaN;
+stimulus0_list = NaN;
+stimulus1_list = NaN;
+stimulus2_list = NaN;
+chosen_stimulus_list = NaN;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
@@ -248,7 +254,15 @@ get_received_info = function() {
         type: 'json',
         success: function (resp) {
             r = resp.infos[0].contents;
-            int_list = JSON.parse(r);
+            stimulus_info = JSON.parse(r);
+            stimulus0_list = stimulus_info[0][0];
+            stimulus1_list = stimulus_info[0][1];
+            stimulus2_list = stimulus_info[0][2];
+            chosen_stimulus_list = stimulus_info[1];
+            console.log(stimulus0_list)
+            console.log(stimulus1_list)
+            console.log(stimulus2_list)
+            console.log(chosen_stimulus_list)
             $("#title").text("Partner found and connected");
             $(".instructions").text("Press enter to begin");
             enter_lock = false;
@@ -400,17 +414,17 @@ proceedToNextTrial = function () {
           Mousetrap.pause();
 
           // Reveal stimulus for set amount of time.
-          $("#title").text("Remember this line length.");
+          $("#title").text("Remember these line lengths.");
           $(".instructions").text("");
-          stimulus0_width = int_list[0][trialIndex];
+          stimulus0_width = stimulus0_list[trialIndex];
           stimulus0_background.show();
           stimulus0_label.show();
           stimulus0_bar.show().attr({ width: stimulus0_width*PPU });
-          stimulus1_width = int_list[1][trialIndex];
+          stimulus1_width = stimulus1_list[trialIndex];
           stimulus1_background.show();
           stimulus1_label.show();
           stimulus1_bar.show().attr({ width: stimulus1_width*PPU });
-          stimulus2_width = int_list[2][trialIndex];
+          stimulus2_width = stimulus2_list[trialIndex];
           stimulus2_background.show();
           stimulus2_label.show();
           stimulus2_bar.show().attr({ width: stimulus2_width*PPU });
@@ -419,9 +433,11 @@ proceedToNextTrial = function () {
           console.log('Stimulus 2 width: '+stimulus2_width)
 
           // Identify which will be the to-be-recalled stimulus.
-          chosen_stimulus_number = Math.floor(Math.random() * Math.floor(stimulus_competitors));
-          chosen_stimulus = int_list[chosen_stimulus_number][trialIndex]
-          console.log('Chosen stimulus:'+chosen_stimulus_number)
+          chosen_stimulus_number = chosen_stimulus_list[trialIndex];
+          display_stimulus_number = chosen_stimulus_number+1;
+          chosen_stimulus = stimulus_info[0][chosen_stimulus_number][trialIndex];
+          console.log('Chosen stimulus number: '+chosen_stimulus_number)
+          console.log('Chosen stimulus value: '+chosen_stimulus)
 
           // Allow response only for a limited amount of time.
           var unresponsiveParticipant;
@@ -656,7 +672,7 @@ allowResponse = function() {
     response_bar.attr("stroke", "none");
 
     // Display response bar and reset instructions.
-    $("#title").text("Re-create the line length.");
+    $("#title").html("Re-create the line length for\n<b><u>line #"+display_stimulus_number+"</b></u>.");
     $(".instructions").text("");
     response_bar.show().attr({width: 0});
 
