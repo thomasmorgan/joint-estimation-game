@@ -12,6 +12,9 @@ websocket_signal = 0;
 partner_accept_type = 0;
 waiting_for_partner = 0;
 partner_guess_record = NaN;
+chosen_stimulus = NaN;
+chosen_stimulus_number = NaN;
+stimulus_competitors = 3;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
@@ -37,13 +40,13 @@ inset = 1;
 stimulus_bg_width = 500;
 stimulus_bg_height = 25;
 stimulus_x_start = 50;
-stimulus1_y_start = 150;
+stimulus0_y_start = 150;
+stimulus1_y_start = stimulus0_y_start + stimulus_bg_height + 50;
 stimulus2_y_start = stimulus1_y_start + stimulus_bg_height + 50;
-stimulus3_y_start = stimulus2_y_start + stimulus_bg_height + 50;
 
 // Specify location information for responses.
 response_x_start = 100;
-response_y_start = stimulus3_y_start + stimulus_bg_height + 50;
+response_y_start = stimulus2_y_start + stimulus_bg_height + 50;
 response_bg_width = 500;
 response_bg_height = 25;
 
@@ -273,6 +276,24 @@ drawUserInterface = function () {
 
     paper = Raphael(0, 50, 800, 600);
 
+    // Draw stimulus0
+    // Create the stimulus0 background.
+    stimulus0_background = paper.rect(stimulus_x_start,
+                                     stimulus0_y_start,
+                                     stimulus_bg_width,
+                                     stimulus_bg_height-2*inset);
+    stimulus0_background.attr("stroke", "#CCCCCC");
+    stimulus0_background.attr("stroke-dasharray", "--");
+    stimulus0_background.hide();
+
+    // Draw the stimulus0 bar with the next line length in the list.
+    stimulus0_bar = paper.rect(stimulus_x_start,
+                              stimulus0_y_start-inset,
+                              0,
+                              25);
+    stimulus0_bar.attr("fill", stimulus_color);
+    stimulus0_bar.attr("stroke", "none");
+
     // Draw stimulus1
     // Create the stimulus1 background.
     stimulus1_background = paper.rect(stimulus_x_start,
@@ -308,24 +329,6 @@ drawUserInterface = function () {
                               25);
     stimulus2_bar.attr("fill", stimulus_color);
     stimulus2_bar.attr("stroke", "none");
-
-    // Draw stimulus3
-    // Create the stimulus3 background.
-    stimulus3_background = paper.rect(stimulus_x_start,
-                                     stimulus3_y_start,
-                                     stimulus_bg_width,
-                                     stimulus_bg_height-2*inset);
-    stimulus3_background.attr("stroke", "#CCCCCC");
-    stimulus3_background.attr("stroke-dasharray", "--");
-    stimulus3_background.hide();
-
-    // Draw the stimulus3 bar with the next line length in the list.
-    stimulus3_bar = paper.rect(stimulus_x_start,
-                              stimulus3_y_start-inset,
-                              0,
-                              25);
-    stimulus3_bar.attr("fill", stimulus_color);
-    stimulus3_bar.attr("stroke", "none");
 };
 
 //
@@ -366,18 +369,25 @@ proceedToNextTrial = function () {
           Mousetrap.pause();
 
           // Reveal stimulus for set amount of time.
-          console.log('Stimulus width: '+int_list[trialIndex])
           $("#title").text("Remember this line length.");
           $(".instructions").text("");
-          stimulus1_width = int_list[(trialIndex+1)*3 - 3];
+          stimulus0_width = int_list[0][trialIndex];
+          stimulus0_background.show();
+          stimulus0_bar.show().attr({ width: stimulus0_width*PPU });
+          stimulus1_width = int_list[1][trialIndex];
           stimulus1_background.show();
           stimulus1_bar.show().attr({ width: stimulus1_width*PPU });
-          stimulus2_width = int_list[(trialIndex+1)*3 - 2];
+          stimulus2_width = int_list[2][trialIndex];
           stimulus2_background.show();
           stimulus2_bar.show().attr({ width: stimulus2_width*PPU });
-          stimulus3_width = int_list[(trialIndex+1)*3 - 1];
-          stimulus3_background.show();
-          stimulus3_bar.show().attr({ width: stimulus3_width*PPU });
+          console.log('Stimulus 0 width: '+stimulus0_width)
+          console.log('Stimulus 1 width: '+stimulus1_width)
+          console.log('Stimulus 2 width: '+stimulus2_width)
+
+          // Identify which will be the to-be-recalled stimulus.
+          chosen_stimulus_number = Math.floor(Math.random() * Math.floor(stimulus_competitors));
+          chosen_stimulus = int_list[chosen_stimulus_number][trialIndex]
+          console.log('Chosen stimulus:'+chosen_stimulus_number)
 
           // Allow response only for a limited amount of time.
           var unresponsiveParticipant;
@@ -438,7 +448,7 @@ showCorrectLength = function(){
   correction_bar.attr("fill", correction_color);
   correction_bar.attr("stroke", "none");
   correction_bar.attr({x: correction_x_start,
-                       width: int_list[trialIndex]*PPU
+                       width: chosen_stimulus*PPU
                        });
 
    // Show labels.
@@ -473,7 +483,7 @@ showCorrectLength = function(){
   }
 
   // Update text to reflect accuracy.
-  if (Math.abs(response - int_list[trialIndex]) < trial_correct_error) {
+  if (Math.abs(response - chosen_stimulus) < trial_correct_error) {
     $("#title").text("Your guess was correct!");
     $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
   } else if (response == -99){
@@ -498,7 +508,10 @@ sendDataToServer = function(){
                                       "trialNumber": trialIndex,
                                       "guessCounter": guessCounter,
                                       "responseCounter": response_counter,
-                                      "length": int_list[trialIndex],
+                                      "simulus1Length": stimulus0_width,
+                                      "simulus2Length": stimulus1_width,
+                                      "simulus3Length": stimulus2_width,
+                                      "chosenStimulus": chosen_stimulus,
                                       "guess": response,
                                       "acceptType": 0,
                                       "finalAccuracy": final_accuracy,
@@ -510,7 +523,10 @@ sendDataToServer = function(){
                                       "trialNumber": trialIndex,
                                       "guessCounter": guessCounter,
                                       "responseCounter": response_counter,
-                                      "length": int_list[trialIndex],
+                                      "simulus1Length": stimulus0_width,
+                                      "simulus2Length": stimulus1_width,
+                                      "simulus3Length": stimulus2_width,
+                                      "chosenStimulus": chosen_stimulus,
                                       "guess": response,
                                       "acceptType": acceptType,
                                       "finalAccuracy": final_accuracy,
@@ -569,12 +585,12 @@ sendDataToServer = function(){
 waitToGuess = function(){
 
     // Hide stimulus bar and text.
+    stimulus0_bar.hide();
+    stimulus0_background.hide();
     stimulus1_bar.hide();
     stimulus1_background.hide();
     stimulus2_bar.hide();
     stimulus2_background.hide();
-    stimulus3_bar.hide();
-    stimulus3_background.hide();
     $("#title").text("");
     $(".instructions").text("");
 
@@ -1411,7 +1427,7 @@ calculateFinalAccuracy = function(){
     if (response == -99){
       final_accuracy = response;
     } else {
-      final_accuracy = (100 - Math.abs(int_list[trialIndex] - response))/100;
+      final_accuracy = (100 - Math.abs(chosen_stimulus - response))/100;
     };
 }
 
