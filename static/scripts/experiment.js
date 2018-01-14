@@ -24,20 +24,20 @@ chosen_stimulus_list = NaN;
 
 // Set a series of timeouts (in seconds).
 stimulus_timeout = 1; // Time for which a stimulus is displayed.
-wait_time = 1; //2; // Time between stimulus viewing and response.
-correction_timeout = 1;//2; // Time for which the correction is displayed.
-response_timeout = 1;//2; // Time for which a response is allowed.
+wait_time = 2; // Time between stimulus viewing and response.
+correction_timeout = 2; // Time for which the correction is displayed.
+response_timeout = 2; // Time for which a response is allowed.
 partner_timeout = 3; // Time for which partner's guess is displayed.
 partner_change_announcement = 2; // Time for which the partner's change announcement is displayed.
-inter_trial_time = 1;//5; // Time to wait between trials.
+inter_trial_time = 5; // Time to wait between trials.
 abandonment_timer = 60; // Time to wait before kicking someone out.
 abandonment_announcement = 5; // Time to wait before moving forward after being abandoned.
 finalize_cutoff = 3; // Number of times to check for finalization.
 waiting_for_partner_timeout = 5 * 60; // Time to wait before showing opt-out button.
 
 // Set training information.
-trainN = 1//10; // Define number of training trials.
-testN = 2//15; // Define number of test trails (over training trials).
+trainN = 10; // Define number of training trials.
+testN = 20; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
