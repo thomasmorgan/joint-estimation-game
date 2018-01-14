@@ -59,7 +59,10 @@ class ListSource(Source):
 
         max_number = 100
         list_length = 100
-        number_list = [choice(range(max_number)) + 1 for _ in range(list_length)]
+        num_competitors = 3
+        stimulus_list = [[choice(range(max_number)) + 1 for _ in range(list_length)] for competitor in range(num_competitors)]
+        chosen_list = [choice(range(num_competitors)) for _ in range(list_length)]
+        number_list = [stimulus_list,chosen_list]
 
         # ship our list as a string (which we'll then reconstitute as a list upon reading)
         return Info(origin=self, contents=json.dumps(number_list))
