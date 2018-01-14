@@ -1,6 +1,6 @@
 # Joint perceptual estimation game
 
-A two-person interactive Dallinger experiment (Paxton, Morgan, & Griffiths, in preparation).
+A two-person interactive Dallinger experiment (A. Paxton, T.J.H. Morgan, J. Suchow, & T.L. Griffiths, *in preparation*).
 
 # Startup notes
 
