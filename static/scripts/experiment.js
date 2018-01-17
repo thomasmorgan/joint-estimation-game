@@ -174,6 +174,9 @@ create_agent = function() {
         type: 'json',
         success: function (resp) {
             my_node_id = resp.node.id;
+
+            console.log("I've been assigned a node ID!")
+
             check_for_partner();
         },
         error: function (err) {
@@ -200,7 +203,13 @@ check_for_partner = function() {
         method: 'get',
         type: 'json',
         success: function (resp) {
+            check_resp = resp;
+            console.log("Here's my resp: "+resp)
+
             vectors = resp.vectors;
+            console.log("Here are my vectors: "+vectors)
+
+            console.log("And here are other things: "+ resp.vector)
 
             // Ask for all my vectors.
             if (vectors.length > 0) {
@@ -237,6 +246,7 @@ check_for_partner = function() {
             };
         },
         error: function (err) {
+            error_issue = err;
             console.log("Error when attempting to identify partner: "+ err);
             $("#title").text("An error has occurred.");
             $(".instructions").text("Please close this window and return this HIT.");
