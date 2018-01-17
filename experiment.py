@@ -27,7 +27,7 @@ class JointEstimation(Experiment):
         self.initial_recruitment_size = 30 # 40
         self.completion_bonus_payment = .33
         self.accuracy_bonus_payment = 2
-        self.total_test_trials = 15
+        self.total_test_trials = 10
 
     def create_network(self):
         """Create a new network."""
