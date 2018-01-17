@@ -32,18 +32,29 @@ Dallinger.submitQuestionnaire = function (name) {
   return deferred;
 };
 
+
 // Cribbed from Dallinger Griduniverse repo:
 // https://github.com/Dallinger/Griduniverse/blob/master/dlgr/griduniverse/static/scripts/questionnaire.js
 $(document).ready( function() {
 
-  // Submit the questionnaire.
-  $("#submit-questionnaire").click(function() {
-    var $elements = [$("form :input"), $(this)],
-        questionSubmission = Dallinger.submitQuestionnaire("questionnaire");
-        console.log("Submitting questionnaire.");
-    questionSubmission.done(function()
-        {
-          go_to_page('debriefing');
-        });
-  });
+  // Submit the questionnaire ONLY if we haven't clicked yet.
+  if (lock===false){
+      $("#submit-questionnaire").click(function() {
+
+        // Prevent multiple submission clicks.
+        lock = true;
+        $(document).off('click');
+
+        // Allow the form to submit.
+        var $elements = [$("form :input"), $(this)],
+            questionSubmission = Dallinger.submitQuestionnaire("questionnaire");
+            console.log("Submitting questionnaire.");
+
+        // Submit questionnaire.
+        questionSubmission.done(function()
+            {
+              go_to_page('debriefing');
+            });
+    });
+  }
 });
