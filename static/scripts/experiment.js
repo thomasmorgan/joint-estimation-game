@@ -203,15 +203,9 @@ check_for_partner = function() {
         method: 'get',
         type: 'json',
         success: function (resp) {
-            check_resp = resp;
-            console.log("Here's my resp: "+resp)
-
-            vectors = resp.vectors;
-            console.log("Here are my vectors: "+vectors)
-
-            console.log("And here are other things: "+ resp.vector)
 
             // Ask for all my vectors.
+            vectors = resp.vectors;
             if (vectors.length > 0) {
                 // if there are vectors, go through their origin_ids
                 // whichever origin id is not the same as your node_id,
@@ -246,7 +240,6 @@ check_for_partner = function() {
             };
         },
         error: function (err) {
-            error_issue = err;
             console.log("Error when attempting to identify partner: "+ err);
             $("#title").text("An error has occurred.");
             $(".instructions").text("Please close this window and return this HIT.");
@@ -567,7 +560,8 @@ sendDataToServer = function(){
                                       "simulus1Length": stimulus0_width,
                                       "simulus2Length": stimulus1_width,
                                       "simulus3Length": stimulus2_width,
-                                      "chosenStimulus": chosen_stimulus,
+                                      "chosenStimulusLength": chosen_stimulus,
+                                      "chosenStimulusNumber":chosen_stimulus_number,
                                       "guess": response,
                                       "acceptType": 0,
                                       "finalAccuracy": final_accuracy,
