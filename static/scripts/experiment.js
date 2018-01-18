@@ -388,7 +388,7 @@ proceedToNextTrial = function () {
         trialType = "train";
     } else {
         trialType = "test";
-    };
+    }
 
     // Move to next trial if we haven't hit our target n.
     if ((trialIndex+1) < totalN) {
@@ -396,7 +396,7 @@ proceedToNextTrial = function () {
       // Update announcements and current trial info.
       $("#title").text("Beginning next round");
       $(".instructions").text("");
-      console.log('BEGINNING TRIAL '+trialIndex)
+      console.log('BEGINNING TRIAL '+trialIndex);
 
       setTimeout( function() {
 
@@ -404,20 +404,8 @@ proceedToNextTrial = function () {
           Mousetrap.pause();
 
           // Reveal stimulus for set amount of time.
-          $("#title").text("Remember these line lengths.");
-          $(".instructions").text("");
-          stimulus0_width = stimulus0_list[trialIndex];
-          stimulus0_background.show();
-          stimulus0_label.show();
-          stimulus0_bar.show().attr({ width: stimulus0_width*PPU });
-          stimulus1_width = stimulus1_list[trialIndex];
-          stimulus1_background.show();
-          stimulus1_label.show();
-          stimulus1_bar.show().attr({ width: stimulus1_width*PPU });
-          stimulus2_width = stimulus2_list[trialIndex];
-          stimulus2_background.show();
-          stimulus2_label.show();
-          stimulus2_bar.show().attr({ width: stimulus2_width*PPU });
+          showStimuliBars();
+
           // console.log('Stimulus 0 width: '+stimulus0_width)
           // console.log('Stimulus 1 width: '+stimulus1_width)
           // console.log('Stimulus 2 width: '+stimulus2_width)
@@ -431,7 +419,7 @@ proceedToNextTrial = function () {
 
           // Allow response only for a limited amount of time.
           var unresponsiveParticipant;
-          setTimeout(waitToGuess,
+          setTimeout(hideStimuliBars,
                      stimulus_timeout*1000);
           setTimeout(allowResponse,
                      (stimulus_timeout+wait_time)*1000);
@@ -620,25 +608,37 @@ sendDataToServer = function(){
         };
 }
 
-//
-// Wait between trials.
-//
-waitToGuess = function(){
+showStimuliBars = function () {
+    $("#title").text("Remember these line lengths.");
+    $(".instructions").text("");
+    stimulus0_width = stimulus0_list[trialIndex];
+    stimulus0_background.show();
+    stimulus0_label.show();
+    stimulus0_bar.show().attr({ width: stimulus0_width*PPU });
+    stimulus1_width = stimulus1_list[trialIndex];
+    stimulus1_background.show();
+    stimulus1_label.show();
+    stimulus1_bar.show().attr({ width: stimulus1_width*PPU });
+    stimulus2_width = stimulus2_list[trialIndex];
+    stimulus2_background.show();
+    stimulus2_label.show();
+    stimulus2_bar.show().attr({ width: stimulus2_width*PPU });
+};
 
+hideStimuliBars = function() {
     // Hide stimulus bar and text.
+    $("#title").text("");
+    $(".instructions").text("");
     stimulus0_bar.hide();
     stimulus0_background.hide();
-    stimulus0_label.hide()
+    stimulus0_label.hide();
     stimulus1_bar.hide();
     stimulus1_background.hide();
     stimulus1_label.hide();
     stimulus2_bar.hide();
     stimulus2_background.hide();
     stimulus2_label.hide();
-    $("#title").text("");
-    $(".instructions").text("");
-
-}
+};
 
 //
 // Allow user response only for a set number of seconds.
