@@ -806,7 +806,7 @@ checkFailedVectors = function() {
       type: 'json',
       success: function (resp) {
           vectors = resp.vectors;
-          if (vectors.length===0) { handleAbandonedPartner(); };
+          if (vectors.length == 1) { handleAbandonedPartner(); }
       },
       error: function (err) {
           console.log("Error when attempting to check for failed node: "+ err);
@@ -830,30 +830,16 @@ checkPartnerTraining = function() {
             // Make sure our partner is still connected.
             checkFailedVectors();
 
-            // Loop back if this is the first trial and the partner hasn't guessed.
-            if (resp.infos.length == 0) {
-              waitForTraining();
-
-            // If we've been waiting forever, kick us to debrief.
-            } else if (waiting_for_partner > waiting_for_partner_timeout) {
-              handleAbandonedPartner();
-
+            if (waiting_for_partner > waiting_for_partner_timeout) {
+                // If we've been waiting forever, kick us to debrief.
+                handleAbandonedPartner();
+            } else if (resp.infos.length < trainN) {
+                // if the partner is still in training loop back around
+                waitForTraining();
             } else {
-
-              // Grab partner's guess.
-              fetchPartnerData();
-              partner_guess_trial = partner_guess_record["trialNumber"];
-
-              // If the partner has finished training, move on.
-              if (partner_guess_trial >= (trainN-1)){
                 $("#title").text("");
                 $(".instructions").text("");
                 proceedToNextTrial();
-
-              // Loop back if the partner hasn't finished training.
-              } else {
-                waitForTraining();
-              }
             }
         },
         error: function (err) {
