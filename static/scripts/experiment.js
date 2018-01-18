@@ -254,7 +254,7 @@ get_received_info = function() {
             stimulus0_list = stimulus_info[0][0];
             stimulus1_list = stimulus_info[0][1];
             stimulus2_list = stimulus_info[0][2];
-            chosen_stimulus_list = stimulus_info[1]
+            chosen_stimulus_list = stimulus_info[1];
             $("#title").text("Partner found and connected");
             $(".instructions").text("Press enter to begin");
             enter_lock = false;
@@ -263,9 +263,7 @@ get_received_info = function() {
             if (waiting_for_partner > waiting_for_partner_timeout){
                 waiting_for_partner = 0;
                 $("#mercyButton").remove();
-            };
-
-
+            }
         },
         error: function (err) {
             console.log("Error when checking if partner is connected: "+err);
