@@ -458,34 +458,33 @@ proceedToNextTrial = function () {
 //
 // For training trials, show the correct length.
 //
-showCorrectLength = function(){
+showCorrectLength = function() {
 
-  // Draw correction background.
-  correction_background = paper.rect(correction_x_start,
-                                    correction_y_start,
-                                    response_bg_width,
-                                    response_bg_height - 2 * inset);
-  correction_background.attr("stroke", "#CCCCCC");
-  correction_background.attr("stroke-dasharray", "--");
+    // Draw correction background.
+    correction_background = paper.rect(correction_x_start,
+                                       correction_y_start,
+                                       response_bg_width,
+                                       response_bg_height - 2 * inset);
+    correction_background.attr("stroke", "#CCCCCC");
+    correction_background.attr("stroke-dasharray", "--");
 
-  // Draw correction bar.
-  correction_bar = paper.rect(correction_x_start,
-                              correction_y_start - inset,
-                              response_bg_width,
-                              response_bg_height);
-  correction_bar.attr("fill", correction_color);
-  correction_bar.attr("stroke", "none");
-  correction_bar.attr({x: correction_x_start,
-                       width: chosen_stimulus*PPU
-                       });
+    // Draw correction bar.
+    correction_bar = paper.rect(correction_x_start,
+                                correction_y_start - inset,
+                                response_bg_width,
+                                response_bg_height);
+    correction_bar.attr("fill", correction_color);
+    correction_bar.attr("stroke", "none");
+    correction_bar.attr({x: correction_x_start,
+                       width: chosen_stimulus*PPU});
 
-   // Show labels.
-   correction_label = paper.text(correction_x_start + 10,
-                                 correction_y_start - inset + 50,
-                                 "Correct length");
-   correction_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
-                          'font-size': '14px',
-                          'text-anchor': 'start'});
+    // Show labels.
+    correction_label = paper.text(correction_x_start + 10,
+                                  correction_y_start - inset + 50,
+                                  "Correct length");
+    correction_label.attr({'font-family':  "Helvetica Neue,Helvetica,Arial,sans-serif",
+                           'font-size': '14px',
+                           'text-anchor': 'start'});
     own_label = paper.text(response_x_start + 10,
                            response_y_start - inset + 50,
                            "Your guess");
@@ -493,35 +492,32 @@ showCorrectLength = function(){
                      'font-size': '14px',
                      'text-anchor': 'start'});
 
-   // Show the participant's guess.
-   response_background.show();
-   response_bar.show();
-   own_label.show();
-   correction_bar.show();
-   correction_bar.show();
-   correction_label.show();
-   if (response == -99){
-      response_bar.attr({x:response_x_start,
-                         width: 0
-                        });
-  } else {
-      response_bar.attr({x:response_x_start,
-                         width: response*PPU
-                         });
-  }
+    // Show the participant's guess.
+    response_background.show();
+    response_bar.show();
+    own_label.show();
+    correction_bar.show();
+    correction_bar.show();
+    correction_label.show();
+    if (response == -99){
+        response_bar.attr({x:response_x_start,
+                           width: 0});
+    } else {
+        response_bar.attr({x:response_x_start,
+                           width: response*PPU});
+    }
 
-  // Update text to reflect accuracy.
-  if (Math.abs(response - chosen_stimulus) < trial_correct_error) {
-    $("#title").text("Your guess was correct!");
-    $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
-  } else if (response == -99){
-    $("#title").text("You didn't respond in time");
-    $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.<br>The grey bar is the correct answer.");
-  } else {
-    $("#title").text("Your guess was incorrect");
-    $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
-  }
-
+    // Update text to reflect accuracy.
+    if (Math.abs(response - chosen_stimulus) < trial_correct_error) {
+        $("#title").text("Your guess was correct!");
+        $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
+    } else if (response == -99){
+        $("#title").text("You didn't respond in time");
+        $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.<br>The grey bar is the correct answer.");
+    } else {
+        $("#title").text("Your guess was incorrect");
+        $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
+    }
 };
 
 //
@@ -677,51 +673,54 @@ allowResponse = function() {
     $(document).mousemove(trackMouseMovement);
 
     // Monitor for an unresponsive participant.
-    unresponsiveParticipant = setTimeout(disableResponseAfterDelay,
+    unresponsiveParticipant = setTimeout(saveDummyGuess,
                                          response_timeout*1000);
 
     // If they click to submit a response, clear the timeout and update the site text.
-    acknowledge_lock = false;
-    $(document).click(acknowledgeGuess);
-}
+    $(document).click(saveGuess);
+};
 
 //
 // Acknowledge participant guess.
 //
+function saveGuess() {
+    clearTimeout(unresponsiveParticipant);
+    response = Math.round(response_bar_size/PPU);
+    acknowledgeGuess();
+}
+
+function saveDummyGuess() {
+    response = -99;
+    acknowledgeGuess();
+}
+
 function acknowledgeGuess(){
 
-  // Only allow them to guess in certain settings.
-  if (acknowledge_lock === false){
+    // Stop the unresponsive timer and prevent multiple guesses.
+    $(document).off("mousemove",trackMouseMovement);
+    $(document).off('click');
 
-      // Register response and hide bars.
-      response = Math.round(response_bar_size/PPU);
-      sendDataToServer();
-      // console.log('Mouse click: '+response);
-      response_bar.hide();
-      response_background.hide();
+    // Register response and hide bars.
+    sendDataToServer();
 
-      // Stop the timer if we click.
-      $(document).click(function(e) { e.stopPropagation(); });
+    // console.log('Mouse click: '+response);
+    response_bar.hide();
+    response_background.hide();
 
-      // Reset for next trial.
-      Mousetrap.resume();
+    // Stop the timer if we click.
+    $(document).click(function(e) { e.stopPropagation(); });
 
-      // Stop the unresponsive timer and prevent multiple guesses.
-      clearTimeout(unresponsiveParticipant);
-      $(document).off("mousemove",trackMouseMovement);
-      $(document).off('click');
+    // Reset for next trial.
+    Mousetrap.resume();
 
-      // If a training trial, display correction; if test, update text.
-      if (trialType == 'train'){
+    // If a training trial, display correction; if test, update text.
+    if (trialType == 'train') {
 
         // Display correct length.
         showCorrectLength();
 
-        // If this is the last training trial, prepare them for test trials.
-        if (trialIndex == (trainN-1)){
-          setTimeout(function(){
-
-            // Get the bars to disappear after the correct time.
+        setTimeout( function() {
+            // hide correct length
             response_bar.hide();
             response_background.hide();
             own_label.hide();
@@ -729,120 +728,26 @@ function acknowledgeGuess(){
             correction_background.hide();
             correction_label.hide();
 
-            // Update the text.
-            $("#title").text("Congrats! You've finished the training trials");
-            $(".instructions").html("Your next trial will be a <b>test</b> trial.");
-
-          }, correction_timeout*1000);
-
-          // Move to next trial.
-          setTimeout(function(){
-            $("#title").text("");
-            $(".instructions").html("");
-            checkPartnerTraining();
-          }, 5000 + (correction_timeout*1000));
-
-        } else {
-
-          // If it's not the last training trial, clean up and advance to next turn.
-          setTimeout(function() {
-            response_bar.hide();
-            response_background.hide();
-            own_label.hide()
-            correction_bar.hide();
-            correction_background.hide();
-            correction_label.hide();
-
-            // Move on to the next trial.
-            proceedToNextTrial();
-          }, correction_timeout*1000);
-        };
-
-      } else {
-
+            if (trialIndex == (trainN-1)) {
+                // if its the last trainging trial
+                $("#title").text("Congrats! You've finished the training trials");
+                $(".instructions").html("Your next trial will be a <b>test</b> trial.");
+                setTimeout(function(){
+                    $("#title").text("");
+                    $(".instructions").html("");
+                    checkPartnerTraining();
+                }, 5000 + (correction_timeout*1000));
+            } else {
+                // if there's more training ot do
+                proceedToNextTrial();
+            }
+        }, correction_timeout*1000);
+    } else {
         // Wait for partner to guess.
         $("#title").text("Your response has been recorded.");
         $(".instructions").text("Please wait for your partner's guess.");
         setTimeout(getPartnerGuess, 1000);
-
-      };
-
-      // Only allow them to acknowledge once.
-      acknowledge_lock = true;
-    };
-}
-
-//
-// Disable participant responses if they take too long.
-//
-disableResponseAfterDelay = function(){
-
-  // Turn off click ability and event listeners.
-  $(document).off('click');
-  $(document).off('mousemove',trackMouseMovement);
-
-  // Hide response bars.
-  response_bar.hide();
-  response_background.hide();
-
-  // Log response as not having been given.
-  response = -99;
-  sendDataToServer();
-
-  // Show the correct length if we're in training.
-  if (trialType == 'train'){
-
-    // Display correct length.
-    showCorrectLength();
-
-    // If this is the last training trial, prepare them for test trials.
-    if (trialIndex == (trainN-1)){
-      setTimeout(function(){
-
-        // Get the bars to disappear after the correct time.
-        response_bar.hide();
-        response_background.hide();
-        own_label.hide();
-        correction_bar.hide();
-        correction_background.hide();
-        correction_label.hide();
-
-        // Update the text.
-        $("#title").text("Congrats! You've finished the training trials");
-        $(".instructions").html("Your next trial will be a <b>test</b> trial.");
-
-      }, correction_timeout*1000);
-
-      // Move to next trial.
-      setTimeout(function(){
-        $("#title").text("");
-        $(".instructions").html("");
-        checkPartnerTraining();
-        waiting_for_partner = 0;
-      }, 5000 + (correction_timeout*1000));
-
-    } else {
-
-      // If it's not the last training trial, clean up and advance to next turn.
-      setTimeout(function() {
-        response_bar.hide();
-        response_background.hide();
-        own_label.hide();
-        correction_bar.hide();
-        correction_background.hide();
-        correction_label.hide();
-
-        // Move on to the next trial.
-        proceedToNextTrial();
-      }, correction_timeout*1000);
-    };
-
-  // Just update the text if we're in a test trial.
-  } else {
-    $("#title").text("Response period timed out.");
-    $(".instructions").text("Please wait for your partner's guess.");
-    getPartnerGuess();
-  };
+    }
 }
 
 //
