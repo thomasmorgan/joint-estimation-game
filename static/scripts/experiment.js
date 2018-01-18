@@ -211,11 +211,12 @@ check_for_partner = function() {
                 // whichever origin id is not the same as your node_id,
                 // that must be your partner's id.
                 partner_node_id = -1;
+                console.log('Partner node ID: ' + partner_node_id);
                 for (i = 0; i < vectors.length; i++) {
                     if ((vectors[i].origin_id != my_node_id) && vectors[i].origin_id != 1) {
                         partner_node_id = vectors[i].origin_id;
                     }
-                }
+                };
                 // Now that you've identified your partner, move on.
                 get_received_info();
             } else {
