@@ -194,13 +194,11 @@ create_agent = function() {
 // Monitor for the participant to be joined with a partner.
 //
 check_for_partner = function() {
-
     reqwest({
         url: "/node/" + my_node_id + "/vectors",
         method: 'get',
         type: 'json',
         success: function (resp) {
-
             // Ask for all my vectors.
             vectors = resp.vectors;
             if (vectors.length > 0) {
@@ -208,16 +206,15 @@ check_for_partner = function() {
                 // whichever origin id is not the same as your node_id,
                 // that must be your partner's id.
                 partner_node_id = -1;
-                console.log('Partner node ID: ' + partner_node_id);
                 for (i = 0; i < vectors.length; i++) {
                     if ((vectors[i].origin_id != my_node_id) && vectors[i].origin_id != 1) {
                         partner_node_id = vectors[i].origin_id;
                     }
-                };
+                }
+                console.log('Partner node ID: ' + partner_node_id);
                 // Now that you've identified your partner, move on.
                 get_received_info();
             } else {
-
                 // If there are no vectors, wait 1 second and then ask again
                 setTimeout(function(){
                     waiting_for_partner = waiting_for_partner + 1;
@@ -225,17 +222,15 @@ check_for_partner = function() {
                 }, 1000);
 
                 // If they've been waiting a long time for a partner, give them an option to leave.
-                if (waiting_for_partner > waiting_for_partner_timeout){
-                    mercy_button = "<input type='button' class='btn btn-secondary btn-lg' id='mercyButton' value='Opt out (or broken)' style='position:absolute;top:"+partner_y_start+"px;left:"+partner_x_start+"px;'>"
-                    $(document).unbind('click');
-                    $(document).off('click');
+                if (waiting_for_partner == waiting_for_partner_timeout){
+                    mercy_button = "<button type='button' class='btn btn-secondary btn-lg' id='mercyButton' style='float: left;'>Opt out (or broken)</button>";
                     $("body").append(mercy_button);
                     $("#mercyButton").click(function(){
-                      allow_exit();
-                      go_to_page('debriefing');
+                      dallinger.allowExit();
+                      dallinger.goToPage('debriefing');
                     });
-                };
-            };
+                }
+            }
         },
         error: function (err) {
             console.log("Error when attempting to identify partner: "+ err);
@@ -243,7 +238,7 @@ check_for_partner = function() {
             $(".instructions").text("Please close this window and return this HIT.");
         }
     });
-}
+};
 
 //
 // Connect them to their partner.
