@@ -174,9 +174,6 @@ create_agent = function() {
         type: 'json',
         success: function (resp) {
             my_node_id = resp.node.id;
-
-            console.log("I've been assigned a node ID!")
-
             check_for_partner();
         },
         error: function (err) {
@@ -186,12 +183,12 @@ create_agent = function() {
             err_response = JSON.parse(err.response);
             if (err_response.hasOwnProperty('html')) {
                 $('body').html(err_response.html);
-                 allow_exit();
-                 go_to_page('debriefing');
-            };
+                dallinger.allowExit();
+                dallinger.goToPage('debriefing');
+            }
         }
     });
-}
+};
 
 //
 // Monitor for the participant to be joined with a partner.
