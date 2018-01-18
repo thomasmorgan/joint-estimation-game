@@ -191,7 +191,7 @@ create_agent = function() {
             };
         }
     });
-};
+}
 
 //
 // Monitor for the participant to be joined with a partner.
