@@ -169,7 +169,7 @@ socket.onmessage = function (msg) {
 // Create the agent.
 create_agent = function() {
     reqwest({
-        url: "/node/" + participant_id,
+        url: "/node/" + dallinger.identity.participantId,
         method: 'post',
         type: 'json',
         success: function (resp) {
