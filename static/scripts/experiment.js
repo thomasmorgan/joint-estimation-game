@@ -246,7 +246,7 @@ check_for_partner = function() {
             $(".instructions").text("Please close this window and return this HIT.");
         }
     });
-};
+}
 
 //
 // Connect them to their partner.
