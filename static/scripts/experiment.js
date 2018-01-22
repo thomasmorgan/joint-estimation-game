@@ -734,7 +734,7 @@ getPartnerGuess = function() {
         partner_response_counter = partner_guess_record['responseCounter'];
         partner_accept_type = partner_guess_record['acceptType'];
         console.log("Partner's current trial: "+partner_guess_trial);
-        
+
         // if you are not on the same trial and response counter wait for your partner
         if (partner_guess_trial != trialIndex || partner_response_counter != response_counter) {
             waitForGuess();
@@ -774,7 +774,7 @@ showPartner = function() {
 
     // If nobody guesses, ask them to go back and guess.
     if (partner_x_guess < 0 && response < 0) {
-        $("#title").text("Neither you nor your partner submitted a guess.<br><br>(Remember: You were asked to recreate line #"+display_stimulus_number+".)");
+        $("#title").html("Neither you nor your partner submitted a guess.<br><br>(Remember: You were asked to recreate line #"+display_stimulus_number+".)");
         $(".instructions").text("Please submit your guess by clicking 'Change my guess'.");
     // If they guessed, allow them to accept it.
     } else {
@@ -937,6 +937,8 @@ changeOwnGuess = function(){
             sendDataToServer();
 
             // Show and hide objects as needed.
+            $("#title").text("You didn't respond in time").
+            $(".instructions").text("");
             partner_bar.hide();
             partner_background.hide();
             partner_label.hide();
