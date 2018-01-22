@@ -75,97 +75,6 @@ own_guess_color = "#0B486B";
 stimulus_color = "#b32113";
 correction_color = "#8e8e8e";
 
-// // Create the websocket channel to serve as an inter-trial waiting room.
-// var channel = 'experiment';
-// var ws_scheme = (window.location.protocol === "https:") ? 'wss://' : 'ws://';
-// var socket = new ReconnectingWebSocket(ws_scheme + location.host + "/chat?channel=" + channel);
-
-// // Check for incoming messages.
-// socket.onmessage = function (msg) {
-
-//     // Prevent us from clogging up the log with errors from empty messages.
-//     if (Object.keys(msg.data.substring(channel.length + 1)).length > 0){
-
-//         // The message is prefixed with the channel name and a colon.
-//         var ready_signal_data = JSON.parse(msg.data.substring(channel.length + 1));
-
-//         // Identify the ready signal and the sender.
-//         next_signal = Object.values(ready_signal_data)[0];
-//         next_sender = Object.keys(ready_signal_data)[0];
-
-//         // If we received a signal, let us know what it was.
-//         if (next_sender == partner_node_id){
-//             console.log("Partner's signal: "+next_signal);
-//         };
-
-//         // If the websocket reads the abandonment signal, terminate the experiment.
-//         websocket_signal = next_signal;
-//         if (next_signal==-99) {
-
-//             // Differentiate between whether the participant or their partner abandoned.
-//             if (next_sender == partner_node_id){
-
-//                 // If their partner abandoned it, go to the postquestionnaire.
-//                 $("#title").text("Your partner has abandoned the experiment.");
-//                 $(".instructions").text("You will receive base pay and any earned bonuses.");
-//                 setTimeout( function () {
-//                     sendDataToServer();
-//                     allow_exit();
-//                     go_to_page('postquestionnaire');
-//                 }, abandonment_announcement*1000);
-
-//             } else {
-
-//                 // If the participant abandoned it, go to debriefing.
-//                 $("#title").text("You have abandoned the experiment.");
-//                 $(".instructions").text("You will receive only your base pay.");
-//                 setTimeout( function () {
-//                     sendDataToServer();
-//                     allow_exit();
-//                     go_to_page('debriefing');
-//                 }, abandonment_announcement*1000);
-//             };
-//         // If it's a reset signal, reset the current ready signals.
-//         } else if (next_signal == "You left!") {
-
-//             // If the partner abandoned it, go to debriefing.
-//             $("#title").text("You have abandoned the experiment.");
-//             $(".instructions").text("You will receive only your base pay.");
-//             setTimeout( function () {
-//                 sendDataToServer();
-//                 allow_exit();
-//                 go_to_page('debriefing');
-//             }, abandonment_announcement*1000);
-
-//         // If it's a reset signal, reset the current ready signals.
-//         } else if (next_signal == "Reset") {
-
-//             current_ready_signals = 0;
-//             partner_ready_signal = 0;
-//             console.log("Ready signals reset.");
-
-//         // If one partner detects that they've been hanging, fix it.
-//         } else if (next_signal == "Hanging") {
-
-//           current_ready_signals = 2;
-//           console.log("Correcting a hanging trial.");
-
-//         // Otherwise, just sum it.
-//         } else {
-
-//             // Let us know if our partner sent it.
-//             if (next_sender == partner_node_id){
-//                partner_ready_signal = next_signal;
-//             };
-
-//             // Sum all ready signals.
-//             current_ready_signals = current_ready_signals + next_signal;
-//             console.log("Current ready signals: "+ current_ready_signals);
-
-//         };
-//     };
-// };
-
 // Create the agent.
 create_agent = function() {
     reqwest({
@@ -406,16 +315,10 @@ proceedToNextTrial = function () {
           // Reveal stimulus for set amount of time.
           showStimuliBars();
 
-          // console.log('Stimulus 0 width: '+stimulus0_width)
-          // console.log('Stimulus 1 width: '+stimulus1_width)
-          // console.log('Stimulus 2 width: '+stimulus2_width)
-
           // Identify which will be the to-be-recalled stimulus.
           chosen_stimulus_number = chosen_stimulus_list[trialIndex];
           display_stimulus_number = chosen_stimulus_number+1;
           chosen_stimulus = stimulus_info[0][chosen_stimulus_number][trialIndex];
-          // console.log('Chosen stimulus number: '+chosen_stimulus_number)
-          // console.log('Chosen stimulus value: '+chosen_stimulus)
 
           // Allow response only for a limited amount of time.
           var unresponsiveParticipant;
@@ -525,100 +428,36 @@ showCorrectLength = function() {
 //
 sendDataToServer = function(){
 
-        // // Handle reset signals to yoke participants to same trial.
-        // if (reset_signal=="Reset"){
-        //   response_type = 0;
-        //   trialData = JSON.stringify({"trialType": trialType,
-        //                               "trialNumber": trialIndex,
-        //                               "guessCounter": guessCounter,
-        //                               "responseCounter": response_counter,
-        //                               "simulus1Length": stimulus0_width,
-        //                               "simulus2Length": stimulus1_width,
-        //                               "simulus3Length": stimulus2_width,
-        //                               "chosenStimulusLength": chosen_stimulus,
-        //                               "chosenStimulusNumber":chosen_stimulus_number,
-        //                               "guess": response,
-        //                               "acceptType": 0,
-        //                               "finalAccuracy": final_accuracy,
-        //                               "responseType": response_type
-        //                             });
-        // } else {
-        //   response_type = 1;
-        //   trialData = JSON.stringify({"trialType": trialType,
-        //                               "trialNumber": trialIndex,
-        //                               "guessCounter": guessCounter,
-        //                               "responseCounter": response_counter,
-        //                               "simulus1Length": stimulus0_width,
-        //                               "simulus2Length": stimulus1_width,
-        //                               "simulus3Length": stimulus2_width,
-        //                               "chosenStimulus": chosen_stimulus,
-        //                               "guess": response,
-        //                               "acceptType": acceptType,
-        //                               "finalAccuracy": final_accuracy,
-        //                               "responseType": response_type
-        //                             });
-        // }
+    response_type = 1;
+    trialData = JSON.stringify({"trialType": trialType,
+                                "trialNumber": trialIndex,
+                                "guessCounter": guessCounter,
+                                "responseCounter": response_counter,
+                                "simulus1Length": stimulus0_width,
+                                "simulus2Length": stimulus1_width,
+                                "simulus3Length": stimulus2_width,
+                                "chosenStimulus": chosen_stimulus,
+                                "guess": response,
+                                "acceptType": acceptType,
+                                "finalAccuracy": final_accuracy,
+                                "responseType": response_type});
 
-        response_type = 1;
-        trialData = JSON.stringify({"trialType": trialType,
-                                    "trialNumber": trialIndex,
-                                    "guessCounter": guessCounter,
-                                    "responseCounter": response_counter,
-                                    "simulus1Length": stimulus0_width,
-                                    "simulus2Length": stimulus1_width,
-                                    "simulus3Length": stimulus2_width,
-                                    "chosenStimulus": chosen_stimulus,
-                                    "guess": response,
-                                    "acceptType": acceptType,
-                                    "finalAccuracy": final_accuracy,
-                                    "responseType": response_type});
-
-        // Prepare data to send to server.
-        console.log('Accept Type: '+acceptType);
-        // console.log('Logged guess: '+response);
-
-
-        // // If someone abandoned, just send the data and let the abandonment function proceed.
-        // if (websocket_signal == -99) {
-        //   reqwest({
-        //       url: "/info/" + my_node_id,
-        //       method: 'post',
-        //       data: {
-        //           contents: trialData,
-        //           info_type: "Info",
-        //           property3: final_accuracy
-        //       }
-        //   });
-
-        // // If we're at the last trial, proceed to questionnaire.
-        // } else if ((trialIndex+1) == totalN){
-        reqwest({
-            url: "/info/" + my_node_id,
-            method: 'post',
-            data: {
-                contents: trialData,
-                info_type: "Info",
-                property3: final_accuracy
-            }, success: function(resp) {
-                if (trialIndex + 1 == totalN) {
-                    create_agent();
-                }
+    // Prepare data to send to server.
+    console.log('Accept Type: '+acceptType);
+    reqwest({
+        url: "/info/" + my_node_id,
+        method: 'post',
+        data: {
+            contents: trialData,
+            info_type: "Info",
+            property3: final_accuracy
+        }, success: function(resp) {
+            if (trialIndex + 1 == totalN) {
+                create_agent();
             }
-        });
-
-        // // Otherwise, keep going with the estimation setup.
-        // } else {
-        //     reqwest({
-        //         url: "/info/" + my_node_id,
-        //         method: 'post',
-        //         data: {
-        //             contents: trialData,
-        //             info_type: "Info",
-        //             property3: final_accuracy
-        //         }
-        //     });
-        // };
-}
+        }
+    });
+};
 
 showStimuliBars = function () {
     $("#title").text("Remember these line lengths.");
@@ -799,8 +638,6 @@ handleAbandonedPartner = function(){
     $("#title").text("Your partner has abandoned the experiment.");
     $(".instructions").text("You will receive base pay and any earned bonuses.");
 
-    // Send a signal, in case partner is still listening.
-    sendReadySignal("You left!");
 
     // Move on.
     setTimeout( function () {
@@ -932,7 +769,6 @@ showPartner = function() {
     // If they change their guess, stop the abandonment timer and allow to change.
     $("#changeGuess").click(function(){
         $(document).click(function(e) { e.stopPropagation(); });
-        clearTimeout(abandoned_participant);
         changeOwnGuess();
     });
 
@@ -967,29 +803,6 @@ showPartner = function() {
             acceptOwnGuess();
         });
     }
-
-
-    // // When we show our partner's guess, send out a signal to prevent them from moving on.
-    // reset_signal = "Reset";
-    // socket.send(channel + ':' + JSON.stringify({reset_signal}));
-    // sendDataToServer();
-
-    // // Reset the ready signals when we display our partner.
-    // current_ready_signals = 0;
-    // ready_signal = 0;
-    // partner_ready_signal = 0;
-    // tried_to_finalize = 0
-
-    // // Start the abandonment timer.
-    // var abandoned_participant;
-    // abandoned_participant = setTimeout(monitorForAbandoned,
-                                       // abandonment_timer*1000);
-
-    
-    
-
-    
-
 };
 
 //
@@ -1085,21 +898,11 @@ acceptOwnGuess = function(){
     acceptType = 1;
     // ready_signal = 1;
     response_counter = response_counter + 1;
-    sendReadySignal(ready_signal);
     sendDataToServer();
 
     // Start next trial.
     getPartnerGuess();
 };
-
-//
-// Send websocket ready signal.
-//
-// sendReadySignal = function(signal_value){
-//     signal_data = {};
-//     signal_data[my_node_id] = ready_signal;
-//     socket.send(channel + ':' + JSON.stringify(signal_data));
-// }
 
 //
 // Change guess.
@@ -1121,15 +924,7 @@ changeOwnGuess = function(){
         response_counter = response_counter + 1;
         response = -99;
 
-        // // Prep signal that we're not ready.
-        // response = -99;
-        // ready_signal = -1;
-        // reset_signal = "Changed"
-        // sendReadySignal(ready_signal);
-
         // // Track the mouse during response.
-        // response = undefined;
-        // response_bar_size = undefined;
         $(document).mousemove(trackMouseMovement);
 
         // If they click to submit a response, clear the timeout and update the site text.
@@ -1139,8 +934,6 @@ changeOwnGuess = function(){
         // Get partner's guess.
         setTimeout( function() {
 
-            // Send data and ready signal.
-            // sendReadySignal(ready_signal);
             sendDataToServer();
 
             // Show and hide objects as needed.
@@ -1182,13 +975,6 @@ acknowledgeChangedGuess = function() {
     }
 };
 
-// //
-// // Wait for partner acceptance.
-// //
-// waitToAccept = function(){
-//   setTimeout(checkIfPartnerAccepted, 1000);
-// };
-
 //
 // Grab partner's most recent data entry.
 //
@@ -1229,166 +1015,6 @@ fetchPartnerData = function(){
         }
     });
 };
-
-// //
-// // Montior the server to see if their partner's accepted a guess.
-// //
-// checkIfPartnerAccepted = function() {
-
-//     // Get partner's data and increment finalization counter.
-//     tried_to_finalize = tried_to_finalize + 1;
-//     fetchPartnerData();
-
-//     // Loop back if this is the first trial and the partner hasn't guessed.
-//     if (partner_guess_record == NaN) {
-//         waitToAccept();
-//     } else {
-
-//         // Grab partner's guess data.
-//         partner_guess_trial = partner_guess_record["trialNumber"];
-//         partner_accept_type = partner_guess_record["acceptType"];
-//         // console.log("Partner's last guess logged in trial "+partner_guess_trial);
-
-//         // If the partner hasn't guessed on this trial:
-//         if (partner_guess_trial < trialIndex) {
-
-//             // Try to finalize if we've been hanging, ...
-//             if (tried_to_finalize > finalize_cutoff/3){
-//               tryToFinalize();
-
-//             // but just keep checking if we haven't been hanging.
-//             } else {
-//                 waitToAccept();
-//             }
-
-//         // If the partner has already indicated that they're done, move on.
-//         } else if (partner_guess_trial > trialIndex) {
-//             proceedToNextTrial();
-
-//         // If the partner has guessed and is still on this trial, see whether they've accepted before moving on.
-//         } else {
-
-//             // If we've both accepted, move into the final checking phase.
-//             if ((partner_accept_type == 1 && acceptType==1) || (tried_to_finalize > finalize_cutoff/3)){
-
-//                 // Update text.
-//                 console.log("Attempting to finalize guess...");
-//                 $("#title").text("Processing your guess...");
-//                 $(".instructions").text("");
-//                 setTimeout(tryToFinalize,
-//                           partner_change_announcement * 1000);
-
-//             // If we haven't both accepted yet...
-//             } else {
-//                 partner_response_counter = partner_guess_record["responseCounter"];
-
-//                 // If they haven't submitted a guess, wait again.
-//                 if (partner_response_counter<0) {
-//                     waitToAccept();
-
-//                 // If they're not on the same response counter that we are, wait more.
-//                 } else if (partner_response_counter !== response_counter) {
-//                     waitToAccept();
-
-//                   // If their last signal was a reset signal, wait.
-//                 } else if (response_signal===0){
-//                     waitToAccept();
-
-//                 // Otherwise, get their guess and send the appropriate ready signal.
-//                 } else {
-//                     sendReadySignal(-1);
-//                     getPartnerGuess();
-//                 }
-//             }
-//         }
-//     }
-// };
-
-// //
-// // Figure out if we're ready to move on to the next trial.
-// //
-// tryToFinalize = function() {
-
-//     // Check if we've been hanging on finalization.
-//     tried_to_finalize = tried_to_finalize + 1;
-//     if (tried_to_finalize > finalize_cutoff){
-//         current_ready_signals = 2;
-//         hanging_signal = "Hanging";
-//         socket.send(channel + ':' + JSON.stringify({hanging_signal}));
-//     }
-
-//     // If both of us have accepted, move on.
-//     fetchPartnerData();
-//     partner_accept_type = partner_guess_record['acceptType'];
-//     partner_guess_trial = partner_guess_record['trialIndex'];
-//     partner_response_counter = partner_guess_record['responseCounter'];
-//     partner_final_accuracy = partner_guess_record['finalAccuracy'];
-
-//     // Send data to server if their partner is on the same response counter, finished the last trial, or
-//     if (partner_accept_type==1 && acceptType == 1){
-//       if (partner_response_counter == response_counter) {
-//           console.log("Successfully finalized: Partner on same response counter.")
-//           calculateFinalAccuracy();
-//           sendDataToServer();
-//           proceedToNextTrial();
-//       } else if (partner_guess_trial == testN && partner_final_accuracy != 0) {
-//         console.log("Successfully finalized: Partner finished all test trial.")
-//         calculateFinalAccuracy();
-//         sendDataToServer();
-//         proceedToNextTrial();
-//       } else if (partner_final_accuracy != 0){
-//         console.log("Successfully finalized: Partner advanced to next trial.")
-//         calculateFinalAccuracy();
-//         sendDataToServer();
-//         proceedToNextTrial();
-//       } else {
-//         console.log("Failed to finalize.")
-//         // console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter)
-//         getPartnerGuess();
-//       };
-//     // If not, just keep checking.
-//     } else {
-//       console.log("Failed to finalize.")
-//       // console.log("partner_accept_type = "+ partner_accept_type + ",\nacceptType = "+acceptType+",\npartner_response_counter = "+partner_response_counter+",\nresponse_counter = "+ response_counter)
-//       getPartnerGuess();
-//     };
-// }
-
-// //
-// // Calculate final accuracy.
-// //
-// calculateFinalAccuracy = function(){
-//     if (response == -99){
-//       final_accuracy = response;
-//     } else {
-//       final_accuracy = (100 - Math.abs(chosen_stimulus - response))/100;
-//     };
-// }
-
-// //
-// // Monitor for unresponsive participants.
-// //
-// monitorForAbandoned = function(){
-
-//   // Turn off click ability and event listeners.
-//   $(document).off('click');
-//   $(document).off('mousemove',trackMouseMovement);
-
-//   // Remove partners' guesses and buttons.
-//   partner_background.hide();
-//   partner_bar.hide();
-//   partner_label.hide();
-//   response_background.hide();
-//   response_bar.hide();
-//   own_label.hide();
-//   $("#acceptGuess").remove();
-//   $("#changeGuess").remove();
-
-//   // Log response as being abandoned.
-//   abandonment_signal = -99;
-//   final_accuracy = -9999999999999999999999999999;
-//   socket.send(channel + ':' + JSON.stringify({abandonment_signal}));
-// }
 
 //
 $(document).keydown(function(e) {
