@@ -940,8 +940,10 @@ changeOwnGuess = function(){
             sendDataToServer();
 
             // Show and hide objects as needed.
-            $("#title").text("You didn't respond in time.");
-            $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.");
+            if (response === -99){
+                $("#title").text("You didn't respond in time.");
+                $(".instructions").html("Please wait for your partner's guess.");
+            }
             partner_bar.hide();
             partner_background.hide();
             partner_label.hide();
