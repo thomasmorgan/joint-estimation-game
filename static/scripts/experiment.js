@@ -421,7 +421,6 @@ showCorrectLength = function() {
 //
 sendDataToServer = function(){
 
-    response_type = 1;
     trialData = JSON.stringify({"trialType": trialType,
                                 "trialNumber": trialIndex,
                                 "guessCounter": guessCounter,
@@ -432,8 +431,7 @@ sendDataToServer = function(){
                                 "chosenStimulus": chosen_stimulus,
                                 "guess": response,
                                 "acceptType": acceptType,
-                                "finalAccuracy": final_accuracy,
-                                "responseType": response_type});
+                                "finalAccuracy": final_accuracy});
 
     // Prepare data to send to server.
     console.log('Accept Type: '+acceptType);
