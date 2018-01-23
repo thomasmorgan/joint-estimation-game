@@ -36,8 +36,8 @@ finalize_cutoff = 3; // Number of times to check for finalization.
 waiting_for_partner_timeout = 5 * 60; // Time to wait before showing opt-out button.
 
 // Set training information.
-trainN = 10; // Define number of training trials.
-testN = 15; // Define number of test trails (over training trials).
+trainN = 2;//10; // Define number of training trials.
+testN = 5;//15; // Define number of test trails (over training trials).
 totalN = trainN + testN + 1; // Summing training and test trials (plus one for experiment mechanics).
 trial_correct_error = 4; // Acceptable difference for correct answer in training.
 
@@ -528,8 +528,11 @@ allowResponse = function() {
     $(document).mousemove(trackMouseMovement);
 
     // Monitor for an unresponsive participant.
-    unresponsiveParticipant = setTimeout(saveDummyGuess,
-                                         response_timeout*1000);
+    unresponsiveParticipant = setTimeout(function(){
+                                saveDummyGuess();
+                                $("#title").text("You didn't respond in time");
+                                $(".instructions").text("Please wait for your partner's guess.");
+                              }, response_timeout*1000);
 
     // If they click to submit a response, clear the timeout and update the site text.
     $(document).click(saveGuess);
@@ -937,8 +940,8 @@ changeOwnGuess = function(){
             sendDataToServer();
 
             // Show and hide objects as needed.
-            $("#title").text("You didn't respond in time").
-            $(".instructions").text("");
+            $("#title").text("You didn't respond in time.");
+            $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.");
             partner_bar.hide();
             partner_background.hide();
             partner_label.hide();
