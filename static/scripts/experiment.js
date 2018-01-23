@@ -740,6 +740,8 @@ getPartnerGuess = function() {
                 wait_for_partner_guess = 0;
                 showPartner();
             } else {
+                final_accuracy = Math.abs(response - chosen_stimulus)
+                sendDataToServer();
                 proceedToNextTrial();
             }
         }
