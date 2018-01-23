@@ -1,7 +1,7 @@
 lock = false;
 
 // Add new (not yet released) code from Dallinger.
-Dallinger.submitQuestionnaire = function (name) {
+dallinger.submitQuestionnaire = function (name) {
   var formSerialized = $("form").serializeArray(),
       formDict = {},
       deferred = $.Deferred();
@@ -47,7 +47,7 @@ $(document).ready( function() {
 
         // Allow the form to submit.
         var $elements = [$("form :input"), $(this)],
-            questionSubmission = Dallinger.submitQuestionnaire("questionnaire");
+            questionSubmission = dallinger.submitQuestionnaire("questionnaire");
             console.log("Submitting questionnaire.");
 
         // Submit questionnaire.

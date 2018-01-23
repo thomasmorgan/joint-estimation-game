@@ -13,7 +13,7 @@ $(document).ready( function() {
         $(document).off('click');
 
         // Submit the HIT.
-        submitAssignment();
+        dallinger.submitAssignment();
       });
   };
 });
