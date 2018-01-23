@@ -4,11 +4,6 @@ xMax = 100; // Maximum size of a bar in base units.
 trialIndex = -1;
 stimulusYSize = 0;
 enter_lock = true;
-abandonment_signal = 0;
-ready_signal = 0;
-reset_signal = "Reset";
-partner_ready_signal = 0;
-websocket_signal = 0;
 partner_accept_type = 0;
 waiting_for_partner = 0;
 partner_guess_record = NaN;
@@ -287,10 +282,8 @@ proceedToNextTrial = function () {
     partner_response_counter = 0;
     acceptType = 0;
     partner_accept_type = 0;
-    current_ready_signals = 0;
     wait_for_partner_guess = 0;
     final_accuracy = 0;
-    reset_signal = "Reset";
 
     // Identify whether we're in training or testing.
     if (trialIndex < trainN){
@@ -883,7 +876,6 @@ showOwnGuess = function(){
 acceptOwnGuess = function(){
 
     // Remove partners' guesses and buttons.
-    // reset_signal = "Submitted";
     partner_background.hide();
     partner_bar.hide();
     partner_label.hide();
@@ -899,7 +891,6 @@ acceptOwnGuess = function(){
 
     // Note whose guess we accepted and send data.
     acceptType = 1;
-    // ready_signal = 1;
     response_counter = response_counter + 1;
     sendDataToServer();
 
@@ -966,7 +957,6 @@ acknowledgeChangedGuess = function() {
 
         // Register response and hide bars.
         response = Math.round(response_bar_size/PPU);
-        ready_signal = 1;
         // console.log('Mouse click: '+response);
 
         // Reset for next trial.
