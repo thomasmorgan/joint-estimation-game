@@ -634,7 +634,6 @@ handleAbandonedPartner = function(){
     $("#title").text("Your partner has abandoned the experiment.");
     $(".instructions").text("You will receive base pay and any earned bonuses.");
 
-
     // Move on.
     setTimeout( function () {
         dallinger.allowExit();
@@ -712,6 +711,8 @@ waitForGuess = function() {
 // Monitor the server to see if partner has guessed.
 //
 getPartnerGuess = function() {
+    $("#title").text("Your response has been recorded.");
+    $(".instructions").text("Please wait for your partner's guess.");
 
     if (wait_for_partner_guess > 20) {
         handleAbandonedPartner();
@@ -767,6 +768,7 @@ showPartner = function() {
     // If they change their guess, stop the abandonment timer and allow to change.
     $("#changeGuess").click(function(){
         $(document).click(function(e) { e.stopPropagation(); });
+        // clearTimeout(abandoned_participant);
         changeOwnGuess();
     });
 
@@ -797,7 +799,6 @@ showPartner = function() {
         $("body").append(accept_guess_button);
         $("#acceptGuess").click(function() {
             $(document).click(function(e) { e.stopPropagation(); });
-            // clearTimeout(abandoned_participant);
             acceptOwnGuess();
         });
     }
@@ -929,7 +930,9 @@ changeOwnGuess = function(){
 
         // Get partner's guess.
         setTimeout( function() {
+            $(document).click(function(e) { e.stopPropagation(); });
 
+            // Send data
             sendDataToServer();
 
             // Show and hide objects as needed.
