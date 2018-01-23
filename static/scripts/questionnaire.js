@@ -12,7 +12,7 @@ Dallinger.submitQuestionnaire = function (name) {
 
   reqwest({
     method: "post",
-    url: "/question/" + participant_id,
+    url: "/question/" + dallinger.identity.participantId,
     data: {
       question: name || "questionnaire",
       number: 1,
