@@ -53,7 +53,7 @@ $(document).ready( function() {
         // Submit questionnaire.
         questionSubmission.done(function()
             {
-              go_to_page('debriefing');
+              dallinger.goToPage('debriefing');
             });
     });
   }

@@ -345,8 +345,8 @@ proceedToNextTrial = function () {
 
         // Send data back to the server and proceed to questionnaire.
         paper.remove();
-        allow_exit();
-        go_to_page('postquestionnaire');
+        dallinger.allowExit();
+        dallinger.goToPage('postquestionnaire');
 
     }
 };
@@ -637,8 +637,8 @@ handleAbandonedPartner = function(){
 
     // Move on.
     setTimeout( function () {
-        allow_exit();
-        go_to_page('debriefing');
+        dallinger.allowExit();
+        dallinger.goToPage('debriefing');
     }, abandonment_announcement*1000);
 };
 
