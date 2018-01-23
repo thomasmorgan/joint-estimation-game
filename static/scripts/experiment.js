@@ -521,8 +521,10 @@ allowResponse = function() {
     // Monitor for an unresponsive participant.
     unresponsiveParticipant = setTimeout(function(){
                                 saveDummyGuess();
-                                $("#title").text("You didn't respond in time");
-                                $(".instructions").text("Please wait for your partner's guess.");
+                                if (trialType != 'train'){
+                                    $("#title").text("You didn't respond in time");
+                                    $(".instructions").text("Please wait for your partner's guess.");
+                                };
                               }, response_timeout*1000);
 
     // If they click to submit a response, clear the timeout and update the site text.
@@ -932,7 +934,7 @@ changeOwnGuess = function(){
 
             // Show and hide objects as needed.
             if (response === -99){
-                $("#title").text("You didn't respond in time.");
+                $("#title").text("You didn't respond in time");
                 $(".instructions").html("Please wait for your partner's guess.");
             }
             partner_bar.hide();
