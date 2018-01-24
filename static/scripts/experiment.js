@@ -82,7 +82,7 @@ create_agent = function() {
         },
         error: function (err) {
             console.log("Error when initializing participant: "+ err);
-            $("#title").text("An error has occurred: creating participant.");
+            $("#title").text("An error has occurred -- creating participant.");
             $(".instructions").text("Please close this window and return this HIT.");
             err_response = JSON.parse(err.response);
             if (err_response.hasOwnProperty('html')) {
@@ -138,7 +138,7 @@ check_for_partner = function() {
         },
         error: function (err) {
             console.log("Error when attempting to identify partner: "+ err);
-            $("#title").text("An error has occurred: identifying partner.");
+            $("#title").text("An error has occurred -- identifying partner.");
             $(".instructions").text("Please close this window and return this HIT.");
         }
     });
@@ -655,7 +655,7 @@ checkFailedVectors = function() {
       },
       error: function (err) {
           console.log("Error when attempting to check for failed node: "+ err);
-          $("#title").text("An error has occurred: checking for failed partner.");
+          $("#title").text("An error has occurred -- checking for failed partner.");
           $(".instructions").text("Please close this window and return this HIT.");
       }
   });
