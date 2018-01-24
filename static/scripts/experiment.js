@@ -346,7 +346,7 @@ proceedToNextTrial = function () {
         // Send data back to the server and proceed to questionnaire.
         paper.remove();
         dallinger.allowExit();
-        dallinger.goToPage('postquestionnaire');
+        dallinger.goToPage('questionnaire');
 
     }
 };

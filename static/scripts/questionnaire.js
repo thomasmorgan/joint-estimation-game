@@ -42,7 +42,7 @@ $(document).ready( function() {
           $(document).off('click');
 
           // submit questionnaire
-          dallinger.submitQuestionnaire();
+          dallinger.submitQuestionnaire("questionnaire");
         });
 
 
