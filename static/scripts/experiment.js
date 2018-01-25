@@ -622,7 +622,7 @@ waitForTraining = function(){
 
     // Update text and check again.
     $("#title").text("Please wait");
-    $(".instructions").text("Your partner is finishing training");
+    $(".instructions").html("Your partner is finishing training.<br>If your partner takes more than 5 minutes to finish training, your partner will be marked as having abandoned the experiment, and you will receive base pay and any earned bonuses.");
     setTimeout(checkPartnerTraining,1000);
 };
 
