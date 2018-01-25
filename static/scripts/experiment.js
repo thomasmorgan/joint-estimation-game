@@ -743,7 +743,7 @@ getPartnerGuess = function() {
                 wait_for_partner_guess = 0;
                 showPartner();
             } else {
-                final_accuracy = Math.abs(response - chosen_stimulus)/100
+                final_accuracy = 1 - (Math.abs(response - chosen_stimulus)/100)
                 sendDataToServer();
                 proceedToNextTrial();
             }
