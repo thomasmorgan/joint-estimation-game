@@ -88,7 +88,7 @@ create_agent = function() {
             if (err_response.hasOwnProperty('html')) {
                 $('body').html(err_response.html);
                 dallinger.allowExit();
-                dallinger.goToPage('debriefing');
+                dallinger.goToPage('questionnaire');
             }
         }
     });
@@ -131,7 +131,7 @@ check_for_partner = function() {
                     $("body").append(mercy_button);
                     $("#mercyButton").click(function(){
                       dallinger.allowExit();
-                      dallinger.goToPage('debriefing');
+                      dallinger.goToPage('questionnaire');
                     });
                 }
             }
@@ -637,7 +637,7 @@ handleAbandonedPartner = function(){
     // Move on.
     setTimeout( function () {
         dallinger.allowExit();
-        dallinger.goToPage('debriefing');
+        dallinger.goToPage('questionnaire');
     }, abandonment_announcement*1000);
 };
 

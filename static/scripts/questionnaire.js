@@ -34,16 +34,28 @@ lock = false;
 
 $(document).ready( function() {
 
-  // Submit the questionnaire ONLY if we haven't clicked yet.
-  if (lock===false){
-      $("#submit-questionnaire").click(function() {
-          // Prevent multiple submission clicks.
-          lock = true;
-          $(document).off('click');
+  // // Submit the questionnaire ONLY if we haven't clicked yet.
+  // if (lock===false){
+  //     $("#submit-questionnaire").click(function() {
+  //         // Prevent multiple submission clicks.
+  //         lock = true;
+  //         $(document).off('click');
+  //
+  //         // submit questionnaire
+  //         dallinger.submitQuestionnaire("questionnaire");
+  //       });
 
-          // submit questionnaire
-          dallinger.submitQuestionnaire("questionnaire");
-        });
+  // Submit the questionnaire.
+  $("#submit-questionnaire").click(function() {
+    console.log("Submitting questionnaire.");
+    var $elements = [$("form :input"), $(this)],
+        questionSubmission = dallinger.submitQuestionnaire("questionnaire");
+
+    spinner.freeze($elements);
+    questionSubmission.done(dallinger.submitAssignment);
+    questionSubmission.always(function () {
+      spinner.unfreeze();
+    });
 
 
       // $("#submit-questionnaire").click(function() {
@@ -60,5 +72,5 @@ $(document).ready( function() {
         //     {
         //       dallinger.goToPage('debriefing');
         //     });
-  };
+  });
 });
