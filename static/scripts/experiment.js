@@ -87,8 +87,8 @@ create_agent = function() {
             err_response = JSON.parse(err.response);
             if (err_response.hasOwnProperty('html')) {
                 $('body').html(err_response.html);
-                dallinger.allowExit();
-                dallinger.goToPage('questionnaire');
+                allow_exit();
+                go_to_page('questionnaire');
             }
         }
     });
@@ -130,8 +130,8 @@ check_for_partner = function() {
                     mercy_button = "<button type='button' class='btn btn-secondary btn-lg' id='mercyButton' style='float: left;'>Opt out (or broken)</button>";
                     $("body").append(mercy_button);
                     $("#mercyButton").click(function(){
-                      dallinger.allowExit();
-                      dallinger.goToPage('questionnaire');
+                      allow_exit();
+                      go_to_page('questionnaire');
                     });
                 }
             }
@@ -345,8 +345,8 @@ proceedToNextTrial = function () {
 
         // Send data back to the server and proceed to questionnaire.
         paper.remove();
-        dallinger.allowExit();
-        dallinger.goToPage('questionnaire');
+        allow_exit();
+        go_to_page('questionnaire');
 
     }
 };
@@ -636,8 +636,8 @@ handleAbandonedPartner = function(){
 
     // Move on.
     setTimeout( function () {
-        dallinger.allowExit();
-        dallinger.goToPage('questionnaire');
+        allow_exit();
+        go_to_page('questionnaire');
     }, abandonment_announcement*1000);
 };
 
