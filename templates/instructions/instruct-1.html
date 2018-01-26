@@ -9,18 +9,20 @@
 <body>
     <div class="main_div">
 
-        <script>
+      <script>
 
-            // Create the participant.
-            dallinger.createParticipant();
+          // Create the participant.
+          create_participant();
 
-            // If the participant ID has been defined, allow us to move on.
-            proceedWithParticipantID = function() {
-              allow_exit();
-              go_to_page('instructions/instruct-2');
+          // If the participant ID has been defined, allow us to move on.
+          proceedWithParticipantID = function() {
+            if (participant_id !== undefined && participant_id !== 'undefined') {
+                allow_exit();
+                go_to_page('instructions/instruct-2');
             };
-
-        </script>
+          };
+          
+      </script>
 
     	<h1>Instructions</h1>
 
