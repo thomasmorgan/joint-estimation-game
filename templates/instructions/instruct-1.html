@@ -14,7 +14,9 @@
         <script>
 
             // Create the participant.
-            dallinger.createParticipant();
+            $(function() {
+              dallinger.createParticipant();
+            });
 
             // If the participant ID has been defined, allow us to move on.
             proceedWithParticipantID = function() {
