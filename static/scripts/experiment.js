@@ -73,7 +73,7 @@ correction_color = "#8e8e8e";
 // Create the agent.
 create_agent = function() {
     reqwest({
-        url: "/node/" + dallinger.identity.participantId,
+        url: "/node/" + participant_id,
         method: 'post',
         type: 'json',
         success: function (resp) {
