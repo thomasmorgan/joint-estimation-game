@@ -3,7 +3,7 @@ auto_recruit = true
 mode = sandbox
 [webdriver_type = chrome] [not yet implemented in current version of Dallinger]
 clock_on = False
-qualification_blacklist = "joint_estimation"
+[qualification_blacklist = "joint_estimation"]
 group_name = "joint_estimation"
 
 [MTurk]
