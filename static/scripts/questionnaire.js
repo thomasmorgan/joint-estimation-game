@@ -70,7 +70,7 @@ $(document).ready( function() {
         // // Submit questionnaire.
         // questionSubmission.done(function()
         //     {
-        //       dallinger.goToPage('debriefing');
+        //       go_to_page('debriefing');
         //     });
   });
 });
