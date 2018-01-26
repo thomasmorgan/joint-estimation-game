@@ -70,6 +70,28 @@ own_guess_color = "#0B486B";
 stimulus_color = "#b32113";
 correction_color = "#8e8e8e";
 
+// Print the consent form.
+$("#print-consent").click(function() {
+  window.print();
+});
+
+// Consent to the experiment.
+$("#consent").click(function() {
+  store.set("hit_id", dallinger.getUrlParameter("hit_id"));
+  store.set("worker_id", dallinger.getUrlParameter("worker_id"));
+  store.set("assignment_id", dallinger.getUrlParameter("assignment_id"));
+  store.set("mode", dallinger.getUrlParameter("mode"));
+
+  dallinger.allowExit();
+  window.location.href = 'instructions/instruct-1';
+});
+
+// Don't consent to the experiment.
+$("#no-consent").click(function() {
+  dallinger.allowExit();
+  window.close();
+});
+
 // Create the agent.
 create_agent = function() {
     reqwest({
