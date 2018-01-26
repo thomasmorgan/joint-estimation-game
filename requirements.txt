@@ -1,1 +1,1 @@
--e git://github.com/a-paxton/Dallinger.git#egg=dallinger
+-e git://github.com/Dallinger/Dallinger.git#egg=dallinger
