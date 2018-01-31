@@ -23,8 +23,8 @@ class JointEstimation(Experiment):
         self.models = models
         self.experiment_repeats = 1
         self.setup()
-        self.num_participants = 200 # desired total participants, not dyads
-        self.initial_recruitment_size = 200 # should be equal to the `num_participants` above
+        self.num_participants = 60 # desired total participants, not dyads
+        self.initial_recruitment_size = 60 # should be equal to the `num_participants` above
         self.completion_bonus_payment = .33
         self.accuracy_bonus_payment = 2
         self.total_test_trials = 15
