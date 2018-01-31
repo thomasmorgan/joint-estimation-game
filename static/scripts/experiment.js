@@ -450,7 +450,8 @@ sendDataToServer = function(){
                                 "simulus1Length": stimulus0_width,
                                 "simulus2Length": stimulus1_width,
                                 "simulus3Length": stimulus2_width,
-                                "chosenStimulus": chosen_stimulus,
+                                "chosenStimulusLength": chosen_stimulus,
+                                "chosenStimulusNumber": chosen_stimulus_number,
                                 "guess": response,
                                 "acceptType": acceptType,
                                 "finalAccuracy": final_accuracy});
