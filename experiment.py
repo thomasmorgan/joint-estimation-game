@@ -73,5 +73,13 @@ class JointEstimation(Experiment):
             score = filter(lambda a: a > 0, score)
             score = score + [0] * (self.total_test_trials - len(score))
             mean_accuracy = float(sum(score))/float(self.total_test_trials)
-            bonus = round(min((self.accuracy_bonus_payment+self.completion_bonus_payment), max(0.0, ((mean_accuracy * self.accuracy_bonus_payment) + self.completion_bonus_payment))),2)
+            bonus = round(min((self.accuracy_bonus_payment+self.completion_bonus_payment), max(0.0, ((mean_accuracy * self.accuracy_bonus_payment) + self.completion_bonus_payment))), 2)
         return bonus
+
+    def submission_successful(self, participant):
+        """Run when a participant submits successfully."""
+        # If a participant submits but some of their nodes lack a partner, then fail their nodes.
+        # this will also fail the vectors connected to that node.
+        for n in participant.nodes():
+            if len(n.vectors() < 2):
+                n.fail()
