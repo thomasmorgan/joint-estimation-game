@@ -28,6 +28,6 @@ database_size = standard-0
 host = 0.0.0.0
 logfile = -
 notification_url = None
-dyno_type = standard-2x
+dyno_type = performance-m
 num_dynos_web = 2
 num_dynos_worker = 2
