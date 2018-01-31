@@ -81,5 +81,5 @@ class JointEstimation(Experiment):
         # If a participant submits but some of their nodes lack a partner, then fail their nodes.
         # this will also fail the vectors connected to that node.
         for n in participant.nodes():
-            if len(n.vectors() < 2):
+            if len(n.vectors()) < 2:
                 n.fail()
