@@ -57,12 +57,15 @@ class JointEstimation(Experiment):
 
         # Get only the "info" from target participant's nodes.
         all_nodes = participant.nodes()
-        experiment_nodes = [n for n in all_nodes if n.network.role == "experiment"]
+        experiment_nodes = [n for n in all_nodes
+                            if n.network.role == "experiment"]
         nested_infos = [n.infos() for n in experiment_nodes]
-        flattened_infos = [info_item for info_list in nested_infos for info_item in info_list]
+        flattened_infos = [info_item for info_list in nested_infos
+                           for info_item in info_list]
 
         # Grab their final accuracy scores.
-        score = [float(info.property3) for info in flattened_infos]    # get the accuracy of the infos
+        score = [float(info.property3) for info
+                 in flattened_infos]  # get the accuracy of the infos
 
         # If they timed out, give them no bonuses.
         if -9999999999999999999999999999 in score:
@@ -73,13 +76,19 @@ class JointEstimation(Experiment):
             score = filter(lambda a: a > 0, score)
             score = score + [0] * (self.total_test_trials - len(score))
             mean_accuracy = float(sum(score))/float(self.total_test_trials)
-            bonus = round(min((self.accuracy_bonus_payment+self.completion_bonus_payment), max(0.0, ((mean_accuracy * self.accuracy_bonus_payment) + self.completion_bonus_payment))), 2)
+            bonus = round(min((self.accuracy_bonus_payment +
+                               self.completion_bonus_payment),
+                              max(0.0, ((mean_accuracy *
+                                         self.accuracy_bonus_payment) +
+                                        self.completion_bonus_payment))),
+                          2)
         return bonus
 
     def submission_successful(self, participant):
         """Run when a participant submits successfully."""
-        # If a participant submits but some of their nodes lack a partner, then fail their nodes.
-        # this will also fail the vectors connected to that node.
+        # If a participant submits but some of their nodes lack a partner,
+        # then fail their nodes. This will also fail the vectors connected to
+        # that node.
         for n in participant.nodes():
             if len(n.vectors()) < 2:
                 n.fail()
