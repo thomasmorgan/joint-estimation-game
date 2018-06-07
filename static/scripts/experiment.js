@@ -1,4 +1,4 @@
-// Condition choice
+// Condition choice -- can be "competitive", "cooperative", or "neutral"
 experiment_condition = 'cooperative'
 
 // Settings
@@ -469,7 +469,9 @@ sendDataToServer = function () {
       "chosenStimulusNumber": chosen_stimulus_number,
       "guess": response,
       "acceptType": acceptType,
-      "finalAccuracy": final_accuracy})
+      "finalAccuracy": final_accuracy,
+      "experimentCondition": experiment_condition
+    })
 
     // Push data
     console.log('Accept Type: '+acceptType)
@@ -504,7 +506,8 @@ sendDataToServer = function () {
       "guess": response,
       "acceptType": acceptType,
       "finalAccuracy": final_accuracy,
-      "dyadBest": dyad_best
+      "dyadBest": dyad_best,
+      "experimentCondition": experiment_condition
     })
 
     // Push data
@@ -540,7 +543,8 @@ sendDataToServer = function () {
       "guess": response,
       "acceptType": acceptType,
       "finalAccuracy": final_accuracy,
-      "winningParticipant": winning_participant
+      "winningParticipant": winning_participant,
+      "experimentCondition": experiment_condition
     })
 
     // Push data
