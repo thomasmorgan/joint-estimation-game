@@ -1,3 +1,6 @@
+// Condition choice
+experiment_condition = 'cooperative'
+
 // Settings
 PPU = 5; // Pixels per base unit.
 xMax = 100; // Maximum size of a bar in base units.
@@ -306,6 +309,15 @@ proceedToNextTrial = function () {
     partner_accept_type = 0;
     wait_for_partner_guess = 0;
     final_accuracy = 0;
+    partner_final_accuracy = 0
+
+    // Add additional counters for different conditions
+    if (experiment_condition === 'cooperative') {
+      dyad_best = 0
+    } else if (experiment_condition === 'competitive') {
+      winning_participant = 0
+      earned_bonus = 0
+    }
 
     // Identify whether we're in training or testing.
     if (trialIndex < trainN){
@@ -417,7 +429,7 @@ showCorrectLength = function() {
     correction_bar.show();
     correction_bar.show();
     correction_label.show();
-    if (response == -99){
+    if (response == -999){
         response_bar.attr({x:response_x_start,
                            width: 0});
     } else {
@@ -429,7 +441,7 @@ showCorrectLength = function() {
     if (Math.abs(response - chosen_stimulus) < trial_correct_error) {
         $("#title").text("Your guess was correct!");
         $(".instructions").text("The blue bar is your guess; the grey bar is the correct answer.");
-    } else if (response == -99){
+    } else if (response == -999){
         $("#title").text("You didn't respond in time");
         $(".instructions").html("Make sure to respond within "+response_timeout+" seconds.<br>The grey bar is the correct answer.");
     } else {
@@ -441,37 +453,115 @@ showCorrectLength = function() {
 //
 // Send the data back to the server.
 //
-sendDataToServer = function(){
+sendDataToServer = function () {
+  // Neutral condition's data-sending function
+  if (experiment_condition === 'neutral') {
+    // Assemble data as string
+    trialData = JSON.stringify({
+      "trialType": trialType,
+      "trialNumber": trialIndex,
+      "guessCounter": guessCounter,
+      "responseCounter": response_counter,
+      "simulus1Length": stimulus0_width,
+      "simulus2Length": stimulus1_width,
+      "simulus3Length": stimulus2_width,
+      "chosenStimulusLength": chosen_stimulus,
+      "chosenStimulusNumber": chosen_stimulus_number,
+      "guess": response,
+      "acceptType": acceptType,
+      "finalAccuracy": final_accuracy})
 
-    trialData = JSON.stringify({"trialType": trialType,
-                                "trialNumber": trialIndex,
-                                "guessCounter": guessCounter,
-                                "responseCounter": response_counter,
-                                "simulus1Length": stimulus0_width,
-                                "simulus2Length": stimulus1_width,
-                                "simulus3Length": stimulus2_width,
-                                "chosenStimulusLength": chosen_stimulus,
-                                "chosenStimulusNumber": chosen_stimulus_number,
-                                "guess": response,
-                                "acceptType": acceptType,
-                                "finalAccuracy": final_accuracy});
-
-    // Prepare data to send to server.
-    console.log('Accept Type: '+acceptType);
+    // Push data
+    console.log('Accept Type: '+acceptType)
     reqwest({
-        url: "/info/" + my_node_id,
-        method: 'post',
-        data: {
-            contents: trialData,
-            info_type: "Info",
-            property3: final_accuracy
-        }, success: function(resp) {
-            if (trialIndex + 1 == totalN) {
-                create_agent();
-            }
+      url: "/info/" + my_node_id,
+      method: 'post',
+      data: {
+        contents: trialData,
+        info_type: "Info",
+        property3: final_accuracy
+      },
+      // If it's the last trial, move on
+      success: function (resp) {
+        if (trialIndex + 1 === totalN) {
+          create_agent()
         }
-    });
-};
+      }
+    })
+  // Cooperative condition's data-sending function.
+  } else if (experiment_condition === 'cooperative') {
+    // Assemble data as string
+    trialData = JSON.stringify({
+      "trialType": trialType,
+      "trialNumber": trialIndex,
+      "guessCounter": guessCounter,
+      "responseCounter": response_counter,
+      "simulus1Length": stimulus0_width,
+      "simulus2Length": stimulus1_width,
+      "simulus3Length": stimulus2_width,
+      "chosenStimulusLength": chosen_stimulus,
+      "chosenStimulusNumber": chosen_stimulus_number,
+      "guess": response,
+      "acceptType": acceptType,
+      "finalAccuracy": final_accuracy,
+      "dyadBest": dyad_best
+    })
+
+    // Push data
+    console.log('Accept Type: ' + acceptType)
+    reqwest({
+      url: "/info/" + my_node_id,
+      method: 'post',
+      data: {
+        contents: trialData,
+        info_type: "Info",
+        property3: dyad_best // Send best guess, not participant's guess.
+      },
+      // If it's the last trial, move on
+      success: function (resp) {
+        if (trialIndex + 1 === totalN) {
+          create_agent()
+        }
+      }
+    })
+  // Competitive condition's data-sending function.
+  } else if (experiment_condition === 'competitive') {
+    // Assemble data as string
+    trialData = JSON.stringify({
+      "trialType": trialType,
+      "trialNumber": trialIndex,
+      "guessCounter": guessCounter,
+      "responseCounter": response_counter,
+      "simulus1Length": stimulus0_width,
+      "simulus2Length": stimulus1_width,
+      "simulus3Length": stimulus2_width,
+      "chosenStimulusLength": chosen_stimulus,
+      "chosenStimulusNumber": chosen_stimulus_number,
+      "guess": response,
+      "acceptType": acceptType,
+      "finalAccuracy": final_accuracy,
+      "winningParticipant": winning_participant
+    })
+
+    // Push data
+    console.log('Accept Type: ' + acceptType)
+    reqwest({
+      url: "/info/" + my_node_id,
+      method: 'post',
+      data: {
+        contents: trialData,
+        info_type: "Info",
+        property3: earned_bonus
+      },
+      // If it's the last trial, move on
+      success: function (resp) {
+        if (trialIndex + 1 === totalN) {
+          create_agent()
+        }
+      }
+    })
+  }
+}
 
 showStimuliBars = function () {
     $("#title").text("Remember these line lengths.");
@@ -564,7 +654,7 @@ function saveGuess() {
 }
 
 function saveDummyGuess() {
-    response = -99;
+    response = -999;
     acknowledgeGuess();
 }
 
@@ -733,45 +823,81 @@ waitForGuess = function() {
 //
 // Monitor the server to see if partner has guessed.
 //
-getPartnerGuess = function() {
-    $("#title").text("Your response has been recorded.");
-    $(".instructions").text("Please wait for your partner's guess.");
+getPartnerGuess = function () {
+  $("#title").text("Your response has been recorded.")
+  $(".instructions").text("Please wait for your partner's guess.")
 
-    if (wait_for_partner_guess > 20) {
-        handleAbandonedPartner();
-    }
+  if (wait_for_partner_guess > 20) {
+    handleAbandonedPartner()
+  }
 
-    // Get partner's data.
-    fetchPartnerData();
+  // Get partner's data.
+  fetchPartnerData()
 
-    // If partner hasn't responded, wait.
-    if (partner_guess_record == NaN) {
-        waitForGuess();
+  // If partner hasn't responded, wait.
+  if (partner_guess_record == NaN) {
+    waitForGuess()
+  } else {
+    // Extract guess information from data.
+    partner_guess_trial = partner_guess_record["trialNumber"]
+    partner_response_counter = partner_guess_record['responseCounter']
+    partner_accept_type = partner_guess_record['acceptType']
+    console.log("Partner's current trial: " + partner_guess_trial)
+
+    // if you are not on the same trial and response counter wait for your partner
+    if (partner_guess_trial != trialIndex ||
+        partner_response_counter != response_counter) {
+      waitForGuess()
     } else {
-
-        // Extract guess information from data.
-        partner_guess_trial = partner_guess_record["trialNumber"];
-        partner_response_counter = partner_guess_record['responseCounter'];
-        partner_accept_type = partner_guess_record['acceptType'];
-        console.log("Partner's current trial: "+partner_guess_trial);
-
-        // if you are not on the same trial and response counter wait for your partner
-        if (partner_guess_trial != trialIndex || partner_response_counter != response_counter) {
-            waitForGuess();
+      // If at least one of you has not accepted, show responses again
+      if (partner_accept_type != 1 || acceptType != 1) {
+        enter_lock = false
+        partner_x_guess = partner_guess_record["guess"]
+        wait_for_partner_guess = 0
+        showPartner()
+      // If both have accepted, process the trial
+      } else {
+        // Calculate own final accuracy if a guess was submitted
+        if (response == -999) {
+          final_accuracy = -999
         } else {
-            // if at least one of you has not accepted then show responses again
-            if (partner_accept_type != 1 || acceptType != 1) {
-                enter_lock = false;
-                partner_x_guess = partner_guess_record["guess"];
-                wait_for_partner_guess = 0;
-                showPartner();
-            } else {
-                final_accuracy = 1 - (Math.abs(response - chosen_stimulus)/100)
-                sendDataToServer();
-                proceedToNextTrial();
-            }
+          final_accuracy = 1 - (Math.abs(response - chosen_stimulus)/100)
         }
+
+        // Calculate partner's accuracy if they submitted a guess
+        if (partner_x_guess == -999) {
+          partner_final_accuracy = -999
+        } else {
+          partner_final_accuracy = 1 - (Math.abs(partner_x_guess -
+                                                 chosen_stimulus) / 100)
+        }
+
+        // Calculate bonuses by condition
+        // In cooperative condition, give best bonus to both players
+        if (experiment_condition === 'cooperative') {
+          dyad_best = Math.max(final_accuracy, partner_final_accuracy, 0)
+
+        // In the competitive condition, give bonus only to most accurate
+        } else if (experiment_condition === 'competitive') {
+          // The participant gets bonus if equal or better guess
+          if (final_accuracy < partner_final_accuracy) {
+            winning_participant = 0
+          } else if (final_accuracy == -999) {
+            winning_participant = 0
+          } else {
+            winning_participant = 1
+          }
+
+          // Calculate each participant's earned bonus
+          earned_bonus = final_accuracy * winning_participant
+        }
+
+        // Send data and move on
+        sendDataToServer()
+        proceedToNextTrial()
+      }
     }
+  }
 };
 
 //
@@ -942,7 +1068,7 @@ changeOwnGuess = function(){
         acceptType = 0;
         guessCounter = guessCounter + 1;
         response_counter = response_counter + 1;
-        response = -99;
+        response = -999;
 
         // // Track the mouse during response.
         $(document).mousemove(trackMouseMovement);
@@ -959,7 +1085,7 @@ changeOwnGuess = function(){
             sendDataToServer();
 
             // Show and hide objects as needed.
-            if (response === -99){
+            if (response === -999){
                 $("#title").text("You didn't respond in time");
                 $(".instructions").html("Please wait for your partner's guess.");
             }
