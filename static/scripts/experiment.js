@@ -1,6 +1,3 @@
-// Condition choice -- can be "competitive", "cooperative", or "neutral"
-experiment_condition = 'cooperative'
-
 // Settings
 PPU = 5; // Pixels per base unit.
 xMax = 100; // Maximum size of a bar in base units.
