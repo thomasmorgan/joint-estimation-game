@@ -85,16 +85,22 @@ class JointEstimation(Experiment):
     def setup(self):
         """Create networks. Add a source if the networks don't yet exist."""
         if not self.networks():
+
+            # create practice networks with desired properties
             for _ in range(self.practice_repeats):
                 network = self.create_network()
                 network.role = "practice"
                 self.session.add(network)
                 self.models.ListSource(network=network)
+
+            # create experiment network with desired properties
             for _ in range(self.experiment_repeats):
                 network = self.create_network()
                 network.role = "experiment"
                 self.session.add(network)
                 self.models.ListSource(network=network)
+
+            # initialize the network
             self.session.commit()
 
     def bonus(self, participant):
@@ -116,7 +122,7 @@ class JointEstimation(Experiment):
         if -9999999999999999999999999999 in score:
             bonus = 0.0
 
-        # Otherwise,
+        # Otherwise, grant them appropriate bonuses
         else:
             score = filter(lambda a: a > 0, score)
             score = score + [0] * (self.total_test_trials - len(score))
