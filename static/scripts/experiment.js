@@ -103,6 +103,9 @@ create_agent = function() {
         type: 'json',
         success: function (resp) {
             my_node_id = resp.node.id;
+            experiment_condition = resp.node.type;
+            // console.log("I'm in the " + experiment_condition + " condition.")
+            // console.log("")
             check_for_partner();
         },
         error: function (err) {

@@ -47,8 +47,40 @@ class JointEstimation(Experiment):
         return self.models.Paired()
 
     def create_node(self, participant, network):
-        """Create a new node."""
-        return self.models.Indexed(participant=participant, network=network)
+        """Create a node for a participant."""
+
+        # check how many participants are in each condition
+        current_cooperative = Node.query.filter_by(type="cooperative").count()
+        current_competitive = Node.query.filter_by(type="competitive").count()
+        current_neutral = Node.query.filter_by(type="neutral").count()
+
+        # figure out how many are still needed
+        req_cooperative = self.recruit_cooperative * 2 - current_cooperative
+        req_competitive = self.recruit_competitive * 2 - current_competitive
+        req_neutral = self.recruit_neutral * 2 - current_neutral
+
+        # identify which conditions still need folks
+        available_conditions = []
+        if req_cooperative > 0:
+            available_conditions.append("cooperative")
+        if req_competitive > 0:
+            available_conditions.append("competitive")
+        if req_neutral > 0:
+            available_conditions.append("neutral")
+
+        # randomly select among the three conditions and assign type
+        assigned_type = choice(available_conditions)
+        if assigned_type == "cooperative":
+            return self.models.Cooperative(participant=participant,
+                                           network=network)
+        elif assigned_type == "competitive":
+            return self.models.Competitive(participant=participant,
+                                           network=network)
+        elif assigned_type == "neutral":
+            return self.models.Neutral(participant=participant,
+                                       network=network)
+        else:
+            exit('Improper condition passed during participant node creation.')
 
     def setup(self):
         """Create networks. Add a source if the networks don't yet exist."""
