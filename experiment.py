@@ -7,11 +7,22 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
 from dallinger.nodes import Source
 from random import randint
+from random import choice
 import json
 
 
 class JointEstimation(Experiment):
     """An experiment for joint perception."""
+
+    # set the desired number of dyads in each condition
+    recruit_cooperative = 1  # 5
+    recruit_competitive = 1  # 5
+    recruit_neutral = 0  # 5
+
+    # total participants desired
+    recruit_all = (recruit_cooperative +
+                   recruit_competitive +
+                   recruit_neutral) * 2
 
     def __init__(self, session):
         """Call the same function in the super (see experiments.py in dallinger).
@@ -23,8 +34,10 @@ class JointEstimation(Experiment):
         self.models = models
         self.experiment_repeats = 1
         self.setup()
-        self.num_participants = 60 # desired total participants, not dyads
-        self.initial_recruitment_size = 60 # should be equal to the `num_participants` above
+
+        # set total participant recruitment
+        self.num_participants = self.recruit_all
+        self.initial_recruitment_size = self.num_participants
         self.completion_bonus_payment = .33
         self.accuracy_bonus_payment = 2
         self.total_test_trials = 15
