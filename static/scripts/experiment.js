@@ -700,20 +700,29 @@ function acknowledgeGuess () {
       correction_background.hide()
       correction_label.hide()
 
+      // if it's the last trainging trial, give us more instructions
       if (trialIndex == (trainN-1)) {
-        // if its the last trainging trial
+        // Show us how we'll earn bonuses.
         $('#title').text("Congrats! You've finished the training trials")
-        $('.instructions').html("Your next trial will be a <b>test</b> trial.")
-        setTimeout(function () {
+        showBonusInstructions()
+
+        // When they click acknowledge bonus terms, remove it and try to advance.
+        bonus_acknowledge_button = "<button id='bonusAcknowledge' style='float: left'>I understand — ready to start!</button>"
+        $('body').on('click')
+        $('document').on('click')
+        $('body').append(bonus_acknowledge_button)
+        $('body').click(function () {
+          $('#bonusAcknowledge').remove()
           $('#title').text('')
           $('.instructions').html('')
-          checkPartnerTraining()
-        }, 5000 + (correction_timeout * 1000))
+          setTimeout(checkPartnerTraining, 1000)
+        })
+
+      // if there's more training to do
       } else {
-        // if there's more training ot do
         proceedToNextTrial()
       }
-    }, correction_timeout*1000)
+    }, correction_timeout * 1000)
   } else {
     // Wait for partner to guess.
     $('#title').text('Your response has been recorded.')
@@ -741,13 +750,13 @@ trackMouseMovement = function (e) {
 // Wait for partner to finish training.
 //
 waitForTraining = function () {
-    // Keep track of how long we've been waiting.
-    waiting_for_partner = waiting_for_partner + 1
+  // Keep track of how long we've been waiting.
+  waiting_for_partner = waiting_for_partner + 1
 
-    // Update text and check again.
-    $('#title').text('Please wait')
-    $('.instructions').html('Your partner is finishing training.<br>If your partner takes more than 5 minutes to finish training, your partner will be marked as having abandoned the experiment, and you will receive base pay and any earned bonuses.')
-    setTimeout(checkPartnerTraining,1000)
+  // Update text and check again.
+  $('#title').text('Please wait')
+  $('.instructions').html('Your partner is finishing training.<br>If your partner takes more than 5 minutes to finish training, your partner will be marked as having abandoned the experiment, and you will receive base pay and any earned bonuses.')
+  setTimeout(checkPartnerTraining,1000)
 }
 
 //
@@ -1163,6 +1172,108 @@ fetchPartnerData = function () {
       $('body').html(err_response.html)
     }
   })
+}
+
+// Show instructions about bonuses.
+showBonusInstructions = function () {
+  // Provide bonus instructions based on condition.
+  if (experiment_condition == 'neutral') {
+    $('.instructions').html(
+      '<p>Your next trial will be a <b>test</b> trial. ' +
+      'You will now be eligible for bonuses.</p>' +
+      '<p>' +
+      'Again, in this game, you are eligible to win two bonuses:' +
+      '<ul>' +
+      '<li>Your <b>accuracy</b> bonus will be based on the accuracy ' +
+      'of your guess in each test trial. ' +
+      '<b>You will receive an accuracy bonus ' +
+      'at each round, and the bonus will equivalent to the accuracy ' +
+      'of your final guess submitted that round.</b> ' +
+      'You can earn up to $2 for the entire game. Only the last guess of ' +
+      'each round will be used to determine your bonus.' +
+      '<br></li>' +
+      '<li>Your <b>completion</b> bonus will be given if you complete ' +
+      'all test trials, regardless of accuracy. You will earn $0.33 ' +
+      'for completing all trials.' +
+      '</ul>' +
+      '</p>' +
+      '<p>' +
+      '<b>Remember</b>: You must respond within 60 seconds. If you ' +
+      'have not entered your response within that time, your game will ' +
+      'time out, and you will only earn the base compensation rate for ' +
+      'participation. You will not retain any of the bonuses from any ' +
+      'rounds that you have already completed.' +
+      '</p>' +
+      '<p>' +
+      'If your partner times out, you will earn the base compensation ' +
+      'rate for participation, any accuracy bonuses that you have ' +
+      'already earned, and the full completion bonus.' +
+      '</p>')
+  } else if (experiment_condition == 'cooperative') {
+    $('.instructions').html(
+      '<p>Your next trial will be a <b>test</b> trial. ' +
+      'You will now be eligible for bonuses.</p>' +
+      '<p>' +
+      'Again, in this game, you are eligible to win two bonuses:' +
+      '<ul>' +
+      '<li>Your <b>accuracy</b> bonus will be based on the accuracy ' +
+      'of you and your partner in each test trial. ' +
+      '<b>Both you and your partner will receive an accuracy bonus ' +
+      'at each round, and the bonus will equivalent to the accuracy ' +
+      'of the most accurate final guess submitted that round.</b> ' +
+      'You can earn up to $2 for the entire game. Only the last guess of ' +
+      'each round will be used to determine your bonus.' +
+      '<br></li>' +
+      '<li>Your <b>completion</b> bonus will be given if you complete ' +
+      'all test trials, regardless of accuracy. You will earn $0.33 ' +
+      'for completing all trials.' +
+      '</ul>' +
+      '</p>' +
+      '<p>' +
+      '<b>Remember</b>: You must respond within 60 seconds. If you ' +
+      'have not entered your response within that time, your game will ' +
+      'time out, and you will only earn the base compensation rate for ' +
+      'participation. You will not retain any of the bonuses from any ' +
+      'rounds that you have already completed.' +
+      '</p>' +
+      '<p>' +
+      'If your partner times out, you will earn the base compensation ' +
+      'rate for participation, any accuracy bonuses that you have ' +
+      'already earned, and the full completion bonus.' +
+      '</p>')
+  } else if (experiment_condition == 'competitive') {
+    $('.instructions').html(
+      '<p>Your next trial will be a <b>test</b> trial. ' +
+      'You will now be eligible for bonuses.</p>' +
+      '<p>' +
+      'Again, in this game, you are eligible to win two bonuses:' +
+      '<ul>' +
+      '<li>Your <b>accuracy</b> bonus will be based on the accuracy ' +
+      'of you and your partner in each trial. ' +
+      '<b>Only the most accurate person will receive an accuracy bonus '+
+      'at each round, and the bonus will be equivalent to the accuracy' +
+      "of that person's final guess of that round.</b> " +
+      'You can earn up to $2 for the entire game. Only the last guess of ' +
+      'each round will be used to determine your bonus.' +
+      '<br></li>' +
+      '<li>Your <b>completion</b> bonus will be given if you complete ' +
+      'all test trials, regardless of accuracy. You will earn $0.33 ' +
+      'for completing all trials.' +
+      '</ul>' +
+      '</p>' +
+      '<p>' +
+      '<b>Remember</b>: You must respond within 60 seconds. If you ' +
+      'have not entered your response within that time, your game will ' +
+      'time out, and you will only earn the base compensation rate for ' +
+      'participation. You will not retain any of the bonuses from any ' +
+      'rounds that you have already completed.' +
+      '</p>' +
+      '<p>' +
+      'If your partner times out, you will earn the base compensation ' +
+      'rate for participation, any accuracy bonuses that you have ' +
+      'already earned, and the full completion bonus.' +
+      '</p>')
+  }
 }
 
 //
