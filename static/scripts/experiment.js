@@ -390,7 +390,6 @@ proceedToNextTrial = function () {
 // For training trials, show the correct length.
 //
 showCorrectLength = function () {
-
   // Draw correction background.
   correction_background = paper.rect(
     correction_x_start,
@@ -961,8 +960,8 @@ showPartner = function () {
     // If they submitted a guess, allow them to accept it and stop the abandonment timer.
     $('body').append(accept_guess_button)
     $('#acceptGuess').click(function () {
-        $(document).click(function(e) { e.stopPropagation() })
-        acceptOwnGuess()
+      $(document).click(function (e) { e.stopPropagation() })
+      acceptOwnGuess()
     })
   }
 }
@@ -971,7 +970,6 @@ showPartner = function () {
 // Draw partner's guess.
 //
 showPartnerGuess = function () {
-
   // Draw partner's background.
   paper = Raphael(0, 50, 800, 600)
   partner_background = paper.rect(
@@ -1015,7 +1013,6 @@ showPartnerGuess = function () {
 // Show own guess.
 //
 showOwnGuess = function () {
-
   // Turn off mousetracking.
   $(document).off('mousemove', trackMouseMovement)
 
