@@ -107,7 +107,7 @@ create_agent = function () {
     },
     error: function (err) {
       // log it in the console for debugging
-      console.log('Error when initializing participant: '+ err)
+      console.log('Error when initializing participant: ' + err)
 
       // notify the participant
       $('#title').text('An error has occurred -- creating participant.')
@@ -168,7 +168,7 @@ check_for_partner = function () {
       }
     },
     error: function (err) {
-      console.log('Error when attempting to identify partner: '+ err)
+      console.log('Error when attempting to identify partner: ' + err)
       $('#title').text('An error has occurred -- identifying partner.')
       $('.instructions').text('Please close this window and return this HIT.')
     }
@@ -201,7 +201,7 @@ get_received_info = function () {
       }
     },
     error: function (err) {
-      console.log('Error when checking if partner is connected: '+err)
+      console.log('Error when checking if partner is connected: ' + err)
       err_response = JSON.parse(err.response)
       $('body').html(err_response.html)
     }
@@ -347,7 +347,7 @@ proceedToNextTrial = function () {
     // Update announcements and current trial info.
     $('#title').text('Beginning next round')
     $('.instructions').text('')
-    console.log('BEGINNING TRIAL '+trialIndex)
+    console.log('BEGINNING TRIAL ' + trialIndex)
     setTimeout(function () {
       // Prevent repeat keypresses.
       Mousetrap.pause()
@@ -482,7 +482,7 @@ sendDataToServer = function () {
     })
 
     // Push data
-    console.log('Accept Type: '+acceptType)
+    console.log('Accept Type: ' + acceptType)
     reqwest({
       url: '/info/' + my_node_id,
       method: 'post',
@@ -582,7 +582,7 @@ showStimuliBars = function () {
   stimulus2_width = stimulus2_list[trialIndex]
   stimulus2_background.show()
   stimulus2_label.show()
-  stimulus2_bar.show().attr({ width: stimulus2_width*PPU })
+  stimulus2_bar.show().attr({ width: stimulus2_width * PPU })
 }
 
 hideStimuliBars = function () {
@@ -675,7 +675,7 @@ function acknowledgeGuess () {
   // Register response and hide bars.
   sendDataToServer()
 
-  // console.log('Mouse click: '+response)
+  // console.log('Mouse click: ' + response)
   response_bar.hide()
   response_background.hide()
 
@@ -700,7 +700,7 @@ function acknowledgeGuess () {
       correction_label.hide()
 
       // if it's the last trainging trial, give us more instructions
-      if (trialIndex == (trainN-1)) {
+      if (trialIndex == (trainN - 1)) {
         // Show us how we'll earn bonuses.
         $('#title').text("Congrats! You've finished the training trials")
         showBonusInstructions()
@@ -1110,7 +1110,7 @@ changeOwnGuess = function () {
       response_bar.hide()
       response_background.hide()
       getPartnerGuess()
-    }, response_timeout*1000)
+    }, response_timeout * 1000)
   }, 1)
 }
 
@@ -1122,7 +1122,7 @@ acknowledgeChangedGuess = function () {
   if (change_lock === false) {
     // Register response and hide bars.
     response = Math.round(response_bar_size / PPU)
-    // console.log('Mouse click: '+response)
+    // console.log('Mouse click: ' + response)
 
     // Reset for next trial.
     Mousetrap.resume()
@@ -1247,7 +1247,7 @@ showBonusInstructions = function () {
       '<ul>' +
       '<li>Your <b>accuracy</b> bonus will be based on the accuracy ' +
       'of you and your partner in each trial. ' +
-      '<b>Only the most accurate person will receive an accuracy bonus '+
+      '<b>Only the most accurate person will receive an accuracy bonus ' +
       'at each round, and the bonus will be equivalent to the accuracy' +
       "of that person's final guess of that round.</b> " +
       'You can earn up to $2 for the entire game. Only the last guess of ' +
