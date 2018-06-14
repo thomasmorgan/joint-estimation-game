@@ -184,15 +184,23 @@ get_received_info = function () {
     method: 'get',
     type: 'json',
     success: function (resp) {
+      // Grab stimuli lists
       r = resp.infos[0].contents
       stimulus_info = JSON.parse(r)
       stimulus0_list = stimulus_info[0][0]
       stimulus1_list = stimulus_info[0][1]
       stimulus2_list = stimulus_info[0][2]
       chosen_stimulus_list = stimulus_info[1]
-      $('#title').text('Partner found and connected')
-      $('.instructions').text('Press enter to begin')
-      enter_lock = false
+
+      // Let them know we have a partner.
+      $('#title').text('Partner found and connected.')
+
+      // Inform them about how bonuses work.
+      showBonusInstructions()
+      setTimeout(function () {
+        acknowledgeBonusInstructions()
+        enter_lock = false
+      }, 4000)
 
       // Remove the button, if it's there.
       if (waiting_for_partner > waiting_for_partner_timeout) {
@@ -1176,21 +1184,21 @@ showBonusInstructions = function () {
   // Provide bonus instructions based on condition.
   if (experiment_condition == 'neutral') {
     $('.instructions').html(
-      '<p>Your next trial will be a <b>test</b> trial. ' +
-      'You will now be eligible for bonuses.</p>' +
-      '<p>' +
-      'Again, in this game, you are eligible to win two bonuses:' +
+      "<b>Before you begin, we'll first review how you can earn bonuses.</b>" +
+      '<br><br>' +
+      'In this game, you are eligible to earn two types of bonuses:' +
+      '<br><br>' +
       '<ul>' +
       '<li>Your <b>accuracy</b> bonus will be based on the accuracy ' +
       'of your guess in each test trial. ' +
       '<b>You will receive an accuracy bonus ' +
       'at each round, and the bonus will equivalent to the accuracy ' +
       'of your final guess submitted that round.</b> ' +
-      'You can earn up to $2 for the entire game. Only the last guess of ' +
+      'You can earn <b>up to $2</b> for the entire game. Only the last guess of ' +
       'each round will be used to determine your bonus.' +
-      '<br></li>' +
+      '<br><br></li>' +
       '<li>Your <b>completion</b> bonus will be given if you complete ' +
-      'all test trials, regardless of accuracy. You will earn $0.33 ' +
+      'all test trials, regardless of accuracy. You will earn <b>$0.33</b> ' +
       'for completing all trials.' +
       '</ul>' +
       '</p>' +
@@ -1208,21 +1216,21 @@ showBonusInstructions = function () {
       '</p>')
   } else if (experiment_condition == 'cooperative') {
     $('.instructions').html(
-      '<p>Your next trial will be a <b>test</b> trial. ' +
-      'You will now be eligible for bonuses.</p>' +
-      '<p>' +
-      'Again, in this game, you are eligible to win two bonuses:' +
+      "<b>Before you begin, we'll first review how you can earn bonuses.</b>" +
+      '<br><br>' +
+      'In this game, you are eligible to earn two types of bonuses:' +
+      '<br><br>' +
       '<ul>' +
       '<li>Your <b>accuracy</b> bonus will be based on the accuracy ' +
       'of you and your partner in each test trial. ' +
       '<b>Both you and your partner will receive an accuracy bonus ' +
       'at each round, and the bonus will equivalent to the accuracy ' +
       'of the most accurate final guess submitted that round.</b> ' +
-      'You can earn up to $2 for the entire game. Only the last guess of ' +
+      'You can earn <b>up to $2</b> for the entire game. Only the last guess of ' +
       'each round will be used to determine your bonus.' +
-      '<br></li>' +
+      '<br><br></li>' +
       '<li>Your <b>completion</b> bonus will be given if you complete ' +
-      'all test trials, regardless of accuracy. You will earn $0.33 ' +
+      'all test trials, regardless of accuracy. You will earn <b>$0.33</b> ' +
       'for completing all trials.' +
       '</ul>' +
       '</p>' +
@@ -1240,21 +1248,21 @@ showBonusInstructions = function () {
       '</p>')
   } else if (experiment_condition == 'competitive') {
     $('.instructions').html(
-      '<p>Your next trial will be a <b>test</b> trial. ' +
-      'You will now be eligible for bonuses.</p>' +
-      '<p>' +
-      'Again, in this game, you are eligible to win two bonuses:' +
+      "<b>Before you begin, we'll first review how you can earn bonuses.</b>" +
+      '<br><br>' +
+      'In this game, you are eligible to earn two types of bonuses:' +
+      '<br><br>' +
       '<ul>' +
       '<li>Your <b>accuracy</b> bonus will be based on the accuracy ' +
       'of you and your partner in each trial. ' +
       '<b>Only the most accurate person will receive an accuracy bonus ' +
       'at each round, and the bonus will be equivalent to the accuracy' +
       "of that person's final guess of that round.</b> " +
-      'You can earn up to $2 for the entire game. Only the last guess of ' +
+      'You can earn <b>up to $2</b> for the entire game. Only the last guess of ' +
       'each round will be used to determine your bonus.' +
-      '<br></li>' +
+      '<br><br></li>' +
       '<li>Your <b>completion</b> bonus will be given if you complete ' +
-      'all test trials, regardless of accuracy. You will earn $0.33 ' +
+      'all test trials, regardless of accuracy. You will earn <b>$0.33</b> ' +
       'for completing all trials.' +
       '</ul>' +
       '</p>' +
@@ -1272,6 +1280,115 @@ showBonusInstructions = function () {
       '</p>')
   }
 }
+
+// Show instructions about bonuses.
+acknowledgeBonusInstructions = function () {
+  // Provide bonus instructions based on condition.
+  if (experiment_condition == 'neutral') {
+    $('.instructions').html(
+      "<b>Before you begin, we'll first review how you can earn bonuses.</b>" +
+      '<br><br>' +
+      'In this game, you are eligible to earn two types of bonuses:' +
+      '<br><br>' +
+      '<ul>' +
+      '<li>Your <b>accuracy</b> bonus will be based on the accuracy ' +
+      'of your guess in each test trial. ' +
+      '<b>You will receive an accuracy bonus ' +
+      'at each round, and the bonus will equivalent to the accuracy ' +
+      'of your final guess submitted that round.</b> ' +
+      'You can earn <b>up to $2</b> for the entire game. Only the last guess of ' +
+      'each round will be used to determine your bonus.' +
+      '<br><br></li>' +
+      '<li>Your <b>completion</b> bonus will be given if you complete ' +
+      'all test trials, regardless of accuracy. You will earn <b>$0.33</b> ' +
+      'for completing all trials.' +
+      '</ul>' +
+      '</p>' +
+      '<p>' +
+      '<b>Remember</b>: You must respond within 60 seconds. If you ' +
+      'have not entered your response within that time, your game will ' +
+      'time out, and you will only earn the base compensation rate for ' +
+      'participation. You will not retain any of the bonuses from any ' +
+      'rounds that you have already completed.' +
+      '</p>' +
+      '<p>' +
+      'If your partner times out, you will earn the base compensation ' +
+      'rate for participation, any accuracy bonuses that you have ' +
+      'already earned, and the full completion bonus.' +
+      '</p>' +
+      '<p>' +
+      "<b>When you're ready to begin, press enter.</b>")
+  } else if (experiment_condition == 'cooperative') {
+    $('.instructions').html(
+      "<b>Before you begin, we'll first review how you can earn bonuses.</b>" +
+      '<br><br>' +
+      'In this game, you are eligible to earn two types of bonuses:' +
+      '<br><br>' +
+      '<ul>' +
+      '<li>Your <b>accuracy</b> bonus will be based on the accuracy ' +
+      'of you and your partner in each test trial. ' +
+      '<b>Both you and your partner will receive an accuracy bonus ' +
+      'at each round, and the bonus will equivalent to the accuracy ' +
+      'of the most accurate final guess submitted that round.</b> ' +
+      'You can earn <b>up to $2</b> for the entire game. Only the last guess of ' +
+      'each round will be used to determine your bonus.' +
+      '<br><br></li>' +
+      '<li>Your <b>completion</b> bonus will be given if you complete ' +
+      'all test trials, regardless of accuracy. You will earn <b>$0.33</b> ' +
+      'for completing all trials.' +
+      '</ul>' +
+      '</p>' +
+      '<p>' +
+      '<b>Remember</b>: You must respond within 60 seconds. If you ' +
+      'have not entered your response within that time, your game will ' +
+      'time out, and you will only earn the base compensation rate for ' +
+      'participation. You will not retain any of the bonuses from any ' +
+      'rounds that you have already completed.' +
+      '</p>' +
+      '<p>' +
+      'If your partner times out, you will earn the base compensation ' +
+      'rate for participation, any accuracy bonuses that you have ' +
+      'already earned, and the full completion bonus.' +
+      '</p>' +
+      '<p>' +
+      "<b>When you're ready to begin, press enter.</b>")
+  } else if (experiment_condition == 'competitive') {
+    $('.instructions').html(
+      "<b>Before you begin, we'll first review how you can earn bonuses.</b>" +
+      '<br><br>' +
+      'In this game, you are eligible to earn two types of bonuses:' +
+      '<br><br>' +
+      '<ul>' +
+      '<li>Your <b>accuracy</b> bonus will be based on the accuracy ' +
+      'of you and your partner in each trial. ' +
+      '<b>Only the most accurate person will receive an accuracy bonus ' +
+      'at each round, and the bonus will be equivalent to the accuracy' +
+      "of that person's final guess of that round.</b> " +
+      'You can earn <b>up to $2</b> for the entire game. Only the last guess of ' +
+      'each round will be used to determine your bonus.' +
+      '<br><br></li>' +
+      '<li>Your <b>completion</b> bonus will be given if you complete ' +
+      'all test trials, regardless of accuracy. You will earn <b>$0.33</b> ' +
+      'for completing all trials.' +
+      '</ul>' +
+      '</p>' +
+      '<p>' +
+      '<b>Remember</b>: You must respond within 60 seconds. If you ' +
+      'have not entered your response within that time, your game will ' +
+      'time out, and you will only earn the base compensation rate for ' +
+      'participation. You will not retain any of the bonuses from any ' +
+      'rounds that you have already completed.' +
+      '</p>' +
+      '<p>' +
+      'If your partner times out, you will earn the base compensation ' +
+      'rate for participation, any accuracy bonuses that you have ' +
+      'already earned, and the full completion bonus.' +
+      '</p>' +
+      '<p>' +
+      "<b>When you're ready to begin, press enter.</b>")
+  }
+}
+
 
 //
 $(document).keydown(function (e) {
