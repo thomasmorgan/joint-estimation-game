@@ -707,23 +707,15 @@ function acknowledgeGuess () {
       correction_background.hide()
       correction_label.hide()
 
-      // if it's the last trainging trial, give us more instructions
+      // if it's the last trainging trial, let us know we're moving on
       if (trialIndex == (trainN - 1)) {
-        // Show us how we'll earn bonuses.
         $('#title').text("Congrats! You've finished the training trials")
-        showBonusInstructions()
-
-        // When they click acknowledge bonus terms, remove it and try to advance.
-        bonus_acknowledge_button = "<button id='bonusAcknowledge' style='float: left'>I understand — ready to start!</button>"
-        $('body').on('click')
-        $('document').on('click')
-        $('body').append(bonus_acknowledge_button)
-        $('body').click(function () {
-          $('#bonusAcknowledge').remove()
-          $('#title').text('')
-          $('.instructions').html('')
-          setTimeout(checkPartnerTraining, 1000)
-        })
+        $('.instructions').html('Your next trial will be a <b>test</b> trial.' +
+                                '<br><br>' +
+                                'Remember: You will now be eligible for the ' +
+                                'accuracy and completion bonuses described ' +
+                                'earlier.')
+        setTimeout(checkPartnerTraining, 3000)
 
       // if there's more training to do
       } else {
