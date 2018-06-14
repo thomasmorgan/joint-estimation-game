@@ -842,7 +842,7 @@ getPartnerGuess = function () {
   $('.instructions').text("Please wait for your partner's guess.")
 
   // If we've been waiting too long, kick out the abandonded partner
-  if (wait_for_partner_guess > 20) { handleAbandonedPartner() }
+  if (wait_for_partner_guess > abandonment_timer) { handleAbandonedPartner() }
 
   // Get partner's data.
   fetchPartnerData()
