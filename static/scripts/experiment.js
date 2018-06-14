@@ -857,10 +857,22 @@ getPartnerGuess = function () {
     partner_accept_type = partner_guess_record['acceptType']
     console.log("Partner's current trial: " + partner_guess_trial)
 
-    // if you are not on the same trial and response counter wait for your partner
-    if (partner_guess_trial != trialIndex ||
-        partner_response_counter != response_counter) {
+    // If both partners on on different trials, wait for them.
+    if (partner_guess_trial != trialIndex) {
       waitForGuess()
+
+    // If we're behind our partner, let us guess.
+    } else if (partner_response_counter > response_counter) {
+      enter_lock = false
+      partner_x_guess = partner_guess_record['guess']
+      wait_for_partner_guess = 0
+      showPartner()
+
+    // If our partner hasn't caught up, wait for them.
+    } else if (partner_response_counter < response_counter) {
+      waitForGuess()
+
+    // If both partners on on the same trial and response counter, try to finish
     } else {
       // If at least one of you has not accepted, show responses again
       if (partner_accept_type != 1 || acceptType != 1) {
