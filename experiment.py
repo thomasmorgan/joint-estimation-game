@@ -38,8 +38,8 @@ class JointEstimation(Experiment):
         # set total participant recruitment
         self.num_participants = self.recruit_all
         self.initial_recruitment_size = self.num_participants
-        self.completion_bonus_payment = .33
-        self.accuracy_bonus_payment = 2
+        self.completion_bonus_payment = 0.33
+        self.accuracy_bonus_payment = 2.00
         self.total_test_trials = 15
 
     def create_network(self):
