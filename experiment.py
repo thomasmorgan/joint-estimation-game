@@ -124,8 +124,7 @@ class JointEstimation(Experiment):
 
         # Otherwise, grant them appropriate bonuses
         else:
-            score = filter(lambda a: a > 0, score)
-            score = score + [0] * (self.total_test_trials - len(score))
+            score = [trial_bonus if trial_bonus > 0.0 else 0.0 for trial_bonus in score ]
             mean_accuracy = float(sum(score))/float(self.total_test_trials)
             bonus = round(min((self.accuracy_bonus_payment +
                                self.completion_bonus_payment),
