@@ -12,13 +12,32 @@ class Paired(Network):
 
     __mapper_args__ = {"polymorphic_identity": "paired"}
 
+    # link nodes together only if they're in the same condition
     def add_node(self, node):
         """Node <-> Node; Node <-> Node; etc. """
 
         # get a list of all potential partners
         all_nodes = self.nodes(type=type(node))
         other_nodes = [n for n in all_nodes if n is not node]
-        available_nodes = [n for n in other_nodes if not any(n.vectors(failed="all"))]
+        available_nodes = [n for n in other_nodes
+                           if not any(n.vectors(failed="all"))]
+
+        # narrow them down by condition
+        if node.type == "cooperative":
+            available_nodes = [n for n
+                               in Node.query.filter_by(type="cooperative")
+                               if not any(n.vectors(failed="all"))
+                               if n is not node]
+        if node.type == "competitive":
+            available_nodes = [n for n
+                               in Node.query.filter_by(type="competitive")
+                               if not any(n.vectors(failed="all"))
+                               if n is not node]
+        if node.type == "neutral":
+            available_nodes = [n for n
+                               in Node.query.filter_by(type="neutral")
+                               if not any(n.vectors(failed="all"))
+                               if n is not node]
 
         # if there are available nodes
         if available_nodes:
@@ -32,9 +51,10 @@ class Paired(Network):
             # grab the source created for the network
             source = self.nodes(type=ListSource)[0]
 
-            # connect the sources to both nodes and sends them both the same list
+            # connect the sources to both nodes and sends both the same list
             source.connect(whom=[node, partner_node])
-            source.transmit(what=source.new_list(), to_whom=[node, partner_node])
+            source.transmit(what=source.new_list(),
+                            to_whom=[node, partner_node])
 
             # let both nodes receive the list that've been sent
             node.receive()
@@ -55,14 +75,36 @@ class ListSource(Source):
     __mapper_args__ = {"polymorphic_identity": "listsource"}
 
     def new_list(self):
-        """Generate a list of numbers randomly sampled from a uniform distribution."""
+        """Generate a list of numbers randomly sampled from a
+        uniform distribution."""
 
         max_number = 100
         list_length = 100
         num_competitors = 3
-        stimulus_list = [[choice(range(max_number)) + 1 for _ in range(list_length)] for competitor in range(num_competitors)]
-        chosen_list = [choice(range(num_competitors)) for _ in range(list_length)]
-        number_list = [stimulus_list,chosen_list]
+        stimulus_list = [[choice(range(max_number)) + 1
+                          for _ in range(list_length)]
+                         for competitor in range(num_competitors)]
+        chosen_list = [choice(range(num_competitors))
+                       for _ in range(list_length)]
+        number_list = [stimulus_list, chosen_list]
 
-        # ship our list as a string (which we'll then reconstitute as a list upon reading)
+        # ship our list as a string (which we'll reconstitute as a list later)
         return Info(origin=self, contents=json.dumps(number_list))
+
+
+class Cooperative(Node):
+    """Participant in the cooperative condition"""
+
+    __mapper_args__ = {"polymorphic_identity": "cooperative"}
+
+
+class Competitive(Node):
+    """Participant in the competitive condition"""
+
+    __mapper_args__ = {"polymorphic_identity": "competitive"}
+
+
+class Neutral(Node):
+    """Participant in the neutral condition"""
+
+    __mapper_args__ = {"polymorphic_identity": "neutral"}
