@@ -15,9 +15,9 @@ class JointEstimation(Experiment):
     """An experiment for joint perception."""
 
     # set the desired number of dyads in each condition
-    recruit_cooperative = 5
-    recruit_competitive = 5
-    recruit_neutral = 5
+    recruit_cooperative = 15
+    recruit_competitive = 15
+    recruit_neutral = 15
 
     # total participants desired
     recruit_all = (recruit_cooperative +
