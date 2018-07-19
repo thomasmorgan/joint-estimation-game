@@ -50,9 +50,12 @@ class JointEstimation(Experiment):
         """Create a node for a participant."""
 
         # check how many participants are in each condition
-        current_cooperative = Node.query.filter_by(type="cooperative").count()
-        current_competitive = Node.query.filter_by(type="competitive").count()
-        current_neutral = Node.query.filter_by(type="neutral").count()
+        current_cooperative = Node.query.filter_by(type="cooperative",
+                                                    failed=False).count()
+        current_competitive = Node.query.filter_by(type="competitive",
+                                                    failed=False).count()
+        current_neutral = Node.query.filter_by(type="neutral",
+                                                failed=False).count()
 
         # figure out how many are still needed
         req_cooperative = self.recruit_cooperative * 2 - current_cooperative
