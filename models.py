@@ -25,18 +25,18 @@ class Paired(Network):
         # narrow them down by condition
         if node.type == "cooperative":
             available_nodes = [n for n
-                               in Node.query.filter_by(type="cooperative")
-                               if not any(n.vectors(failed="all"))
+                               in Node.query.filter_by(type="cooperative",
+                                                       failed=False)
                                if n is not node]
         if node.type == "competitive":
             available_nodes = [n for n
-                               in Node.query.filter_by(type="competitive")
-                               if not any(n.vectors(failed="all"))
+                               in Node.query.filter_by(type="competitive"),
+                                                       failed=False)
                                if n is not node]
         if node.type == "neutral":
             available_nodes = [n for n
-                               in Node.query.filter_by(type="neutral")
-                               if not any(n.vectors(failed="all"))
+                               in Node.query.filter_by(type="neutral",
+                                                       failed=False)
                                if n is not node]
 
         # if there are available nodes
