@@ -16,13 +16,7 @@ class Paired(Network):
     def add_node(self, node):
         """Node <-> Node; Node <-> Node; etc. """
 
-        # get a list of all potential partners
-        all_nodes = self.nodes(type=type(node))
-        other_nodes = [n for n in all_nodes if n is not node]
-        available_nodes = [n for n in other_nodes
-                           if not any(n.vectors(failed="all"))]
-
-        # narrow them down by condition
+        # get a list of all potential partners by condition
         if node.type == "cooperative":
             available_nodes = [n for n
                                in Node.query.filter_by(type="cooperative",
