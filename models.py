@@ -17,21 +17,11 @@ class Paired(Network):
         """Node <-> Node; Node <-> Node; etc. """
 
         # get a list of all potential partners by condition
-        if node.type == "cooperative":
-            available_nodes = [n for n
-                               in Node.query.filter_by(type="cooperative",
-                                                       failed=False)
-                               if n is not node]
-        if node.type == "competitive":
-            available_nodes = [n for n
-                               in Node.query.filter_by(type="competitive"),
-                                                       failed=False)
-                               if n is not node]
-        if node.type == "neutral":
-            available_nodes = [n for n
-                               in Node.query.filter_by(type="neutral",
-                                                       failed=False)
-                               if n is not node]
+        available_nodes = [
+            n for n in Node.query.filter_by(type=node.type, failed=False)
+            if n is not node and
+            not n.neighbors(direction="either")
+        ]
 
         # if there are available nodes
         if available_nodes:
