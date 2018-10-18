@@ -47,17 +47,8 @@ $(document).ready( function() {
 
   // Submit the questionnaire.
   $("#submit-questionnaire").click(function() {
-    console.log("Submitting questionnaire.");
-    var $elements = [$("form :input"), $(this)],
-        questionSubmission = dallinger.submitQuestionnaire("questionnaire");
-
-    spinner.freeze($elements);
-    questionSubmission.done(dallinger.submitAssignment);
-    questionSubmission.always(function () {
-      spinner.unfreeze();
-    });
-
-
+    dallinger.submitQuestionnaire();
+  });
       // $("#submit-questionnaire").click(function() {
       //
 
