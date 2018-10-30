@@ -47,8 +47,17 @@ $(document).ready( function() {
 
   // Submit the questionnaire.
   $("#submit-questionnaire").click(function() {
-    dallinger.submitQuestionnaire();
-  });
+    console.log("Submitting questionnaire.");
+    var $elements = [$("form :input"), $(this)],
+        questionSubmission = dallinger.submitQuestionnaire("questionnaire");
+
+    spinner.freeze($elements);
+    questionSubmission.done(dallinger.submitAssignment);
+    questionSubmission.always(function () {
+      spinner.unfreeze();
+    });
+
+
       // $("#submit-questionnaire").click(function() {
       //
 
